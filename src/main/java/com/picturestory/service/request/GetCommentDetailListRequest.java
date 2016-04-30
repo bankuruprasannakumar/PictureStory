@@ -45,7 +45,7 @@ public class GetCommentDetailListRequest implements IRequest {
         if (userId == 0)
             msg.append(Constants.INVALID_USER_ID);
         if (contentId == 0)
-            msg.append(Constants.INVALID_COMMENT_ID);
+            msg.append(Constants.INVALID_CONTENT_ID);
         return msg.toString();
     }
 }

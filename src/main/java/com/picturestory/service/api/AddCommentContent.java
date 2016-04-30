@@ -64,7 +64,6 @@ public class AddCommentContent {
             contentUserCommentAssociation.setCommentId(commentId);
             contentUserCommentAssociation.setIngestionTime(System.currentTimeMillis());
             status = mContentUserCommentDao.addContentUserComment(contentUserCommentAssociation);
-
             if (status == false) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mContentUserCommentDao.getDetailedResponse().getErrorMessage());
             } else {

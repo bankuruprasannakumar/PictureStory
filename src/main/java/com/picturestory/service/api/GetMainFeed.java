@@ -97,6 +97,7 @@ public class GetMainFeed {
                         contentCreatorJSON.put(Constants.ID, user.getUserId());
                         contentCreatorJSON.put(Constants.NAME, user.getUserName());
                         contentCreatorJSON.put(Constants.DESCRIPTION,user.getUserDesc());
+                        contentCreatorJSON.put(Constants.IMAGE_URL,user.getUserImage());
                         contentJSON.put(Constants.PERSON_DETAILS, contentCreatorJSON);
                     }
                     contentJSONArray.put(contentJSON);
