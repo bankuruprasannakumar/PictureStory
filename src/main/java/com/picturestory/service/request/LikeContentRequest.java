@@ -3,9 +3,12 @@ package com.picturestory.service.request;
 
 import com.picturestory.service.Constants;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by bankuru on 30/12/15.
  */
+@XmlRootElement
 public class LikeContentRequest implements IRequest{
     int userId;
     int contentId;
@@ -52,7 +55,7 @@ public class LikeContentRequest implements IRequest{
         if(userId == 0)
             msg.append(Constants.INVALID_USER_ID);
         if (contentId == 0)
-            msg.append(Constants.INVALID_CATEGORY_ID);
+            msg.append(Constants.INVALID_CONTENT_ID);
         if (doLike == null || doLike.trim().isEmpty())
             msg.append(Constants.INVALID_DO_LIKE);
         return msg.toString();

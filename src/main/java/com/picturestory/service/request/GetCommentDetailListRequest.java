@@ -3,9 +3,13 @@ package com.picturestory.service.request;
 
 import com.picturestory.service.Constants;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by aasha.medhi on 10/19/15.
  */
+@XmlRootElement
+
 public class GetCommentDetailListRequest implements IRequest {
     int userId;
     int contentId;

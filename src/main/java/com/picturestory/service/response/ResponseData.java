@@ -1,8 +1,11 @@
 package com.picturestory.service.response;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by bankuru on 21/8/15.
  */
+@XmlRootElement
 public class ResponseData {
     private boolean success;
     private int errorCode;

@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 public class ResponseBuilder {
     public static Response successResponse(String response) {
         try {
-            return Response.ok(response).build();
+            return Response.ok(response, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError().build();
@@ -25,7 +25,7 @@ public class ResponseBuilder {
             JSONObject obj = new JSONObject();
             obj = new JSONObject();
             obj.put(Constants.SUCCESS, true);
-            return Response.ok(obj.toString()).build();
+            return Response.ok(obj.toString(),MediaType.APPLICATION_JSON_TYPE).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError().build();

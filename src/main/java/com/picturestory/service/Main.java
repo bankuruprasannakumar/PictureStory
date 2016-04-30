@@ -20,7 +20,7 @@ import java.net.URI;
  */
 public class Main {
     private HttpServer server;
-    public static final String BASE_URI = "http://localhost:4055/myapp/";
+    public static final String BASE_URI = "http://localhost:4055/";
 
     public static HttpServer startServer(){
         try {
@@ -32,7 +32,7 @@ public class Main {
             IoCComponentProviderFactory ioc = new GuiceComponentProviderFactory(rc, injector);
             // create and start a new instance of grizzly http server
             // exposing the Jersey application at BASE_URI
-            return GrizzlyServerFactory.createHttpServer(BASE_URI + "rest/", rc, ioc);
+            return GrizzlyServerFactory.createHttpServer(BASE_URI, rc, ioc);
         }catch (IOException e){
             System.out.println("unable to start server");
             e.printStackTrace();

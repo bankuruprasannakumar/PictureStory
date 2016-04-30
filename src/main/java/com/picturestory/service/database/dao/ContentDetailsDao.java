@@ -64,7 +64,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public List<Content> getAllContentDetails() {
-        String query = String.format("q=s:%s&%s&%s=%s&%s=%s",Constants.PICTURE_DESCRIPTION,Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        String query = String.format("q=%s:%s&%s&%s=%s&%s=%s",Constants.PICTURE_DESCRIPTION,Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {

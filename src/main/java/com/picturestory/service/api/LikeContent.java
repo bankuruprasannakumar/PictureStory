@@ -48,11 +48,11 @@ public class LikeContent {
             contentUserLike.setLikeduserId(userId);
             contentUserLike.setContentId(likeContentRequest.getContentId());
             boolean status = false;
-            if(likeContentRequest.getDoLike() == true)
+            if(likeContentRequest.getDoLike())
                 status = mUserLikeDao.addContentUserLike(contentUserLike);
             else
                 status = mUserLikeDao.deleteContentUserLike(contentUserLike);
-            if (status == false) {
+            if (status) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserLikeDao.getDetailedResponse().getErrorMessage());
             } else {
                 return ResponseBuilder.successResponse();
