@@ -10,11 +10,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class LikeContentRequest implements IRequest{
+
     int userId;
     int contentId;
     private String doLike;
 
-    public boolean getDoLike() {
+    public boolean getDoLikeValue() {
         if(doLike != null){
             if(doLike.equals("true") || doLike.equals("yes") || doLike.equals("1"))
                 return true;
@@ -22,12 +23,20 @@ public class LikeContentRequest implements IRequest{
         return false;
     }
 
+    public String getDoLike() {
+        return doLike;
+    }
+
     public int getContentId() {
         return contentId;
     }
 
-    public void setSubCategoryIdArray(int subCategoryId) {
-        this.contentId = subCategoryId;
+    public void setContentId(int contentId) {
+        this.contentId = contentId;
+    }
+
+    public void setDoLike(String doLike){
+        this.doLike = doLike;
     }
 
     public int getUserId() {
@@ -57,6 +66,7 @@ public class LikeContentRequest implements IRequest{
         if (contentId == 0)
             msg.append(Constants.INVALID_CONTENT_ID);
         if (doLike == null || doLike.trim().isEmpty())
+            System.out.println(userId+contentId+doLike);
             msg.append(Constants.INVALID_DO_LIKE);
         return msg.toString();
     }

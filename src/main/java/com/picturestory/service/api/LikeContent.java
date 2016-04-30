@@ -1,7 +1,6 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
-import com.picturestory.service.database.dao.IContentDetailsDao;
 import com.picturestory.service.database.dao.IContentUserLikeDao;
 import com.picturestory.service.database.dao.IUserDetailsDao;
 import com.picturestory.service.pojo.ContentUserLikeAssociation;
@@ -32,7 +31,7 @@ public class LikeContent {
         mUserLikeDao = userLikeDao;
     }
     @POST
-    public Response followSubCategory(LikeContentRequest likeContentRequest) {
+    public Response likeContent(LikeContentRequest likeContentRequest) {
         try {
             if (likeContentRequest == null) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_REQUEST);
@@ -48,14 +47,14 @@ public class LikeContent {
             contentUserLike.setLikeduserId(userId);
             contentUserLike.setContentId(likeContentRequest.getContentId());
             boolean status = false;
-            if(likeContentRequest.getDoLike())
+            if(likeContentRequest.getDoLikeValue())
                 status = mUserLikeDao.addContentUserLike(contentUserLike);
             else
                 status = mUserLikeDao.deleteContentUserLike(contentUserLike);
             if (status) {
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserLikeDao.getDetailedResponse().getErrorMessage());
-            } else {
                 return ResponseBuilder.successResponse();
+            } else {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserLikeDao.getDetailedResponse().getErrorMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();
