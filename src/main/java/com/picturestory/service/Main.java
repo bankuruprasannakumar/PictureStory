@@ -20,7 +20,7 @@ import java.net.URI;
  */
 public class Main {
     private HttpServer server;
-    public static final String BASE_URI = "http://appdemo.ops.ev1.inmobi.com:4055/";
+    public static final String BASE_URI = "http://10.14.125.134:4055/";
 
     public static HttpServer startServer(){
         try {

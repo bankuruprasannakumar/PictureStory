@@ -11,7 +11,6 @@ public class User {
     private String userImage;
     private String userDesc;
     private String gcmId;
-    private String startTime;
 
     public int getUserId() {
         return userId;
@@ -69,11 +68,4 @@ public class User {
         this.gcmId = gcmId;
     }
 
-    public String getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
 }

@@ -34,10 +34,6 @@ public class RegisterUser {
     @POST
     public Response registerUser(NewUserRequest userRequest) {
         try {
-/*
-            Gson gson = new Gson();
-            NewUserRequest userRequest = gson.fromJson(userRequestFromClient,NewUserRequest.class);
-*/
             if(userRequest == null){
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_REQUEST);
             }
@@ -73,8 +69,6 @@ public class RegisterUser {
                 if(userRequest.getUserName().equals("user") || userRequest.getUserName().equals("User") || userRequest.getUserName().equals("USER")){
                     User user = new User();
                     user.setUserName("user");
-                    long time = System.currentTimeMillis();
-                    user.setStartTime(Long.toString(time));
                     int userId = mUserDetailsDao.addUser(user);
                     if (userId != 0) {
                         JSONObject responseObj = composeResponse(userId);
