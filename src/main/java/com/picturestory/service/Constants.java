@@ -124,6 +124,7 @@ public class Constants {
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";
     public static final String INVALID_USER_NAME = "Invalid User Name";
+    public static final String INVALID_USER_EMAIL = "Invalid User E-Mail";
     public static final String INVALID_PRODUCT_ID = "Invalid Product Id";
     public static final String INVALID_PERSON_ID = "Invalid Person Id";
     public static final String INVALID_CATEGORY_ID = "Invalid Category Id";
