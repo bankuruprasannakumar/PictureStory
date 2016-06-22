@@ -4,9 +4,11 @@ import com.picturestory.service.Constants;
 import com.picturestory.service.database.dao.IContentDetailsDao;
 import com.picturestory.service.database.dao.IContentUserLikeDao;
 import com.picturestory.service.database.dao.IUserDetailsDao;
+import com.picturestory.service.database.dao.IUserUserDao;
 import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.ContentUserLikeAssociation;
 import com.picturestory.service.pojo.User;
+import com.picturestory.service.pojo.UserUserAssociation;
 import com.picturestory.service.request.GetMainFeedRequest;
 import com.picturestory.service.response.ResponseBuilder;
 import org.json.JSONArray;
@@ -32,13 +34,15 @@ public class GetMainFeed {
     private final IUserDetailsDao mUserDetailsDao;
     private final IContentDetailsDao mContentDetailsDao;
     private final IContentUserLikeDao mContentUserLikeDao;
+    private final IUserUserDao mUserUserDao;
 
     @Inject
     public GetMainFeed(IUserDetailsDao userDetailsDao,IContentDetailsDao contentDetailsDao,
-                       IContentUserLikeDao contentUserDao) {
+                       IContentUserLikeDao contentUserDao, IUserUserDao userUserDao) {
         mUserDetailsDao = userDetailsDao;
         mContentDetailsDao = contentDetailsDao;
         mContentUserLikeDao = contentUserDao;
+        mUserUserDao = userUserDao;
     }
 
     @POST
@@ -101,6 +105,7 @@ public class GetMainFeed {
                         contentCreatorJSON.put(Constants.NAME, user.getUserName());
                         contentCreatorJSON.put(Constants.DESCRIPTION,user.getUserDesc());
                         contentCreatorJSON.put(Constants.IMAGE_URL,user.getUserImage());
+                        contentCreatorJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, user.getUserId()));
                         contentJSON.put(Constants.PERSON_DETAILS, contentCreatorJSON);
                     }
                     contentJSONArray.put(contentJSON);
@@ -113,4 +118,12 @@ public class GetMainFeed {
         }
         return response.toString();
     }
+
+    private boolean isPersonFollowedByUser(int userId, int personId) {
+        UserUserAssociation userUserAssociation = new UserUserAssociation();
+        userUserAssociation.setUserId(userId);
+        userUserAssociation.setFollowedUserId(personId);
+        return mUserUserDao.isFollowedByUser(userUserAssociation);
+    }
+
 }
