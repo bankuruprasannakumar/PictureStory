@@ -1,42 +1,41 @@
 package com.picturestory.service.request;
 
-
 import com.picturestory.service.Constants;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Created by bankuru on 30/12/15.
+ * Created by bankuru on 23/9/15.
  */
+
 @XmlRootElement
-public class LikeContentRequest implements IRequest{
-
+public class FollowPersonRequest implements IRequest {
     int userId;
-    int contentId;
-    private String doLike;
+    int personId;
+    private String doFollow;
 
-    public boolean getDoLikeValue() {
-        if(doLike != null){
-            if(doLike.equals("true") || doLike.equals("yes") || doLike.equals("1"))
+    public boolean getDoFollowValue() {
+        if(doFollow != null){
+            if(doFollow.equals("true") || doFollow.equals("yes") || doFollow.equals("1"))
                 return true;
         }
         return false;
     }
 
-    public String getDoLike() {
-        return doLike;
+    public String getDoFollow() {
+        return doFollow;
     }
 
-    public int getContentId() {
-        return contentId;
+    public int getPersonId() {
+        return personId;
     }
 
-    public void setContentId(int contentId) {
-        this.contentId = contentId;
+    public void setPersonId(int personId) {
+        this.personId = personId;
     }
 
-    public void setDoLike(String doLike){
-        this.doLike = doLike;
+    public void setDoFollow(String doFollow){
+        this.doFollow = doFollow;
     }
 
     public int getUserId() {
@@ -51,9 +50,9 @@ public class LikeContentRequest implements IRequest{
     public boolean isValid() {
         if(userId == 0)
             return false;
-        if (contentId == 0)
+        if (personId == 0)
             return false;
-        if (doLike == null || doLike.trim().isEmpty())
+        if (doFollow == null || doFollow.trim().isEmpty())
             return false;
         return true;
     }
@@ -63,10 +62,10 @@ public class LikeContentRequest implements IRequest{
         StringBuilder msg = new StringBuilder();
         if(userId == 0)
             msg.append(Constants.INVALID_USER_ID);
-        if (contentId == 0)
+        if (personId == 0)
             msg.append(Constants.INVALID_CONTENT_ID);
-        if (doLike == null || doLike.trim().isEmpty())
-            msg.append(Constants.INVALID_DO_LIKE);
+        if (doFollow == null || doFollow.trim().isEmpty())
+            msg.append(Constants.INVALID_DO_FOLLOW);
         return msg.toString();
     }
 

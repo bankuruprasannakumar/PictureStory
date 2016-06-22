@@ -47,6 +47,12 @@ public class GetContributorMail {
             }
             User user = (User)mUserDetailsDao.getUser(userId);
             user.setUserEmail(contributorMailRequest.getUserEmail());
+            if (contributorMailRequest.getUserName() != null && !contributorMailRequest.getUserName().trim().isEmpty()){
+                user.setUserName(contributorMailRequest.getUserName());
+            }
+            if (contributorMailRequest.getMobileNumber() != null && !contributorMailRequest.getMobileNumber().trim().isEmpty()){
+                user.setMobileNumber(contributorMailRequest.getMobileNumber());
+            }
 
             boolean status = false;
             status = mUserDetailsDao.updateUser(user);

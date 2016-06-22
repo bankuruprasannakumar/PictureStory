@@ -19,5 +19,8 @@ public class SolrModule  extends AbstractModule{
         bind(IUserDetailsDao.class).to(UserDetailsDao.class);
         bind(IContentUserCommentDao.class).to(ContentUserCommentDao.class);
         bind(IUserFeedBackDao.class).to(UserFeedBackDao.class);
+        bind(IUserFollowedUserDetailsDao.class).to(UserFollowedUserDetailsDao.class);
+        bind(IUserFollowerDetailsDao.class).to(UserFollowerDetailsDao.class);
+        bind(IUserUserDao.class).to(UserUserDao.class);
     }
 }

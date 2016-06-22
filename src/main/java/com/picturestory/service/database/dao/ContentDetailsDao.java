@@ -1,11 +1,13 @@
 package com.picturestory.service.database.dao;
 
 import com.google.common.reflect.TypeToken;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.picturestory.service.Configs ;
 import com.picturestory.service.Constants ;
 import com.picturestory.service.database.adapters.IDataAccessAdapter ;
+import com.picturestory.service.database.dao.Utils.UnionAndIntersionHelper;
 import com.picturestory.service.pojo.*;
 import com.picturestory.service.response.ResponseData ;
 import com.picturestory.service.pojo.Content;
@@ -63,7 +65,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
     }
 
     @Override
-    public List<Content> getAllContentDetailsForUserId(int userId) {
+    public List<Content> getAllContentDetailsContributedByUserId(int userId) {
         String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s",Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.USER_ID, userId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
@@ -92,6 +94,161 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         mResponseData = responseData;
         return null;
     }
+
+    @Override
+    public List<Content> getAllContentDetailsLikedByUser(int userId) {
+        String query = String.format("q={!join from=%s to=%s}%s:%s&fq=%s:%s&%s&%s=%s&%s=%s",Constants.CONTENT_ID,Constants.CONTENT_ID, Constants.LIKED_USER_ID,userId,Constants.PICTURE_URL,Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    mResponseData.setSuccess(true);
+                    JSONArray contentArray = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Content>>(){}.getType();
+                    List<Content> contentList = gson.fromJson(contentArray.toString(), listType);
+                    return contentList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Content>();
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
+        return null;
+    }
+
+    @Override
+    public List<Integer> getAllContentIdsLikedByUser(int userId) {
+        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.LIKED_USER_ID, userId, Constants.CONTENT_ID, Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS,Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    List<Integer> contentIdList = new ArrayList<Integer>();
+                    mResponseData.setSuccess(true);
+                    JSONArray contentLikedUserJSON = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<ContentUserLikeAssociation>>(){}.getType();
+                    List<ContentUserLikeAssociation> contentUserAssociationList = gson.fromJson(contentLikedUserJSON.toString(), listType);
+                    for (int i = 0; i < contentUserAssociationList.size(); i++){
+                        contentIdList.add(contentUserAssociationList.get(i).getContentId());
+                    }
+                    return contentIdList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return null;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
+        return null;
+    }
+
+    @Override
+    public List<Integer> getAllContentIdsCommentedByUser(int userId) {
+        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.USER_ID, userId, Constants.COMMENT_ID, Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS,Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    List<Integer> contentIdList = new ArrayList<Integer>();
+                    mResponseData.setSuccess(true);
+                    JSONArray contentCommentUserJSON = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<ContentUserCommentAssociation>>(){}.getType();
+                    List<ContentUserCommentAssociation> contentCommentUserAssociationList = gson.fromJson(contentCommentUserJSON.toString(), listType);
+                    for (int i = 0; i < contentCommentUserAssociationList.size(); i++){
+                        contentIdList.add(contentCommentUserAssociationList.get(i).getContentId());
+                    }
+                    return contentIdList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return null;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
+        return null;
+    }
+
+    @Override
+    public List<Content> getAllContentCommentedAndLikedByUser(int userId) {
+        List<Integer> contentIdsLikedByUser = getAllContentIdsLikedByUser(userId);
+        List<Integer> contentIdsCommentedByUser = getAllContentIdsCommentedByUser(userId);
+        List<Integer> contentIdsCommentedAndLikedByUser = UnionAndIntersionHelper.union(contentIdsLikedByUser, contentIdsCommentedByUser);
+        List<Content> contentList = getAllContentDetailsForIds(contentIdsCommentedAndLikedByUser);
+        return contentList;
+    }
+
+    @Override
+    public List<Content> getAllContentDetailsForIds(List<Integer> ids) {
+        if(ids == null || ids.isEmpty()){
+            mResponseData.setSuccess(false);
+            mResponseData.setErrorMessage(Constants.INVALID_CONTENT_ID);
+            return new ArrayList<Content>();
+        }
+        String subQuery = "";
+        subQuery = "(";
+        for (int index = 0; index < ids.size(); index++) {
+            subQuery += ids.get(index) + " OR ";
+        }
+        subQuery = subQuery.substring(0, (subQuery.length() - 3));
+        subQuery += ")";
+        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.CONTENT_ID, subQuery.toString(), Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    mResponseData.setSuccess(true);
+                    JSONArray contentArray = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Content>>(){}.getType();
+                    List<Content> contentList = gson.fromJson(contentArray.toString(), listType);
+                    return contentList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return null;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
+        return null;
+    }
+
+
 
     @Override
     public List<Content> getAllContentDetails() {

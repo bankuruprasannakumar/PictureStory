@@ -99,7 +99,7 @@ public class ContentUserCommentDao implements IContentUserCommentDao<ContentUser
 
     @Override
     public List<ContentUserCommentAssociation> getAllCommentsForContentId(int contentId) {
-        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.CONTENT_ID, contentId, Constants.COMMENT, Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s&sort=ingestionTime+desc", Constants.CONTENT_ID, contentId, Constants.COMMENT, Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {

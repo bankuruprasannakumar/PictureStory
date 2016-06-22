@@ -59,7 +59,13 @@ public class GetPersonDetails {
 
             User personDetails = (User) mUserDetailsDao.getUser(personId);
             //get all content for the user
-            List<Content> contentList = mContentDetailsDao.getAllContentDetailsForUserId(personId);
+            List<Content> contentList;
+            if (personDetails.isContributor()) {
+                contentList = mContentDetailsDao.getAllContentDetailsContributedByUserId(personId);
+            } else {
+                contentList = mContentDetailsDao.getAllContentCommentedAndLikedByUser(personId);
+            }
+
             return ResponseBuilder.successResponse(composeResponse(userId,personDetails, contentList));
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,6 +89,9 @@ public class GetPersonDetails {
                     contentJSON.put(Constants.PLACE,content.getPlace());
                     contentJSON.put(Constants.DATE,content.getDate());
                     contentJSON.put(Constants.PICTURE_DESCRIPTION,content.getPictureDescription());
+                    contentJSON.put(Constants.PICTURE_SUMMARY,content.getPictureSummary());
+                    contentJSON.put(Constants.EDITORS_PICK,content.isEditorsPick());
+
                     //set if liked by user
 
                     ContentUserLikeAssociation contentUserAssociation = new ContentUserLikeAssociation();

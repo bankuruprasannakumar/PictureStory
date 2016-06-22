@@ -11,6 +11,24 @@ public class User {
     private String userImage;
     private String userDesc;
     private String gcmId;
+    private boolean isContributor;
+    private String mobileNumber;
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public boolean isContributor() {
+        return isContributor;
+    }
+
+    public void setContributor(boolean contributor) {
+        isContributor = contributor;
+    }
 
     public int getUserId() {
         return userId;

@@ -10,7 +10,17 @@ import java.util.List;
  */
 public interface IContentDetailsDao<T> {
 
-    public List<T> getAllContentDetailsForUserId(int userId);
+    public List<T> getAllContentDetailsContributedByUserId(int userId);
+
+    public List<T> getAllContentDetailsLikedByUser(int userId);
+
+    public List<Integer> getAllContentIdsLikedByUser(int userId);
+
+    public List<Integer> getAllContentIdsCommentedByUser(int userId);
+
+    public List<T> getAllContentCommentedAndLikedByUser(int userId);
+
+    public List<T> getAllContentDetailsForIds(List<Integer> ids);
 
     public List<T> getAllContentDetails();
 

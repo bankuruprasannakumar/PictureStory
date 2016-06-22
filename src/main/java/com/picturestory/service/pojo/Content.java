@@ -12,6 +12,24 @@ public class Content {
     private String name;
     private String place;
     private String date;
+    private String pictureSummary;
+    private boolean editorsPick;
+
+    public String getPictureSummary() {
+        return pictureSummary;
+    }
+
+    public void setPictureSummary(String pictureSummary) {
+        this.pictureSummary = pictureSummary;
+    }
+
+    public boolean isEditorsPick() {
+        return editorsPick;
+    }
+
+    public void setEditorsPick(boolean editorsPick) {
+        this.editorsPick = editorsPick;
+    }
 
     public String getPlace() {
         return place;
