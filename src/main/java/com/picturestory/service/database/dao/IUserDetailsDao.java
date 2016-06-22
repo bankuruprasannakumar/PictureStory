@@ -1,5 +1,6 @@
 package com.picturestory.service.database.dao;
 
+import com.picturestory.service.pojo.Contributor;
 import com.picturestory.service.pojo.User;
 import com.picturestory.service.response.ResponseData;
 
@@ -12,6 +13,8 @@ public interface IUserDetailsDao<T> {
     public int addUser(T user);
 
     public boolean updateUser(T user);
+
+    public boolean addContributor(Contributor contributor);
 
     public boolean deleteUser(int userId);
 

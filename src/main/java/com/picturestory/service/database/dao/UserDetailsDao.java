@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.picturestory.service.Configs ;
 import com.picturestory.service.Constants ;
 import com.picturestory.service.database.adapters.IDataAccessAdapter ;
+import com.picturestory.service.pojo.Contributor;
 import com.picturestory.service.response.ResponseData ;
 import com.picturestory.service.pojo.User;
 import org.json.JSONArray;
@@ -129,6 +130,28 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
         return false;
     }
 
+    @Override
+    public boolean addContributor(Contributor contributor) {
+        String query = "";
+        try {
+            Gson gson = new Gson();
+            String jsonContributor = gson.toJson(contributor);
+            JSONObject contributorObject = new JSONObject(jsonContributor);
+            contributorObject.put(Constants.INGESTION_TIME,System.currentTimeMillis());
+            query = Constants.INSERT_START + contributorObject.toString() + Constants.INSERT_END;
+            mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return true;
+            }
+        }catch (JSONException j){
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return false;
+        }
+        return false;
+    }
 
 
 

@@ -12,15 +12,6 @@ public class User {
     private String userDesc;
     private String gcmId;
     private boolean isContributor;
-    private String mobileNumber;
-
-    public String getMobileNumber() {
-        return mobileNumber;
-    }
-
-    public void setMobileNumber(String mobileNumber) {
-        this.mobileNumber = mobileNumber;
-    }
 
     public boolean isContributor() {
         return isContributor;

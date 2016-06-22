@@ -147,7 +147,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
                 }
                 else{
                     mResponseData.setSuccess(true);
-                    return null;
+                    return new ArrayList<Integer>();
                 }
             } catch (JSONException j) {
                 j.printStackTrace();
@@ -182,7 +182,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
                 }
                 else{
                     mResponseData.setSuccess(true);
-                    return null;
+                    return new ArrayList<Integer>();
                 }
             } catch (JSONException j) {
                 j.printStackTrace();
@@ -200,7 +200,18 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
     public List<Content> getAllContentCommentedAndLikedByUser(int userId) {
         List<Integer> contentIdsLikedByUser = getAllContentIdsLikedByUser(userId);
         List<Integer> contentIdsCommentedByUser = getAllContentIdsCommentedByUser(userId);
-        List<Integer> contentIdsCommentedAndLikedByUser = UnionAndIntersionHelper.union(contentIdsLikedByUser, contentIdsCommentedByUser);
+        List<Integer> contentIdsCommentedAndLikedByUser;
+        if (contentIdsCommentedByUser == null && contentIdsLikedByUser == null) {
+            return null;
+        }
+        if (contentIdsCommentedByUser == null) {
+            contentIdsCommentedAndLikedByUser = contentIdsLikedByUser;
+        }
+        else if (contentIdsLikedByUser == null){
+            contentIdsCommentedAndLikedByUser = contentIdsCommentedByUser;
+        } else {
+            contentIdsCommentedAndLikedByUser = UnionAndIntersionHelper.union(contentIdsLikedByUser, contentIdsCommentedByUser);
+        }
         List<Content> contentList = getAllContentDetailsForIds(contentIdsCommentedAndLikedByUser);
         return contentList;
     }

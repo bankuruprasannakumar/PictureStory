@@ -1,13 +1,10 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
-import com.picturestory.service.database.dao.IContentDetailsDao;
-import com.picturestory.service.database.dao.IContentUserLikeDao;
 import com.picturestory.service.database.dao.IUserDetailsDao;
+import com.picturestory.service.pojo.Contributor;
 import com.picturestory.service.pojo.User;
-import com.picturestory.service.pojo.UserFeedBackAssociation;
 import com.picturestory.service.request.ContributorMailRequest;
-import com.picturestory.service.request.UserFeedBackRequest;
 import com.picturestory.service.response.ResponseBuilder;
 
 import javax.inject.Inject;
@@ -46,16 +43,29 @@ public class GetContributorMail {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
             }
             User user = (User)mUserDetailsDao.getUser(userId);
-            user.setUserEmail(contributorMailRequest.getUserEmail());
+
+            //put all the user fields in contributor
+            Contributor contributor = new Contributor();
+            contributor.setContributorUserName(user.getUserName());
+            contributor.setContributorUserEmail(user.getUserEmail());
+            contributor.setContributorUserDesc(user.getUserDesc());
+            contributor.setContributorFbId(user.getFbId());
+            contributor.setContributorUserId(user.getUserId());
+            contributor.setContributorUserImage(user.getUserImage());
+            contributor.setContributorGcmId(user.getGcmId());
+            contributor.setContributorIsContributor(user.isContributor());
+
+
+            contributor.setContributorUserEmail(contributorMailRequest.getUserEmail());
             if (contributorMailRequest.getUserName() != null && !contributorMailRequest.getUserName().trim().isEmpty()){
-                user.setUserName(contributorMailRequest.getUserName());
+                contributor.setContributorUserName(contributorMailRequest.getUserName());
             }
             if (contributorMailRequest.getMobileNumber() != null && !contributorMailRequest.getMobileNumber().trim().isEmpty()){
-                user.setMobileNumber(contributorMailRequest.getMobileNumber());
+                contributor.setContributorMobileNumber(contributorMailRequest.getMobileNumber());
             }
 
             boolean status = false;
-            status = mUserDetailsDao.updateUser(user);
+            status = mUserDetailsDao.addContributor(contributor);
             if (status == false) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserDetailsDao.getDetailedResponse().getErrorMessage());
             } else {
