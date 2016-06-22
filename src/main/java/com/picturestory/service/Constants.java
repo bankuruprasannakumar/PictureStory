@@ -82,6 +82,7 @@ public class Constants {
     public static final String DOWNLOADED_BY_USER = "downloadedByUser";
     public static final String FULLCOUNT = "fullCount";
     public static final String PERSON_DETAILS="personDetails";
+    public static final String USER_DETAILS="userDetails";
     public static final String PERSON_LIST="personList";
     public static final String CONTENT_LIST = "contentList";
     public static final String COMMENT_LIST = "commentList";
@@ -100,4 +101,5 @@ public class Constants {
     public static final String INVALID_GCMID = "Invalid gcmId";
     public static final String INVALID_FEEDBACK = "Invalid feedBack";
 
+    public static final String INVALID_MESSAGE = "Invalid message";
 }

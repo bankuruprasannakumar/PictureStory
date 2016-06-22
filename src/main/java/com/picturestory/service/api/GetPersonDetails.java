@@ -101,7 +101,16 @@ public class GetPersonDetails {
                     contentJSON.put(Constants.LIKE_COUNT, mContentUserLikeDao.fullCountOfUserLikesForContentId(content.getContentId()));
 
                     //Add content creator details
-                    org.json.JSONObject contentCreatorJSON = new org.json.JSONObject();
+                    //Add content creator details
+                    JSONObject contentCreatorJSON = new JSONObject();
+                    User user = (User) mUserDetailsDao.getUser(content.getUserId());
+                    if (user != null) {
+                        contentCreatorJSON.put(Constants.ID, user.getUserId());
+                        contentCreatorJSON.put(Constants.NAME, user.getUserName());
+                        contentCreatorJSON.put(Constants.DESCRIPTION,user.getUserDesc());
+                        contentCreatorJSON.put(Constants.IMAGE_URL,user.getUserImage());
+                        contentJSON.put(Constants.PERSON_DETAILS, contentCreatorJSON);
+                    }
                     contentJSONArray.put(contentJSON);
                 }
             }
@@ -111,7 +120,7 @@ public class GetPersonDetails {
             personDetailsJSONObject.put(Constants.NAME, personDetails.getUserName());
             personDetailsJSONObject.put(Constants.DESCRIPTION,personDetails.getUserDesc());
             personDetailsJSONObject.put(Constants.IMAGE_URL,personDetails.getUserImage());
-            response.put(Constants.PERSON_DETAILS,personDetailsJSONObject);
+            response.put(Constants.USER_DETAILS,personDetailsJSONObject);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
