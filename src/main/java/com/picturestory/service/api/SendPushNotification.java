@@ -24,7 +24,7 @@ import java.net.URL;
 @Consumes("application/json")
 
 public class SendPushNotification {
-    public static final String API_KEY = "AIzaSyDhOQKRc3jUvF8jqgrCvvlYrkN332wAzyc";
+    public static final String API_KEY = "AIzaSyC_QWcqeMMH5OXqfCkscBYP6hgiwSlBd2A";
 
     @Inject
     public SendPushNotification() {

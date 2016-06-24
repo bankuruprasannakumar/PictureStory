@@ -127,6 +127,7 @@ public class GetPersonDetails {
             personDetailsJSONObject.put(Constants.NAME, personDetails.getUserName());
             personDetailsJSONObject.put(Constants.DESCRIPTION,personDetails.getUserDesc());
             personDetailsJSONObject.put(Constants.IMAGE_URL,personDetails.getUserImage());
+            personDetailsJSONObject.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, personDetails.getUserId()));
             response.put(Constants.USER_DETAILS,personDetailsJSONObject);
         } catch (Exception e) {
             e.printStackTrace();

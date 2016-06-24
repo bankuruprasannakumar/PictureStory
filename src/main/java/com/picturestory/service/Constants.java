@@ -35,6 +35,7 @@ public class Constants {
     public static final String START = "start";
     public static final String ROWS = "rows";
     public static final String FOLLOWED_USER_ID = "followedUserId";
+    public static final String WALL_PAPER = "wallPaper";
 
     //Network params
     public static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
