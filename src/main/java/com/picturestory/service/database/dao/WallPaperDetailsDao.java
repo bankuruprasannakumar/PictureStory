@@ -29,6 +29,12 @@ public class WallPaperDetailsDao implements IWallPaperDetailsDao {
     @Override
     public boolean setWallPaper(WallPaper wallPaper) {
         String query = "";
+        query = String.format("%s:%s", Constants.WALL_PAPER, Constants.ALL);
+        query = Constants.DELETE_START +query + Constants.DELETE_END;
+        mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
+        if (!mResponseData.isSuccess()) {
+            return false;
+        }
         try {
             Gson gson = new Gson();
             String jsonWallPaper = gson.toJson(wallPaper);
