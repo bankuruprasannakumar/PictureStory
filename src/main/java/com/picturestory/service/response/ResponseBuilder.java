@@ -16,7 +16,7 @@ public class ResponseBuilder {
             return Response.ok(response, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().build();
+            return Response.serverError().header("Access-Control-Allow-Origin", "*").build();
         }
     }
 
@@ -28,7 +28,7 @@ public class ResponseBuilder {
             return Response.ok(obj.toString(),MediaType.APPLICATION_JSON_TYPE).build();
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().build();
+            return Response.serverError().header("Access-Control-Allow-Origin", "*").build();
         }
     }
 
@@ -37,6 +37,6 @@ public class ResponseBuilder {
         response.setSuccess(false);
         response.setErrorCode(errorCode);
         response.setErrorMessage(errorMessage);
-        return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
+        return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).header("Access-Control-Allow-Origin", "*").build();
     }
 }
