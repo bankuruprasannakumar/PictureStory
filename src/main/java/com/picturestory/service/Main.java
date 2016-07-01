@@ -29,6 +29,10 @@ public class Main {
             // in com.example.rest package
 //        final ResourceConfig rc = new ResourceConfig().packages("com.picturestory.service.api");
             ResourceConfig rc = new PackagesResourceConfig("com.picturestory.service.api");
+            rc.getProperties().put(
+                    "com.sun.jersey.spi.container.ContainerResponseFilters",
+                    "com.sun.jersey.api.container.filter.LoggingFilter;com.myprogram.CrossDomainFilter"
+            );
             IoCComponentProviderFactory ioc = new GuiceComponentProviderFactory(rc, injector);
             // create and start a new instance of grizzly http server
             // exposing the Jersey application at BASE_URI

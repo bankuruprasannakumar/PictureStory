@@ -13,12 +13,17 @@ import javax.ws.rs.core.Response;
 public class ResponseBuilder {
     public static Response successResponse(String response) {
         try {
-            return Response.ok(response, MediaType.APPLICATION_JSON).build();
+            return Response.ok(response, MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD")
+                    .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().
-                    header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+            return Response.serverError()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD")
+                    .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
                     .build();
         }
     }
@@ -28,12 +33,17 @@ public class ResponseBuilder {
             JSONObject obj = new JSONObject();
             obj = new JSONObject();
             obj.put(Constants.SUCCESS, true);
-            return Response.ok(obj.toString(),MediaType.APPLICATION_JSON_TYPE).build();
+            return Response.ok(obj.toString(),MediaType.APPLICATION_JSON_TYPE)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD")
+                    .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError()
                     .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD")
+                    .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
                     .build();
         }
     }
@@ -43,8 +53,10 @@ public class ResponseBuilder {
         response.setSuccess(false);
         response.setErrorCode(errorCode);
         response.setErrorMessage(errorMessage);
-        return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+        return Response.ok(response, MediaType.APPLICATION_JSON_TYPE)
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD")
+                .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
                 .build();
     }
 }
