@@ -3,6 +3,7 @@ package com.picturestory.service;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.picturestory.service.database.SolrModule;
+import com.picturestory.service.network.CORSFilter;
 import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -29,10 +30,11 @@ public class Main {
             // in com.example.rest package
 //        final ResourceConfig rc = new ResourceConfig().packages("com.picturestory.service.api");
             ResourceConfig rc = new PackagesResourceConfig("com.picturestory.service.api");
-            rc.getProperties().put(
-                    "com.sun.jersey.spi.container.ContainerResponseFilters",
-                    "com.sun.jersey.api.container.filter.LoggingFilter;com.myprogram.CrossDomainFilter"
-            );
+//            rc.getProperties().put(
+//                    "com.sun.jersey.spi.container.ContainerResponseFilters",
+//                    "com.sun.jersey.api.container.filter.LoggingFilter;com.myprogram.CrossDomainFilter"
+//            );
+            rc.getContainerResponseFilters().add(new CORSFilter());
             IoCComponentProviderFactory ioc = new GuiceComponentProviderFactory(rc, injector);
             // create and start a new instance of grizzly http server
             // exposing the Jersey application at BASE_URI
