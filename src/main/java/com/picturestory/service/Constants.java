@@ -36,6 +36,7 @@ public class Constants {
     public static final String ROWS = "rows";
     public static final String FOLLOWED_USER_ID = "followedUserId";
     public static final String WALL_PAPER = "wallPaper";
+    public static final String WALL_PAPER_END_TIME = "wallpaperEndTime";
 
     //Network params
     public static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
@@ -61,6 +62,7 @@ public class Constants {
     public static final String FOLLOWED_SUB_CATEGORY_ID="followedSubCategoryId";
     public static final String SUB_CATEGORY_NAME="subCategoryName";
     public static final String CONTENT_ID = "contentId";
+    public static final String CONTENT_ID_LIST = "contentIdList";
     public static final String VIDEO_URL = "videoUrl";
     public static final String STREAM_URL = "streamUrl";
     public static final String CONTENT_LENGTH = "contentLength";
@@ -87,6 +89,8 @@ public class Constants {
     public static final String PERSON_LIST="personList";
     public static final String CONTENT_LIST = "contentList";
     public static final String COMMENT_LIST = "commentList";
+
+    public static final String CATEGORY_NAME_LIST = "categoryNameList";
 
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";
