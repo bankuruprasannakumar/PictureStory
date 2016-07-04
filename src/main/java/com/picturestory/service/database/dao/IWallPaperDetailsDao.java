@@ -11,5 +11,6 @@ public interface IWallPaperDetailsDao {
     public WallPaper getWallPaper();
     public ResponseData getDetailedResponse();
     public WallPaper getWallPaperFromEndTime(long endTime);
+    public WallPaper getWallPaperFromSetId(Long setId);
 
 }

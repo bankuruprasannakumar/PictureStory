@@ -293,7 +293,67 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
     }
 
 
+    @Override
+    public List<Content> getAllContentDetailsForSet(long setId) {
+        String query = String.format("q=%s:%s&%s&%s=%s",Constants.SET_ID,setId, Constants.WT_JSON, Constants.ROWS, Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    mResponseData.setSuccess(true);
+                    JSONArray contentArray = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Content>>(){}.getType();
+                    List<Content> contentList = gson.fromJson(contentArray.toString(), listType);
+                    return contentList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Content>();
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
+        return null;
+    }
 
+    @Override
+    public List<Content> getAllContentDetailsTillSetId(long setId) {
+        String query = String.format("q=%s:[%s TO %s]&%s=%s&%s",Constants.SET_ID,Constants.ALL, setId,Constants.ROWS,Configs.MAX_LIMIT, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    mResponseData.setSuccess(true);
+                    JSONArray contentArray = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Content>>(){}.getType();
+                    List<Content> contentList = gson.fromJson(contentArray.toString(), listType);
+                    return contentList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Content>();
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
+        return null;
+    }
 
     @Override
     public ResponseData getDetailedResponse() {

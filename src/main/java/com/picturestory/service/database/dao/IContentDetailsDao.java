@@ -26,5 +26,9 @@ public interface IContentDetailsDao<T> {
 
     public T getContentDetails(int id);
 
+    public List<T> getAllContentDetailsForSet(long setId);
+
+    public List<T> getAllContentDetailsTillSetId(long setId);
+
     public ResponseData getDetailedResponse();
 }
