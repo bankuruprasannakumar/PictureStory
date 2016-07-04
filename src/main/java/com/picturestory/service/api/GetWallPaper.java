@@ -50,7 +50,7 @@ public class GetWallPaper {
         }
 
         WallPaper wallPaperObject ;
-        wallPaperObject = mWallPaperDetailsDao.getWallPaper();
+        wallPaperObject = mWallPaperDetailsDao.getWallPaperFromEndTime(System.currentTimeMillis());
         if (wallPaperObject != null) {
             JSONObject responseObj = composeResponse(wallPaperObject.getWallPaper());
             return ResponseBuilder.successResponse(responseObj.toString());

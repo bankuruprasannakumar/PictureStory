@@ -1,10 +1,7 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
-import com.picturestory.service.database.dao.IContentDetailsDao;
-import com.picturestory.service.database.dao.IContentUserLikeDao;
-import com.picturestory.service.database.dao.IUserDetailsDao;
-import com.picturestory.service.database.dao.IUserUserDao;
+import com.picturestory.service.database.dao.*;
 import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.ContentUserLikeAssociation;
 import com.picturestory.service.pojo.User;
@@ -31,14 +28,19 @@ public class GetMainFeed {
     private final IContentDetailsDao mContentDetailsDao;
     private final IContentUserLikeDao mContentUserLikeDao;
     private final IUserUserDao mUserUserDao;
+    private final IContentCategoryDao mContentCategoryDao;
+    private final ICategoryDetailsDao mCategoryDetailsDao;
 
     @Inject
     public GetMainFeed(IUserDetailsDao userDetailsDao,IContentDetailsDao contentDetailsDao,
-                       IContentUserLikeDao contentUserDao, IUserUserDao userUserDao) {
+                       IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
+                       ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao) {
         mUserDetailsDao = userDetailsDao;
         mContentDetailsDao = contentDetailsDao;
         mContentUserLikeDao = contentUserDao;
         mUserUserDao = userUserDao;
+        this.mCategoryDetailsDao = mCategoryDetailsDao;
+        this.mContentCategoryDao = mContentCategoryDao;
     }
 
     @POST
@@ -105,7 +107,14 @@ public class GetMainFeed {
                         contentCreatorJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, user.getUserId()));
                         contentJSON.put(Constants.PERSON_DETAILS, contentCreatorJSON);
                     }
+
+                    //Add category name list
+                    List<Integer> categoryIdList = mContentCategoryDao.getCategoryIdListFromContentId(content.getContentId());
+                    List<String> categoryNameList = mCategoryDetailsDao.getCategoryNameList(categoryIdList);
+                    contentJSON.put(Constants.CATEGORY_NAME_LIST,categoryNameList);
+
                     contentJSONArray.put(contentJSON);
+
                 }
             }
             response.put(Constants.CONTENT_LIST, contentJSONArray);

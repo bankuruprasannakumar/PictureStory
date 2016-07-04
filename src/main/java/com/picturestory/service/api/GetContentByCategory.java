@@ -6,9 +6,10 @@ import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.ContentUserLikeAssociation;
 import com.picturestory.service.pojo.User;
 import com.picturestory.service.pojo.UserUserAssociation;
-import com.picturestory.service.request.GetPersonDetailsRequest;
+import com.picturestory.service.request.GetContentByCategoryRequest;
 import com.picturestory.service.response.ResponseBuilder;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
@@ -20,68 +21,58 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * Created by bankuru on 26/5/16.
+ * Created by krish on 04/07/2016.
  */
-@Path("/getPersonDetails")
+@Path("/getContentByCategory")
 @Produces("application/json")
 @Consumes("application/json")
-
-public class GetPersonDetails {
-    private final IUserDetailsDao mUserDetailsDao;
+public class GetContentByCategory {
+    private final IContentCategoryDao mContentCategoryDao;
     private final IContentDetailsDao mContentDetailsDao;
+    private final IUserDetailsDao mUserDetailsDao;
     private final IContentUserLikeDao mContentUserLikeDao;
     private final IUserUserDao mUserUserDao;
     private final ICategoryDetailsDao mCategoryDetailsDao;
-    private final IContentCategoryDao mContentCategoryDao;
 
     @Inject
-    public GetPersonDetails(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao,
-                            IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
-                            ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao) {
-        mUserDetailsDao = userDetailsDao;
-        mContentDetailsDao = contentDetailsDao;
-        mContentUserLikeDao = contentUserDao;
-        mUserUserDao = userUserDao;
-        this.mCategoryDetailsDao = mCategoryDetailsDao;
+    public GetContentByCategory(IContentCategoryDao mContentCategoryDao,IContentDetailsDao mContentDetailsDao,
+                                IContentUserLikeDao mContentUserLikeDao, IUserDetailsDao mUserDetailsDao,
+                                IUserUserDao mUserUserDao, ICategoryDetailsDao mCategoryDetailsDao) {
         this.mContentCategoryDao = mContentCategoryDao;
+        this.mContentDetailsDao = mContentDetailsDao;
+        this.mUserDetailsDao = mUserDetailsDao;
+        this.mContentUserLikeDao = mContentUserLikeDao;
+        this.mUserUserDao = mUserUserDao;
+        this.mCategoryDetailsDao = mCategoryDetailsDao;
     }
 
     @POST
-    public Response getPersonDetails(GetPersonDetailsRequest getPersonDetailRequest) {
+    public Response getContentByCategory(GetContentByCategoryRequest getContentByCategoryRequest) {
         try {
-            if (getPersonDetailRequest == null) {
+            if (getContentByCategoryRequest == null)
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_REQUEST);
-            }
-            if (!getPersonDetailRequest.isValid()) {
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getPersonDetailRequest.errorMessage());
-            }
-            int userId = getPersonDetailRequest.getUserId();
-            if (null == mUserDetailsDao.getUser(userId)) {
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
-            }
-            int personId = getPersonDetailRequest.getPersonId();
-            if (null == mUserDetailsDao.getUser(personId)) {
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_PERSON_ID);
-            }
+            if (!getContentByCategoryRequest.isValid())
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getContentByCategoryRequest.errorMessage());
 
-            User personDetails = (User) mUserDetailsDao.getUser(personId);
-            //get all content for the user
-            List<Content> contentList;
-            if (personDetails.isContributor()) {
-                contentList = mContentDetailsDao.getAllContentDetailsContributedByUserId(personId);
+            Integer categoryId = getContentByCategoryRequest.getCategoryId();
+            int userId = getContentByCategoryRequest.getUserId();
+
+            List<Integer> contentIdList = mContentCategoryDao.getContentIdsFromCategoryId(categoryId);
+            if (contentIdList != null) {
+                JSONObject responseObj = composeResponse(userId,contentIdList);
+                return ResponseBuilder.successResponse(responseObj.toString());
             } else {
-                contentList = mContentDetailsDao.getAllContentCommentedAndLikedByUser(personId);
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mContentCategoryDao.getDetailedResponse().getErrorMessage());
             }
-
-            return ResponseBuilder.successResponse(composeResponse(userId,personDetails, contentList));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseBuilder.error(Constants.ERRORCODE_IOEXCEPTION, "Internal Server Error");
+            return ResponseBuilder.error(Constants.ERRORCODE_IOEXCEPTION, "Internal server error");
         }
     }
 
-    private String composeResponse(int userId,User personDetails,List<Content> contentList) {
-        org.json.JSONObject response = new org.json.JSONObject();
+    private JSONObject composeResponse(int userId,List<Integer> contentIdList) {
+        List<Content> contentList = mContentDetailsDao.getAllContentDetailsForIds(contentIdList);
+        JSONObject response = new JSONObject();
         try {
             response.put(Constants.SUCCESS, true);
             response.put(Constants.FULLCOUNT,contentList.size());
@@ -89,7 +80,7 @@ public class GetPersonDetails {
             if (null != contentList) {
                 for (int index = 0; index < contentList.size(); index++) {
                     Content content = contentList.get(index);
-                    org.json.JSONObject contentJSON = new org.json.JSONObject();
+                    JSONObject contentJSON = new JSONObject();
                     contentJSON.put(Constants.ID, content.getContentId());
                     contentJSON.put(Constants.NAME, content.getName());
                     contentJSON.put(Constants.PICTURE_URL,content.getPictureUrl());
@@ -98,7 +89,6 @@ public class GetPersonDetails {
                     contentJSON.put(Constants.PICTURE_DESCRIPTION,content.getPictureDescription());
                     contentJSON.put(Constants.PICTURE_SUMMARY,content.getPictureSummary());
                     contentJSON.put(Constants.EDITORS_PICK,content.isEditorsPick());
-
                     //set if liked by user
 
                     ContentUserLikeAssociation contentUserAssociation = new ContentUserLikeAssociation();
@@ -107,7 +97,6 @@ public class GetPersonDetails {
                     contentJSON.put(Constants.LIKED_BY_USER, mContentUserLikeDao.isContentLikedByUser(contentUserAssociation));
                     contentJSON.put(Constants.LIKE_COUNT, mContentUserLikeDao.fullCountOfUserLikesForContentId(content.getContentId()));
 
-                    //Add content creator details
                     //Add content creator details
                     JSONObject contentCreatorJSON = new JSONObject();
                     User user = (User) mUserDetailsDao.getUser(content.getUserId());
@@ -129,25 +118,17 @@ public class GetPersonDetails {
                 }
             }
             response.put(Constants.CONTENT_LIST, contentJSONArray);
-            JSONObject personDetailsJSONObject = new JSONObject();
-            personDetailsJSONObject.put(Constants.ID, personDetails.getUserId());
-            personDetailsJSONObject.put(Constants.NAME, personDetails.getUserName());
-            personDetailsJSONObject.put(Constants.DESCRIPTION,personDetails.getUserDesc());
-            personDetailsJSONObject.put(Constants.IMAGE_URL,personDetails.getUserImage());
-            personDetailsJSONObject.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, personDetails.getUserId()));
-            response.put(Constants.USER_DETAILS,personDetailsJSONObject);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        return response.toString();
+        return response;
     }
-
     private boolean isPersonFollowedByUser(int userId, int personId) {
         UserUserAssociation userUserAssociation = new UserUserAssociation();
         userUserAssociation.setUserId(userId);
         userUserAssociation.setFollowedUserId(personId);
         return mUserUserDao.isFollowedByUser(userUserAssociation);
     }
-
 }
+

@@ -14,6 +14,18 @@ public class Content {
     private String date;
     private String pictureSummary;
     private boolean editorsPick;
+    private long wallpaperEndTime;
+
+
+
+    public long getWallpaperEndTime() {
+        return wallpaperEndTime;
+    }
+
+    public void setWallpaperEndTime(long wallpaperEndTime) {
+        this.wallpaperEndTime = wallpaperEndTime;
+    }
+
 
     public String getPictureSummary() {
         return pictureSummary;
