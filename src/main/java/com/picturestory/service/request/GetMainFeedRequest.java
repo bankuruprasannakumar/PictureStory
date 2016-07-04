@@ -11,13 +11,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class GetMainFeedRequest implements IRequest {
     int userId;
-    String time;
+    long time;
 
-    public String getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
@@ -31,7 +31,7 @@ public class GetMainFeedRequest implements IRequest {
 
     @Override
     public boolean isValid() {
-        if (userId == 0)
+        if (userId == 0 || time<0)
             return false;
         return true;
     }
@@ -41,6 +41,8 @@ public class GetMainFeedRequest implements IRequest {
         StringBuilder msg = new StringBuilder();
         if (userId == 0)
             msg.append(Constants.INVALID_USER_ID);
+        if(time<0)
+            msg.append("Invalid time stamp");
         return msg.toString();
     }
 }

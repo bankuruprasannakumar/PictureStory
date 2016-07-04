@@ -45,12 +45,13 @@ public class GetWallPaper {
         }
 
         int userId = getWallPaperRequest.getUserId();
+        long time = getWallPaperRequest.getRegisteredTimeStamp();
         if (null == mUserDetailsDao.getUser(userId)) {
             return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
         }
 
         WallPaper wallPaperObject ;
-        wallPaperObject = mWallPaperDetailsDao.getWallPaperFromEndTime(System.currentTimeMillis());
+        wallPaperObject = mWallPaperDetailsDao.getWallPaperFromSetId(timeStampTosetId(time));
         if (wallPaperObject != null) {
             JSONObject responseObj = composeResponse(wallPaperObject.getWallPaper());
             return ResponseBuilder.successResponse(responseObj.toString());
@@ -64,6 +65,10 @@ public class GetWallPaper {
     }
 
 }
+    private long timeStampTosetId(long timeStamp){
+        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
+    }
+
     private JSONObject composeResponse(String wallPaper) throws JSONException {
         JSONObject responseObj = new JSONObject();
         responseObj.put(Constants.SUCCESS, true);
