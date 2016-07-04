@@ -12,12 +12,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * Created by bankuru on 30/4/16.
+ * Created by krish on 04/07/2016.
  */
 
 @Path("/getMainFeed")
@@ -32,7 +35,7 @@ public class GetMainFeed {
     private final ICategoryDetailsDao mCategoryDetailsDao;
 
     @Inject
-    public GetMainFeed(IUserDetailsDao userDetailsDao,IContentDetailsDao contentDetailsDao,
+    public GetMainFeed(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao,
                        IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
                        ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao) {
         mUserDetailsDao = userDetailsDao;
@@ -53,6 +56,7 @@ public class GetMainFeed {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getMainFeedReguest.errorMessage());
             }
             int userId = getMainFeedReguest.getUserId();
+            long registeredTimeStamp = getMainFeedReguest.getTime();
             if (null == mUserDetailsDao.getUser(userId)) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
             }
@@ -60,8 +64,10 @@ public class GetMainFeed {
             List<Content> contentList;
             if(userId==1)
                 contentList = mContentDetailsDao.getAllContentDetails();
-            else
+            else if (registeredTimeStamp == 0)
                 contentList = mContentDetailsDao.getAllContentDetailsTillSetId(0);
+            else
+                contentList = mContentDetailsDao.getAllContentDetailsTillSetId(timeStampTosetId(registeredTimeStamp));
 
             return ResponseBuilder.successResponse(composeResponse(userId,contentList));
         } catch (Exception e) {
@@ -133,6 +139,10 @@ public class GetMainFeed {
         userUserAssociation.setUserId(userId);
         userUserAssociation.setFollowedUserId(personId);
         return mUserUserDao.isFollowedByUser(userUserAssociation);
+    }
+
+    private long timeStampTosetId(long timeStamp){
+        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
     }
 
 }

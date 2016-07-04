@@ -87,7 +87,6 @@ public class Constants {
     public static final String PERSON_LIST="personList";
     public static final String CONTENT_LIST = "contentList";
     public static final String COMMENT_LIST = "commentList";
-    public static final String WALL_PAPER_END_TIME = "wallpaperEndTime";
     public static final String IS_WALLPAPER = "isWallPaper";
     public static final String SET_ID = "setId";
     public static final String CATEGORY_NAME_LIST = "categoryNameList";
