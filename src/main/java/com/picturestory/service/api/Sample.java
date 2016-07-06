@@ -18,7 +18,7 @@ public class Sample {
     @GET
     public Response getIt() throws JSONException {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(Constants.SUCCESS, false);
+        jsonObject.put(Constants.SUCCESS, true);
         return Response.ok(jsonObject.toString(), MediaType.APPLICATION_JSON).build();
     }
 
