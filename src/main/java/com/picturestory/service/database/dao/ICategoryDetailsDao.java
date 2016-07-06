@@ -15,5 +15,8 @@ public interface ICategoryDetailsDao<T,S> {
     //returns list of category names for a given list of category ids
     public List<S> getCategoryNameList(List<T> categoryIdList);
 
+    //returns categoryId for a given given category name
+    public T getCategoryId(S categoryName);
+
     public ResponseData getDetailedResponse();
 }
