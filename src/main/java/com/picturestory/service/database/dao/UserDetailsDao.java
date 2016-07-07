@@ -9,6 +9,8 @@ import com.picturestory.service.database.adapters.IDataAccessAdapter ;
 import com.picturestory.service.pojo.Contributor;
 import com.picturestory.service.response.ResponseData ;
 import com.picturestory.service.pojo.User;
+import com.sun.xml.bind.v2.runtime.reflect.opt.Const;
+import com.sun.xml.internal.fastinfoset.sax.SystemIdResolver;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -166,6 +168,7 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
             String jsonUser = gson.toJson(user);
             JSONObject userObject = new JSONObject(jsonUser);
             userObject.put(Constants.INGESTION_TIME,System.currentTimeMillis());
+            userObject.put(Constants.REGISTERED_TIME, System.currentTimeMillis());
             Random rand = new Random();
             int currentuserId = rand.nextInt( Integer.MAX_VALUE ) + 1;
             userObject.put(Constants.USER_ID, currentuserId);

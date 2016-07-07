@@ -10,15 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class GetWallPaperRequest implements IRequest{
     int userId;
-    long registeredTimeStamp;
 
-    public long getRegisteredTimeStamp() {
-        return registeredTimeStamp;
-    }
-
-    public void setRegisteredTimeStamp(long registeredTimeStamp) {
-        this.registeredTimeStamp = registeredTimeStamp;
-    }
 
     public int getUserId() {
         return userId;
@@ -30,7 +22,7 @@ public class GetWallPaperRequest implements IRequest{
 
     @Override
     public boolean isValid() {
-        if (userId == 0 || registeredTimeStamp<0)
+        if (userId == 0 )
             return false;
         return true;
     }
@@ -40,7 +32,7 @@ public class GetWallPaperRequest implements IRequest{
     @Override
     public String errorMessage() {
         String errorMessage = "";
-        if (userId == 0 || registeredTimeStamp<0)
+        if (userId == 0 )
             errorMessage = "Invalid wallPaper";
         return errorMessage;
     }

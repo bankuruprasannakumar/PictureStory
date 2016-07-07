@@ -53,11 +53,11 @@ public class GetMainFeed {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getMainFeedReguest.errorMessage());
             }
             int userId = getMainFeedReguest.getUserId();
-            long registeredTimeStamp = getMainFeedReguest.getTime();
             if (null == mUserDetailsDao.getUser(userId)) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
             }
             User user =(User)mUserDetailsDao.getUser(userId);
+            long registeredTimeStamp = user.getRegisteredTime();
             List<Content> contentList;
             if(userId==1)
                 contentList = mContentDetailsDao.getAllContentDetails();

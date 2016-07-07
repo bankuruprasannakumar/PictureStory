@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.picturestory.service.Constants;
 import com.picturestory.service.database.dao.IUserDetailsDao;
 import com.picturestory.service.database.dao.IWallPaperDetailsDao;
+import com.picturestory.service.pojo.User;
 import com.picturestory.service.pojo.WallPaper;
 import com.picturestory.service.request.GetWallPaperRequest;
 import com.picturestory.service.request.SetWallPaperRequest;
@@ -45,13 +46,14 @@ public class GetWallPaper {
         }
 
         int userId = getWallPaperRequest.getUserId();
-        long time = getWallPaperRequest.getRegisteredTimeStamp();
         if (null == mUserDetailsDao.getUser(userId)) {
             return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
         }
+        User user =(User)mUserDetailsDao.getUser(userId);
+        long registeredTimeStamp = user.getRegisteredTime();
 
         WallPaper wallPaperObject ;
-        wallPaperObject = mWallPaperDetailsDao.getWallPaperFromSetId(timeStampTosetId(time));
+        wallPaperObject = mWallPaperDetailsDao.getWallPaperFromSetId(timeStampTosetId(registeredTimeStamp));
         if (wallPaperObject != null) {
             JSONObject responseObj = composeResponse(wallPaperObject.getWallPaper());
             return ResponseBuilder.successResponse(responseObj.toString());

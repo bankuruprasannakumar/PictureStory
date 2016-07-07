@@ -52,7 +52,7 @@ public class RegisterUser {
                 user.setUserImage(userRequest.getUserImageUrl());
             if (userRequest.getGcmId()!=null && !"".equals(userRequest.getGcmId().trim()))
                 user.setGcmId(userRequest.getGcmId());
-            if (userRequest.getRegisteredTime()!=null && !"".equals(userRequest.getRegisteredTime().trim())){
+            if (userRequest.getRegisteredTime() != 0){
                 user.setRegisteredTime(userRequest.getRegisteredTime());
             }
             int userId = mUserDetailsDao.addUserForFbId(user);

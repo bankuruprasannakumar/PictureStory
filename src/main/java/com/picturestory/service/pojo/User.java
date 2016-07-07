@@ -12,13 +12,13 @@ public class User {
     private String userDesc;
     private String gcmId;
     private boolean isContributor;
-    private String registeredTime;
+    private long registeredTime;
 
-    public String getRegisteredTime() {
+    public long getRegisteredTime() {
         return registeredTime;
     }
 
-    public void setRegisteredTime(String registeredTime) {
+    public void setRegisteredTime(long registeredTime) {
         this.registeredTime = registeredTime;
     }
 

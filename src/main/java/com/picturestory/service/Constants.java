@@ -10,6 +10,7 @@ public class Constants {
 
     //Solr params
     public static final String SUCCESS = "success";
+    public static final String REGISTERED_TIME = "registeredTime";
     public static final String RESPONSE = "response";
     public static final String DOCS = "docs";
     public static final String WT_JSON = "wt=json";

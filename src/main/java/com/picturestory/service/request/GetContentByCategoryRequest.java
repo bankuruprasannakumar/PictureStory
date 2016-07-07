@@ -9,24 +9,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GetContentByCategoryRequest implements IRequest {
     private Integer categoryId;
     private int userId;
-    private String categoryName;
-    private long registeredTimeStamp;
-
-    public long getRegisteredTimeStamp() {
-        return registeredTimeStamp;
-    }
-
-    public void setRegisteredTimeStamp(long registeredTimeStamp) {
-        this.registeredTimeStamp = registeredTimeStamp;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
 
     public int getUserId() {
         return userId;
@@ -48,7 +30,7 @@ public class GetContentByCategoryRequest implements IRequest {
     public boolean isValid() {
         if(userId<1)
             return false;
-        if((categoryName==null || categoryName.trim().equals(""))&&(categoryId==null||categoryId<1))
+        if (categoryId < 1)
             return false;
         return true;
     }
@@ -58,8 +40,8 @@ public class GetContentByCategoryRequest implements IRequest {
         String errorMessage="";
         if(userId<1)
             errorMessage+="Invalid User Id ";
-        if((categoryName==null || categoryName.trim().equals(""))&&(categoryId==null||categoryId<1))
-            errorMessage+= "Invalid category name and/or category id";
+        if (categoryId < 1)
+            errorMessage+="Invalid categoryId ";
         return errorMessage;
     }
 }

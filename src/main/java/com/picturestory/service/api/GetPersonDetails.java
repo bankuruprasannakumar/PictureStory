@@ -64,7 +64,9 @@ public class GetPersonDetails {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_PERSON_ID);
             }
             long setId=0;
-            long registeredTimeStamp = getPersonDetailRequest.getRegisteredTimeStamp();
+            User user =(User)mUserDetailsDao.getUser(userId);
+            long registeredTimeStamp = user.getRegisteredTime();
+
             if( registeredTimeStamp>0)
                 setId = timeStampTosetId(registeredTimeStamp);
             User personDetails = (User) mUserDetailsDao.getUser(personId);
