@@ -73,7 +73,10 @@ public class GetPersonDetails {
             //get all content for the user
             List<Content> contentList;
             if (personDetails.isContributor()) {
-                contentList = mContentDetailsDao.getAllContentDetailsContributedByUserIdTillSetId(personId,setId);
+                if (userId == personId)
+                    contentList = mContentDetailsDao.getAllContentDetailsContributedByUserId(personId);
+                else
+                    contentList = mContentDetailsDao.getAllContentDetailsContributedByUserIdTillSetId(personId,setId);
             } else {
                 contentList = mContentDetailsDao.getAllContentCommentedAndLikedByUser(personId);
             }
