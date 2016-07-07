@@ -12,6 +12,15 @@ public class User {
     private String userDesc;
     private String gcmId;
     private boolean isContributor;
+    private String registeredTime;
+
+    public String getRegisteredTime() {
+        return registeredTime;
+    }
+
+    public void setRegisteredTime(String registeredTime) {
+        this.registeredTime = registeredTime;
+    }
 
     public boolean isContributor() {
         return isContributor;

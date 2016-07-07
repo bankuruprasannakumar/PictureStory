@@ -40,60 +40,27 @@ public class RegisterUser {
             if (!userRequest.isValid()) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, userRequest.errorMessage());
             }
-            if (userRequest.getFbId()!=null && !userRequest.getFbId().trim().isEmpty()){
-                User user = new User();
-                user.setFbId(userRequest.getFbId());
+            User user = new User();
+            user.setFbId(userRequest.getFbId());
+            if (userRequest.getUserName() != null && !"".equals(userRequest.getUserName().trim())){
                 user.setUserName(userRequest.getUserName());
-                if (userRequest.getUserEmail() != null && !"".equals(userRequest.getUserEmail().trim())){
-                    user.setUserEmail(userRequest.getUserEmail());
-                }
-                if (userRequest.getUserImageUrl() != null && !"".equals(userRequest.getUserImageUrl().trim()))
-                    user.setUserImage(userRequest.getUserImageUrl());
-                if (userRequest.getGcmId()!=null && "".equals(userRequest.getGcmId().trim()))
-                    user.setGcmId(userRequest.getGcmId());
-                int userId = mUserDetailsDao.addUserForFbId(user);
-                User u = (User) mUserDetailsDao.getUser(userId);
-                if (userId != 0) {
-                    JSONObject responseObj = composeResponse(userId);
-                    return ResponseBuilder.successResponse(responseObj.toString());
-                } else {
-                    return ResponseBuilder.error(mUserDetailsDao.getDetailedResponse().getErrorCode(), mUserDetailsDao.getDetailedResponse().getErrorMessage());
-                }
             }
-            else {
-                if(userRequest.getUserName().equals("abc") || userRequest.getUserName().equals("Abc") || userRequest.getUserName().equals("ABC")){
-                    int userId = 457135309;
-                    JSONObject responseObj = composeResponse(userId);
-                    return ResponseBuilder.successResponse(responseObj.toString());
-                }
-                if(userRequest.getUserName().equals("user") || userRequest.getUserName().equals("User") || userRequest.getUserName().equals("USER")){
-                    User user = new User();
-                    user.setUserName("user");
-                    int userId = mUserDetailsDao.addUser(user);
-                    if (userId != 0) {
-                        JSONObject responseObj = composeResponse(userId);
-                        return ResponseBuilder.successResponse(responseObj.toString());
-                    } else {
-                        return ResponseBuilder.error(mUserDetailsDao.getDetailedResponse().getErrorCode(), mUserDetailsDao.getDetailedResponse().getErrorMessage());
-                    }
-                }
-                User user = new User();
-                user.setUserName(userRequest.getUserName());
-                int userId = mUserDetailsDao.isUserNamePresent(user);
-                if (userId != 0){
-                    //userName already present
-                    return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_NAME);
-                }
-                else {
-                    //register user with userName
-                    userId = mUserDetailsDao.createUser(user);
-                    if (userId != 0) {
-                        JSONObject responseObj = composeResponse(userId);
-                        return ResponseBuilder.successResponse(responseObj.toString());
-                    } else {
-                        return ResponseBuilder.error(mUserDetailsDao.getDetailedResponse().getErrorCode(), mUserDetailsDao.getDetailedResponse().getErrorMessage());
-                    }
-                }
+            if (userRequest.getUserEmail() != null && !"".equals(userRequest.getUserEmail().trim())){
+                user.setUserEmail(userRequest.getUserEmail());
+            }
+            if (userRequest.getUserImageUrl() != null && !"".equals(userRequest.getUserImageUrl().trim()))
+                user.setUserImage(userRequest.getUserImageUrl());
+            if (userRequest.getGcmId()!=null && !"".equals(userRequest.getGcmId().trim()))
+                user.setGcmId(userRequest.getGcmId());
+            if (userRequest.getRegisteredTime()!=null && !"".equals(userRequest.getRegisteredTime().trim())){
+                user.setRegisteredTime(userRequest.getRegisteredTime());
+            }
+            int userId = mUserDetailsDao.addUserForFbId(user);
+            if (userId != 0) {
+                JSONObject responseObj = composeResponse(userId);
+                return ResponseBuilder.successResponse(responseObj.toString());
+            } else {
+                return ResponseBuilder.error(mUserDetailsDao.getDetailedResponse().getErrorCode(), mUserDetailsDao.getDetailedResponse().getErrorMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();

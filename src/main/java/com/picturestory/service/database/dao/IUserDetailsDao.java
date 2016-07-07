@@ -10,13 +10,11 @@ import java.util.List;
  * Created by aasha.medhi on 9/24/15.
  */
 public interface IUserDetailsDao<T> {
-    public int addUser(T user);
 
     public boolean updateUser(T user);
 
     public boolean addContributor(Contributor contributor);
 
-    public boolean deleteUser(int userId);
 
     public T getUser(int userId);
 
@@ -25,7 +23,6 @@ public interface IUserDetailsDao<T> {
 
     public int addUserForFbId(T user);
 
-    public int isUserNamePresent(User user);
 
     public ResponseData getDetailedResponse();
 

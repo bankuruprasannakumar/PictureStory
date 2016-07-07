@@ -13,6 +13,15 @@ public class NewUserRequest implements IRequest {
     private String userImageUrl;
     private String gcmId;
     private String fbId;
+    private String registeredTime;
+
+    public String getRegisteredTime() {
+        return registeredTime;
+    }
+
+    public void setRegisteredTime(String registeredTime) {
+        this.registeredTime = registeredTime;
+    }
 
     public String getFbId() {
         return fbId;
@@ -59,28 +68,18 @@ public class NewUserRequest implements IRequest {
     }
 
     public boolean isValid() {
-        if (userName == null || userName.trim().isEmpty()) {
+        if (fbId == null || fbId.trim().isEmpty()) {
             return false;
         }
-/*
-        if (userEmail == null || userEmail.isEmpty()) {
-            return false;
-        }
-*/
         return true;
     }
 
     @Override
     public String errorMessage() {
         StringBuilder errorMessage = new StringBuilder();
-        if (userName == null || userName.trim().isEmpty()) {
+        if (fbId == null || fbId.trim().isEmpty()) {
             errorMessage.append("Invalid userName. ");
         }
-/*
-        if (userEmail == null || userEmail.isEmpty()) {
-            errorMessage.append("Invalid userEmail. ");
-        }
-*/
         return errorMessage.toString();
     }
 }
