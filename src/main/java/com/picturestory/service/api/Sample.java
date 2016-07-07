@@ -12,13 +12,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.awt.*;
 
-@Path("myResource")
+@Path("ping")
 @Produces(MediaType.APPLICATION_JSON)
 public class Sample {
     @GET
     public Response getIt() throws JSONException {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(Constants.SUCCESS, false);
+        jsonObject.put(Constants.SUCCESS, true);
         return Response.ok(jsonObject.toString(), MediaType.APPLICATION_JSON).build();
     }
 

@@ -10,19 +10,12 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.core.spi.component.ioc.IoCComponentProviderFactory;
 import com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-
-import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
-import java.net.URI;
 
 /**
  * Created by bankuru on 29/4/16.
  */
 public class Main {
-    private HttpServer server;
-    public static final String BASE_URI = "http://ec2-52-207-219-87.compute-1.amazonaws.com:4055/";
-
     public static HttpServer startServer(){
         try {
             Injector injector = Guice.createInjector(new SolrModule());
@@ -38,7 +31,8 @@ public class Main {
             IoCComponentProviderFactory ioc = new GuiceComponentProviderFactory(rc, injector);
             // create and start a new instance of grizzly http server
             // exposing the Jersey application at BASE_URI
-            return GrizzlyServerFactory.createHttpServer(BASE_URI, rc, ioc);
+
+            return GrizzlyServerFactory.createHttpServer(getBaseURI(), rc, ioc);
         }catch (IOException e){
             System.out.println("unable to start server");
             e.printStackTrace();
@@ -56,5 +50,12 @@ public class Main {
             e.printStackTrace();
             return ;
         }
+    }
+
+    public static String getBaseURI(){
+        String localIp = System.getenv("AWS_PRIVATE_IPV4");
+        String base_uri = "http://"+localIp+":4055/";
+        System.out.println(base_uri);
+        return base_uri;
     }
 }
