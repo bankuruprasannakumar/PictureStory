@@ -105,6 +105,40 @@ public class CategoryDetailsDao implements ICategoryDetailsDao<Integer,String> {
     }
 
     @Override
+    public Integer getCategoryId(String categoryName) {
+        String query = "";
+        query = String.format("q=%s:%s&%s", Constants.CATEGORY_NAME, categoryName, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+
+                JSONObject categoryResponse = new JSONObject(responseData.getData());
+                if (categoryResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    JSONObject userJsonObject = categoryResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0);
+                    Gson gson = new Gson();
+                    Category category = gson.fromJson(userJsonObject.toString(),Category.class);
+                    return category.getCategoryId();
+                }
+                else {
+                    mResponseData.setErrorMessage("Invalid category id");
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return null;
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+
+
+    @Override
     public ResponseData getDetailedResponse() {
         return mResponseData;
     }

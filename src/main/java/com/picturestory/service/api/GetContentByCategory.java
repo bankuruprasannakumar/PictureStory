@@ -53,13 +53,23 @@ public class GetContentByCategory {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_REQUEST);
             if (!getContentByCategoryRequest.isValid())
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getContentByCategoryRequest.errorMessage());
-
-            Integer categoryId = getContentByCategoryRequest.getCategoryId();
+            Integer categoryId;
+            if(getContentByCategoryRequest.getCategoryName()!=null && getContentByCategoryRequest.getCategoryName()!=""){
+                String categoryName = getContentByCategoryRequest.getCategoryName();
+                categoryId = (Integer) mCategoryDetailsDao.getCategoryId(categoryName);
+            }
+            else
+                categoryId = getContentByCategoryRequest.getCategoryId();
             int userId = getContentByCategoryRequest.getUserId();
 
             List<Integer> contentIdList = mContentCategoryDao.getContentIdsFromCategoryId(categoryId);
+            long registeredTimeStamp = getContentByCategoryRequest.getRegisteredTimeStamp();
+            long setId=0;
+            if( registeredTimeStamp>0)
+                setId = timeStampTosetId(registeredTimeStamp);
+
             if (contentIdList != null) {
-                JSONObject responseObj = composeResponse(userId,contentIdList);
+                JSONObject responseObj = composeResponse(userId,contentIdList,setId);
                 return ResponseBuilder.successResponse(responseObj.toString());
             } else {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mContentCategoryDao.getDetailedResponse().getErrorMessage());
@@ -70,8 +80,8 @@ public class GetContentByCategory {
         }
     }
 
-    private JSONObject composeResponse(int userId,List<Integer> contentIdList) {
-        List<Content> contentList = mContentDetailsDao.getAllContentDetailsForIds(contentIdList);
+    private JSONObject composeResponse(int userId,List<Integer> contentIdList, long setId) {
+        List<Content> contentList = mContentDetailsDao.getAllContentDetailsForIdsTillSetId(contentIdList,setId);
         JSONObject response = new JSONObject();
         try {
             response.put(Constants.SUCCESS, true);
@@ -110,9 +120,15 @@ public class GetContentByCategory {
                     }
 
                     //Add category name list
+                    JSONArray categoryJSONArray = new JSONArray();
                     List<Integer> categoryIdList = mContentCategoryDao.getCategoryIdListFromContentId(content.getContentId());
-                    List<String> categoryNameList = mCategoryDetailsDao.getCategoryNameList(categoryIdList);
-                    contentJSON.put(Constants.CATEGORY_NAME_LIST,categoryNameList);
+                    for(int i=0;i<categoryIdList.size();i++){
+                        JSONObject categoryObject = new JSONObject();
+                        categoryObject.put(Constants.CATEGORY_ID,categoryIdList.get(i));
+                        categoryObject.put(Constants.CATEGORY_NAME,mCategoryDetailsDao.getCategoryName(categoryIdList.get(i)));
+                        categoryJSONArray.put(categoryObject);
+                    }
+                    contentJSON.put(Constants.CATEGORY_NAME_LIST,categoryJSONArray);
 
                     contentJSONArray.put(contentJSON);
                 }
@@ -129,6 +145,10 @@ public class GetContentByCategory {
         userUserAssociation.setUserId(userId);
         userUserAssociation.setFollowedUserId(personId);
         return mUserUserDao.isFollowedByUser(userUserAssociation);
+    }
+
+    private long timeStampTosetId(long timeStamp){
+        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
     }
 }
 

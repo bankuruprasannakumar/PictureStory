@@ -356,6 +356,81 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
     }
 
     @Override
+    public List<Content> getAllContentDetailsContributedByUserIdTillSetId(int userId, long setId) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:[%s TO %s]&%s&%s=%s&%s=%s",Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.USER_ID,userId,Constants.SET_ID,Constants.ALL,setId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    mResponseData.setSuccess(true);
+                    JSONArray contentArray = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Content>>(){}.getType();
+                    List<Content> contentList = gson.fromJson(contentArray.toString(), listType);
+                    return contentList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Content>();
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
+        return null;
+
+    }
+
+    @Override
+    public List<Content> getAllContentDetailsForIdsTillSetId(List<Integer> ids, long setId) {
+        if(ids == null || ids.isEmpty()){
+            mResponseData.setSuccess(false);
+            mResponseData.setErrorMessage(Constants.INVALID_CONTENT_ID);
+            return new ArrayList<Content>();
+        }
+        String subQuery = "";
+        subQuery = "(";
+        for (int index = 0; index < ids.size(); index++) {
+            subQuery += ids.get(index) + " OR ";
+        }
+        subQuery = subQuery.substring(0, (subQuery.length() - 3));
+        subQuery += ")";
+        String query = String.format("q=%s:%s AND %s:%s AND %s:[* TO %s]&%s&%s=%s&%s=%s", Constants.CONTENT_ID, subQuery.toString(), Constants.PICTURE_DESCRIPTION, Constants.ALL,Constants.SET_ID,setId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    mResponseData.setSuccess(true);
+                    JSONArray contentArray = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Content>>(){}.getType();
+                    List<Content> contentList = gson.fromJson(contentArray.toString(), listType);
+                    return contentList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return null;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
+        return null;
+    }
+
+    @Override
     public ResponseData getDetailedResponse() {
         return mResponseData;
     }

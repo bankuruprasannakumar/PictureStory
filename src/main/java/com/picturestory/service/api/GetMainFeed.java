@@ -2,10 +2,7 @@ package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
 import com.picturestory.service.database.dao.*;
-import com.picturestory.service.pojo.Content;
-import com.picturestory.service.pojo.ContentUserLikeAssociation;
-import com.picturestory.service.pojo.User;
-import com.picturestory.service.pojo.UserUserAssociation;
+import com.picturestory.service.pojo.*;
 import com.picturestory.service.request.GetMainFeedRequest;
 import com.picturestory.service.response.ResponseBuilder;
 import org.json.JSONArray;
@@ -118,9 +115,15 @@ public class GetMainFeed {
                     }
 
                     //Add category name list
+                    JSONArray categoryJSONArray = new JSONArray();
                     List<Integer> categoryIdList = mContentCategoryDao.getCategoryIdListFromContentId(content.getContentId());
-                    List<String> categoryNameList = mCategoryDetailsDao.getCategoryNameList(categoryIdList);
-                    contentJSON.put(Constants.CATEGORY_NAME_LIST,categoryNameList);
+                    for(int i=0;i<categoryIdList.size();i++){
+                        JSONObject categoryObject = new JSONObject();
+                        categoryObject.put(Constants.CATEGORY_ID,categoryIdList.get(i));
+                        categoryObject.put(Constants.CATEGORY_NAME,mCategoryDetailsDao.getCategoryName(categoryIdList.get(i)));
+                        categoryJSONArray.put(categoryObject);
+                    }
+                    contentJSON.put(Constants.CATEGORY_NAME_LIST,categoryJSONArray);
 
                     contentJSONArray.put(contentJSON);
 
