@@ -93,7 +93,7 @@ public class Constants {
     public static final String CATEGORY_NAME_LIST = "categoryNameList";
     public static final String NUMBER_OF_USERS = "numberOfUsers";
     public static final String PNF_DATA = "pNfData";
-
+    public static final String CONTENT = "content";
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";
     public static final String INVALID_USER_NAME = "Invalid User Name";
