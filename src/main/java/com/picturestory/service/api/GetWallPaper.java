@@ -2,6 +2,7 @@ package com.picturestory.service.api;
 
 import com.google.inject.Inject;
 import com.picturestory.service.Constants;
+import com.picturestory.service.api.utilities.GetSetId;
 import com.picturestory.service.database.dao.IUserDetailsDao;
 import com.picturestory.service.database.dao.IWallPaperDetailsDao;
 import com.picturestory.service.pojo.User;
@@ -53,7 +54,7 @@ public class GetWallPaper {
         long registeredTimeStamp = user.getRegisteredTime();
 
         WallPaper wallPaperObject ;
-        wallPaperObject = mWallPaperDetailsDao.getWallPaperFromSetId(timeStampTosetId(registeredTimeStamp));
+        wallPaperObject = mWallPaperDetailsDao.getWallPaperFromSetId(GetSetId.getSetIdForWallPaper(registeredTimeStamp));
         if (wallPaperObject != null) {
             JSONObject responseObj = composeResponse(wallPaperObject.getWallPaper());
             return ResponseBuilder.successResponse(responseObj.toString());
@@ -65,11 +66,7 @@ public class GetWallPaper {
         e.printStackTrace();
         return ResponseBuilder.error(Constants.ERRORCODE_IOEXCEPTION, "Internal Server Error");
     }
-
 }
-    private long timeStampTosetId(long timeStamp){
-        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
-    }
 
     private JSONObject composeResponse(String wallPaper) throws JSONException {
         JSONObject responseObj = new JSONObject();

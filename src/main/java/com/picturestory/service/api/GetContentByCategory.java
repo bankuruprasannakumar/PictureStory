@@ -1,6 +1,7 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
+import com.picturestory.service.api.utilities.GetSetId;
 import com.picturestory.service.database.dao.*;
 import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.ContentUserLikeAssociation;
@@ -65,12 +66,8 @@ public class GetContentByCategory {
             List<Integer> contentIdList = mContentCategoryDao.getContentIdsFromCategoryId(categoryId);
             User user =(User)mUserDetailsDao.getUser(userId);
             long registeredTimeStamp = user.getRegisteredTime();
-            long setId=0;
-            if( registeredTimeStamp>0)
-                setId = timeStampTosetId(registeredTimeStamp);
-
             if (contentIdList != null) {
-                JSONObject responseObj = composeResponse(userId,contentIdList,setId);
+                JSONObject responseObj = composeResponse(userId,contentIdList, GetSetId.getSetIdForFeed(registeredTimeStamp));
                 return ResponseBuilder.successResponse(responseObj.toString());
             } else {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mContentCategoryDao.getDetailedResponse().getErrorMessage());
@@ -146,10 +143,6 @@ public class GetContentByCategory {
         userUserAssociation.setUserId(userId);
         userUserAssociation.setFollowedUserId(personId);
         return mUserUserDao.isFollowedByUser(userUserAssociation);
-    }
-
-    private long timeStampTosetId(long timeStamp){
-        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
     }
 }
 

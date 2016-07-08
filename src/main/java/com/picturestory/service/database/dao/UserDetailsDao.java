@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.jws.soap.SOAPBinding;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,57 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
             currentUserId = createUser(user);
             return currentUserId;
         }
+    }
+
+    @Override
+    public ArrayList<User> getUsersForIndex(int startIndex, int endIndex) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.USER_ID,Constants.ALL, Constants.USER_NAME,Constants.ALL, Constants.GCMID, Constants.ALL, Constants.WT_JSON, Constants.START, startIndex, Constants.ROWS, endIndex);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    JSONArray userJsonArray = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<User>>(){}.getType();
+                    ArrayList<User> users = gson.fromJson(userJsonArray.toString(),listType);
+                    return users;
+                }
+                else {
+                    mResponseData.setErrorMessage("Invalid userId");
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return null;
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public int getTotalCount() {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s", Constants.USER_ID,Constants.ALL, Constants.USER_NAME,Constants.ALL,Constants.GCMID,Constants.ALL,Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                return userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND);
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return 0;
+            }
+        }
+        return 0;
     }
 
     private int isUserPresentForFbId(User user) {

@@ -33,7 +33,7 @@ public class GetWallPaperRequest implements IRequest{
     public String errorMessage() {
         String errorMessage = "";
         if (userId == 0 )
-            errorMessage = "Invalid wallPaper";
+            errorMessage = "Invalid endIndex";
         return errorMessage;
     }
 }

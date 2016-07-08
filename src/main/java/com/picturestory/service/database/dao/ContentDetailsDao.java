@@ -401,7 +401,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         }
         subQuery = subQuery.substring(0, (subQuery.length() - 3));
         subQuery += ")";
-        String query = String.format("q=%s:%s AND %s:%s AND %s:[* TO %s]&%s&%s=%s&%s=%s", Constants.CONTENT_ID, subQuery.toString(), Constants.PICTURE_DESCRIPTION, Constants.ALL,Constants.SET_ID,setId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        String query = String.format("q=%s:%s AND %s:%s AND %s:[* TO %s]&%s&%s=%s&%s=%s&sort=%s desc", Constants.CONTENT_ID, subQuery.toString(), Constants.PICTURE_DESCRIPTION, Constants.ALL,Constants.SET_ID,setId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT, Constants.SET_ID);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -427,6 +427,35 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
             }
         }
         mResponseData = responseData;
+        return null;
+    }
+
+    @Override
+    public String getImageForSetId(long setId) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s", Constants.CONTENT_ID, Constants.ALL, Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.SET_ID, setId, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    JSONObject contentJsonObject = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0);
+                    Gson gson = new Gson();
+                    Content content = gson.fromJson(contentJsonObject.toString(), Content.class);
+                    return content.getPictureUrl();
+                } else {
+                    mResponseData.setErrorMessage(Constants.INVALID_CONTENT_ID);
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return null;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
         return null;
     }
 

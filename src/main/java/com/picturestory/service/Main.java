@@ -16,6 +16,7 @@ import java.io.IOException;
  * Created by bankuru on 29/4/16.
  */
 public class Main {
+    private static final String BASE_URI = "http://10.14.125.134:4055/";
     public static HttpServer startServer(){
         try {
             Injector injector = Guice.createInjector(new SolrModule());
@@ -32,7 +33,7 @@ public class Main {
             // create and start a new instance of grizzly http server
             // exposing the Jersey application at BASE_URI
 
-            return GrizzlyServerFactory.createHttpServer(getBaseURI(), rc, ioc);
+            return GrizzlyServerFactory.createHttpServer(BASE_URI, rc, ioc);
         }catch (IOException e){
             System.out.println("unable to start server");
             e.printStackTrace();

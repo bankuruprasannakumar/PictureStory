@@ -5,8 +5,8 @@ package com.picturestory.service;
  */
 public class Constants {
 
-    public static final String DB_SELECT_ENDPOINT = "http://10.0.38.48:8983/solr/pixtoryContent/select";
-    public static final String DB_UPDATE_ENDPOINT = "http://10.0.38.48:8983/solr/pixtoryContent/update?commit=true";
+    public static final String DB_SELECT_ENDPOINT = "http://ec2-52-207-219-87.compute-1.amazonaws.com:8983/solr/strandsContent/select";
+    public static final String DB_UPDATE_ENDPOINT = "http://ec2-52-207-219-87.compute-1.amazonaws.com:8983/solr/strandsContent/update?commit=true";
 
     //Solr params
     public static final String SUCCESS = "success";
@@ -91,6 +91,8 @@ public class Constants {
     public static final String IS_WALLPAPER = "isWallPaper";
     public static final String SET_ID = "setId";
     public static final String CATEGORY_NAME_LIST = "categoryNameList";
+    public static final String NUMBER_OF_USERS = "numberOfUsers";
+    public static final String PNF_DATA = "pNfData";
 
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";

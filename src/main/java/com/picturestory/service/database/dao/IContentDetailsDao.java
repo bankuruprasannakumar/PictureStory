@@ -34,5 +34,7 @@ public interface IContentDetailsDao<T> {
 
     public List<T> getAllContentDetailsForIdsTillSetId(List<Integer> ids,long setId);
 
+    public String getImageForSetId(long setId);
+
     public ResponseData getDetailedResponse();
 }

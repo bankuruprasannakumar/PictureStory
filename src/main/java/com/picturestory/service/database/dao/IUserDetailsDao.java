@@ -4,6 +4,7 @@ import com.picturestory.service.pojo.Contributor;
 import com.picturestory.service.pojo.User;
 import com.picturestory.service.response.ResponseData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +24,9 @@ public interface IUserDetailsDao<T> {
 
     public int addUserForFbId(T user);
 
+    public int getTotalCount();
+
+    public ArrayList<T> getUsersForIndex(int startIndex, int endIndex);
 
     public ResponseData getDetailedResponse();
 

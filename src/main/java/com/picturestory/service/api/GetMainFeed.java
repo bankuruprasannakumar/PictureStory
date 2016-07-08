@@ -1,6 +1,7 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
+import com.picturestory.service.api.utilities.GetSetId;
 import com.picturestory.service.database.dao.*;
 import com.picturestory.service.pojo.*;
 import com.picturestory.service.request.GetMainFeedRequest;
@@ -64,7 +65,7 @@ public class GetMainFeed {
             else if (registeredTimeStamp == 0)
                 contentList = mContentDetailsDao.getAllContentDetailsTillSetId(0);
             else
-                contentList = mContentDetailsDao.getAllContentDetailsTillSetId(timeStampTosetId(registeredTimeStamp));
+                contentList = mContentDetailsDao.getAllContentDetailsTillSetId(GetSetId.getSetIdForFeed(registeredTimeStamp));
 
             return ResponseBuilder.successResponse(composeResponse(userId,contentList));
         } catch (Exception e) {
@@ -142,10 +143,6 @@ public class GetMainFeed {
         userUserAssociation.setUserId(userId);
         userUserAssociation.setFollowedUserId(personId);
         return mUserUserDao.isFollowedByUser(userUserAssociation);
-    }
-
-    private long timeStampTosetId(long timeStamp){
-        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
     }
 
 }
