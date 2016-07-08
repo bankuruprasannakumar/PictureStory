@@ -5,8 +5,8 @@ package com.picturestory.service;
  */
 public class Constants {
 
-    public static final String DB_SELECT_ENDPOINT = "http://ec2-52-207-219-87.compute-1.amazonaws.com:8983/solr/strandsContent/select";
-    public static final String DB_UPDATE_ENDPOINT = "http://ec2-52-207-219-87.compute-1.amazonaws.com:8983/solr/strandsContent/update?commit=true";
+    public static final String DB_SELECT_ENDPOINT = "http://localhosta:8983/solr/strandsContent/select";
+    public static final String DB_UPDATE_ENDPOINT = "http://localhost:8983/solr/strandsContent/update?commit=true";
 
     //Solr params
     public static final String SUCCESS = "success";
