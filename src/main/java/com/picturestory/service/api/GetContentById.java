@@ -29,10 +29,13 @@ import java.util.List;
 @Consumes("application/json")
 public class GetContentById {
     private final IContentDetailsDao mContentDetailsDao;
+    private final ISharedContentAssociationDao mSharedContentAssociationDao;
 
     @Inject
-    public GetContentById(IContentDetailsDao mContentDetailsDao) {
+    public GetContentById(IContentDetailsDao mContentDetailsDao,
+                          ISharedContentAssociationDao sharedContentAssociationDao) {
         this.mContentDetailsDao = mContentDetailsDao;
+        mSharedContentAssociationDao = sharedContentAssociationDao;
     }
 
     @POST
@@ -43,7 +46,11 @@ public class GetContentById {
             if (!getContentByIdRequest.isValid())
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getContentByIdRequest.errorMessage());
             int contentId = getContentByIdRequest.getContentId();
-            Content content = (Content) mContentDetailsDao.getContentDetails(contentId);
+            int realContentId = mSharedContentAssociationDao.getContentIdforSharedContentId(contentId);
+            if (realContentId == 0){
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mContentDetailsDao.getDetailedResponse().getErrorMessage());
+            }
+            Content content = (Content) mContentDetailsDao.getContentDetails(realContentId);
             if (content != null) {
                 JSONObject responseObj = composeResponse(content);
                 return ResponseBuilder.successResponse(responseObj.toString());

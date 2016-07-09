@@ -5,8 +5,8 @@ package com.picturestory.service;
  */
 public class Constants {
 
-    public static final String DB_SELECT_ENDPOINT = "http://10.0.38.48:8983/solr/pixtoryContent/select";
-    public static final String DB_UPDATE_ENDPOINT = "http://10.0.38.48:8983/solr/pixtoryContent/update?commit=true";
+    public static final String DB_SELECT_ENDPOINT = "http://localhost:8983/solr/strandsContent/select";
+    public static final String DB_UPDATE_ENDPOINT = "http://localhost:8983/solr/strandsContent/update?commit=true";
 
     //Solr params
     public static final String SUCCESS = "success";
@@ -36,6 +36,7 @@ public class Constants {
     public static final String ROWS = "rows";
     public static final String FOLLOWED_USER_ID = "followedUserId";
     public static final String WALL_PAPER = "wallPaper";
+    public static final String SHARED_CONTEND_ID = "sharedContentId";
 
     //Network params
     public static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
