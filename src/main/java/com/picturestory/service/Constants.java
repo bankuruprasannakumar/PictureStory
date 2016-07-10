@@ -5,8 +5,8 @@ package com.picturestory.service;
  */
 public class Constants {
 
-    public static final String DB_SELECT_ENDPOINT = "http://172.31.3.90:8983/solr/pixtoryContent/select";
-    public static final String DB_UPDATE_ENDPOINT = "http://172.31.3.90:8983/solr/pixtoryContent/update?commit=true";
+    public static final String DB_SELECT_ENDPOINT = "http://172.31.2.50:8983/solr/pixtoryContent/select";
+    public static final String DB_UPDATE_ENDPOINT = "http://172.31.2.50:8983/solr/pixtoryContent/update?commit=true";
 
     //Solr params
     public static final String SUCCESS = "success";
