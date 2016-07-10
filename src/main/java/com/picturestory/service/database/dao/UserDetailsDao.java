@@ -155,6 +155,110 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
     }
 
     @Override
+    public boolean updateGcmIdOfUser(User user){
+        JSONObject userJsonObject = new JSONObject();
+        JSONObject setQuery = new JSONObject();
+        String query = "";
+        String recordId;
+        query = String.format("q=%s:%s AND %s:%s&%s", Constants.USER_ID,user.getUserId(),Constants.USER_NAME,Constants.ALL, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) == 1) {
+                    recordId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getString(Constants.ID);
+                } else {
+                    mResponseData.setSuccess(false);
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setErrorMessage(Constants.INVALID_USER_ID);
+                    return false;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return false;
+            }
+        } else {
+            mResponseData = responseData;
+            return false;
+        }
+        try {
+            setQuery = new JSONObject();
+            setQuery.put(Constants.SET,user.getGcmId());
+            userJsonObject.put(Constants.GCMID, setQuery);
+            userJsonObject.put(Constants.ID, recordId);
+            query = userJsonObject.toString();
+            query = Constants.INSERT_START + query +Constants.INSERT_END;
+            mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return true;
+            }
+        } catch (JSONException j) {
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateFbIdOfUser(User user){
+        JSONObject userJsonObject = new JSONObject();
+        JSONObject setQuery = new JSONObject();
+        String query = "";
+        String recordId;
+        query = String.format("q=%s:%s AND %s:%s&%s", Constants.USER_ID,user.getUserId(),Constants.USER_NAME,Constants.ALL, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) == 1) {
+                    recordId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getString(Constants.ID);
+                } else {
+                    mResponseData.setSuccess(false);
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setErrorMessage(Constants.INVALID_USER_ID);
+                    return false;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return false;
+            }
+        } else {
+            mResponseData = responseData;
+            return false;
+        }
+        try {
+            setQuery = new JSONObject();
+            setQuery.put(Constants.SET,user.getFbId());
+            userJsonObject.put(Constants.FB_ID, setQuery);
+            userJsonObject.put(Constants.ID, recordId);
+            query = userJsonObject.toString();
+            query = Constants.INSERT_START + query +Constants.INSERT_END;
+            mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return true;
+            }
+        } catch (JSONException j) {
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return false;
+        }
+        return false;
+
+    }
+
+
+    @Override
     public boolean addContributor(Contributor contributor) {
         String query = "";
         try {

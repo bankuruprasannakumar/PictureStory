@@ -47,7 +47,7 @@ public class LinkFbIdUserId {
             }
             User user =(User)mUserDetailsDao.getUser(userId);
             user.setFbId(linkFbIdUserIdRequest.getFbId());
-            boolean status = mUserDetailsDao.updateUser(user);
+            boolean status = mUserDetailsDao.updateFbIdOfUser(user);
             if (status) {
                 return ResponseBuilder.successResponse();
             } else {

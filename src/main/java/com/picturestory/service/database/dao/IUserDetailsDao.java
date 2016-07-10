@@ -21,6 +21,9 @@ public interface IUserDetailsDao<T> {
 
     public int createUser(T user);
 
+    public boolean updateFbIdOfUser(T user);
+
+    public boolean updateGcmIdOfUser(T user);
 
     public int addUserForFbId(T user);
 
