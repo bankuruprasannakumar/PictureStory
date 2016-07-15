@@ -35,7 +35,7 @@ public class GetSetId {
             String[] currentTimeTokens = currentTimeFormatted.split("-");
             int currentTimeHour = Integer.parseInt(currentTimeTokens[3]);
 
-            if (currentTimeHour < 17) {
+            if (currentTimeHour < 5) {
                 return diffInDays-1;
             }
             else {
