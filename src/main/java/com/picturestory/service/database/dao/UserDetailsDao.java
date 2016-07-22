@@ -344,6 +344,46 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
     }
 
     @Override
+    public int addUserForEmail(User user) {
+        int currentUserId = isUserPresentForEmail(user);
+        if(currentUserId != 0){
+            return currentUserId;
+        }
+        else {
+            currentUserId = createUser(user);
+            return currentUserId;
+        }
+    }
+
+    private int isUserPresentForEmail(User user) {
+        String query = String.format("q=%s:\"%s\"&%s", Constants.USER_EMAIL, user.getUserEmail(),Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0 ) {
+                    int currentUserId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getInt(Constants.USER_ID);
+                    responseData.setData(String.valueOf(currentUserId));
+                    mResponseData.setSuccess(true);
+                    return currentUserId;
+                }
+                else {
+                    return 0;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return 0;
+            }
+        }else {
+            mResponseData = responseData;
+        }
+        return 0;
+    }
+
+    @Override
     public ResponseData getDetailedResponse() {
         return mResponseData;
     }

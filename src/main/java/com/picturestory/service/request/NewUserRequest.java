@@ -69,7 +69,7 @@ public class NewUserRequest implements IRequest {
     }
 
     public boolean isValid() {
-        if (fbId == null || fbId.trim().isEmpty()) {
+        if ((fbId == null || fbId.trim().isEmpty())&&(userEmail == null || userEmail.trim().isEmpty())) {
             return false;
         }
         return true;
@@ -78,8 +78,8 @@ public class NewUserRequest implements IRequest {
     @Override
     public String errorMessage() {
         StringBuilder errorMessage = new StringBuilder();
-        if (fbId == null || fbId.trim().isEmpty()) {
-            errorMessage.append("Invalid fbId. ");
+        if ((fbId == null || fbId.trim().isEmpty())&&(userEmail == null || userEmail.trim().isEmpty())){
+            errorMessage.append("Invalid fbId or email id");
         }
         return errorMessage.toString();
     }
