@@ -361,7 +361,7 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
         if (responseData.isSuccess()) {
             try {
                 JSONObject userResponse = new JSONObject(responseData.getData());
-                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) == 1) {
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0 ) {
                     int currentUserId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getInt(Constants.USER_ID);
                     responseData.setData(String.valueOf(currentUserId));
                     mResponseData.setSuccess(true);
