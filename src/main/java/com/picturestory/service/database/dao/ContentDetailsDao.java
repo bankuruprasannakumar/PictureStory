@@ -326,7 +326,8 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public List<Content> getAllContentDetailsTillSetId(long setId) {
-        String query = String.format("q=%s:[%s TO %s]&%s=%s&%s",Constants.SET_ID,Constants.ALL, setId,Constants.ROWS,Configs.MAX_LIMIT, Constants.WT_JSON);
+	String startSet = (setId<9? Constants.ALL:(setId<11?"1":""+(setId-9)));
+        String query = String.format("q=%s:[%s TO %s]&%s=%s&%s",Constants.SET_ID,startSet, setId,Constants.ROWS,Configs.MAX_LIMIT, Constants.WT_JSON);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
