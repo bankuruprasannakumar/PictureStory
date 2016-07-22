@@ -41,7 +41,9 @@ public class RegisterUser {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, userRequest.errorMessage());
             }
             User user = new User();
-            user.setFbId(userRequest.getFbId());
+            String fbid = userRequest.getFbId();
+            if(fbid!=null && !fbid.trim().isEmpty())
+                user.setFbId(userRequest.getFbId());
             if (userRequest.getUserName() != null && !"".equals(userRequest.getUserName().trim())){
                 user.setUserName(userRequest.getUserName());
             }
@@ -55,7 +57,11 @@ public class RegisterUser {
             if (userRequest.getRegisteredTime() != 0){
                 user.setRegisteredTime(userRequest.getRegisteredTime());
             }
-            int userId = mUserDetailsDao.addUserForFbId(user);
+            int userId =0;
+            if(fbid!=null && !fbid.trim().isEmpty())
+                userId = mUserDetailsDao.addUserForFbId(user);
+            else
+                userId = mUserDetailsDao.addUserForEmail(user);
             if (userId != 0) {
                 JSONObject responseObj = composeResponse(userId);
                 return ResponseBuilder.successResponse(responseObj.toString());

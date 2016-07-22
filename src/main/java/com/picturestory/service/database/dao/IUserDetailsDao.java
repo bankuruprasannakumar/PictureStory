@@ -33,5 +33,7 @@ public interface IUserDetailsDao<T> {
 
     public ResponseData getDetailedResponse();
 
+    public int addUserForEmail(T user);
+
 
 }
