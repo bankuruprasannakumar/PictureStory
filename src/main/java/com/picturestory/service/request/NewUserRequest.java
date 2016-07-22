@@ -78,8 +78,8 @@ public class NewUserRequest implements IRequest {
     @Override
     public String errorMessage() {
         StringBuilder errorMessage = new StringBuilder();
-        if (fbId == null || fbId.trim().isEmpty()) {
-            errorMessage.append("Invalid fbId. or email id");
+        if ((fbId == null || fbId.trim().isEmpty())&&(userEmail == null || userEmail.trim().isEmpty())){
+            errorMessage.append("Invalid fbId or email id");
         }
         return errorMessage.toString();
     }
