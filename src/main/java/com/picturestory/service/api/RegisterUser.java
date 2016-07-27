@@ -46,7 +46,8 @@ public class RegisterUser {
                 user.setFbId(userRequest.getFbId());
             if (userRequest.getUserName() != null && !"".equals(userRequest.getUserName().trim())){
                 user.setUserName(userRequest.getUserName());
-            }
+            }else
+                user.setUserName("Pixtory User");
             if (userRequest.getUserEmail() != null && !"".equals(userRequest.getUserEmail().trim())){
                 user.setUserEmail(userRequest.getUserEmail());
             }

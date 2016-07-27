@@ -37,7 +37,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public Content getContentDetails(int id) {
-        String query = String.format("q=%s:%s AND %s:%s&%s", Constants.CONTENT_ID, id, Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.WT_JSON);
+        String query = String.format("q=%s:%s AND %s:%s&%s", Constants.CONTENT_ID, id, Constants.NAME, Constants.ALL, Constants.WT_JSON);
         ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -66,7 +66,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public List<Content> getAllContentDetailsContributedByUserId(int userId) {
-        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s",Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.USER_ID, userId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s",Constants.NAME, Constants.ALL, Constants.USER_ID, userId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -230,7 +230,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         }
         subQuery = subQuery.substring(0, (subQuery.length() - 3));
         subQuery += ")";
-        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.CONTENT_ID, subQuery.toString(), Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.CONTENT_ID, subQuery.toString(), Constants.NAME, Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -263,7 +263,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public List<Content> getAllContentDetails() {
-        String query = String.format("q=%s:%s&%s&%s=%s&%s=%s",Constants.PICTURE_DESCRIPTION,Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        String query = String.format("q=%s:%s&%s&%s=%s&%s=%s",Constants.NAME,Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -326,7 +326,8 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public List<Content> getAllContentDetailsTillSetId(long setId) {
-        String query = String.format("q=%s:[%s TO %s]&%s=%s&%s",Constants.SET_ID,Constants.ALL, setId,Constants.ROWS,Configs.MAX_LIMIT, Constants.WT_JSON);
+        String startSet = (setId<9? Constants.ALL:(setId<11?"1":""+(setId-9)));
+        String query = String.format("q=%s:[%s TO %s]&%s=%s&%s",Constants.SET_ID,startSet, setId,Constants.ROWS,Configs.MAX_LIMIT, Constants.WT_JSON);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -357,7 +358,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public List<Content> getAllContentDetailsContributedByUserIdTillSetId(int userId, long setId) {
-        String query = String.format("q=%s:%s AND %s:%s AND %s:[%s TO %s]&%s&%s=%s&%s=%s",Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.USER_ID,userId,Constants.SET_ID,Constants.ALL,setId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        String query = String.format("q=%s:%s AND %s:%s AND %s:[%s TO %s]&%s&%s=%s&%s=%s",Constants.NAME, Constants.ALL, Constants.USER_ID,userId,Constants.SET_ID,Constants.ALL,setId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -401,7 +402,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         }
         subQuery = subQuery.substring(0, (subQuery.length() - 3));
         subQuery += ")";
-        String query = String.format("q=%s:%s AND %s:%s AND %s:[* TO %s]&%s&%s=%s&%s=%s&sort=%s desc", Constants.CONTENT_ID, subQuery.toString(), Constants.PICTURE_DESCRIPTION, Constants.ALL,Constants.SET_ID,setId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT, Constants.SET_ID);
+        String query = String.format("q=%s:%s AND %s:%s AND %s:[* TO %s]&%s&%s=%s&%s=%s&sort=%s desc", Constants.CONTENT_ID, subQuery.toString(), Constants.NAME, Constants.ALL,Constants.SET_ID,setId, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT, Constants.SET_ID);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -432,7 +433,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public String getImageForSetId(long setId) {
-        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s", Constants.CONTENT_ID, Constants.ALL, Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.SET_ID, setId, Constants.WT_JSON);
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s", Constants.CONTENT_ID, Constants.ALL, Constants.NAME, Constants.ALL, Constants.SET_ID, setId, Constants.WT_JSON);
         ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -456,6 +457,37 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
                 return null;
             }
         }
+        return null;
+    }
+
+    @Override
+    public List<Content> getAllContentTillSetIdWithRange(long setId, int startIndex, int numRows) {
+        String query = String.format("q=%s:[%s TO %s]&sort=%s desc&%s=%s&%s=%s&%s",Constants.SET_ID,Constants.ALL, setId,Constants.SET_ID,Constants.START,startIndex,Constants.ROWS,numRows, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    mResponseData.setSuccess(true);
+                    JSONArray contentArray = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Content>>(){}.getType();
+                    List<Content> contentList = gson.fromJson(contentArray.toString(), listType);
+                    return contentList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Content>();
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
         return null;
     }
 

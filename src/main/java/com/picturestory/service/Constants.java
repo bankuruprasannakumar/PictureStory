@@ -5,8 +5,8 @@ package com.picturestory.service;
  */
 public class Constants {
 
-    public static final String DB_SELECT_ENDPOINT = "http://172.31.2.50:8983/solr/pixtoryContent/select";
-    public static final String DB_UPDATE_ENDPOINT = "http://172.31.2.50:8983/solr/pixtoryContent/update?commit=true";
+    public static final String DB_SELECT_ENDPOINT = "http://localhost:8983/solr/pixtoryNewContent/select";
+    public static final String DB_UPDATE_ENDPOINT = "http://localhost:8983/solr/pixtoryNewContent/update?commit=true ";
 
     //Solr params
     public static final String SUCCESS = "success";
@@ -95,6 +95,13 @@ public class Constants {
     public static final String NUMBER_OF_USERS = "numberOfUsers";
     public static final String PNF_DATA = "pNfData";
     public static final String CONTENT = "content";
+    public static final String STORY_ID = "storyId";
+    public static final String STORY_DESC = "storyDescription";
+    public static final String STORY_LIKED_USER_ID = "storyLikedUserId";
+    public static final String STORY_LIST = "storyList";
+    public static final String STORY_LIKED_BY_USER = "storyLikedByUser";
+    public static final String STORY_LIKE_COUNT = "storyLikeCount";
+    public static final String IS_PHOTOGRAPHERS_PIECE = "isPhotographersPiece";
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";
     public static final String INVALID_USER_NAME = "Invalid User Name";
@@ -110,4 +117,5 @@ public class Constants {
     public static final String INVALID_FEEDBACK = "Invalid feedBack";
 
     public static final String INVALID_MESSAGE = "Invalid message";
+    public static final String INVALID_STORY_ID = "Invalid Story Id";
 }
