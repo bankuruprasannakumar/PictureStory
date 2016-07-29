@@ -21,7 +21,7 @@ import java.net.URI;
  */
 public class Main {
     private HttpServer server;
-    public static final String BASE_URI = "http://10.14.122.89:4055/";
+    public static final String BASE_URI = "http://localhost:4055/";
 
     public static HttpServer startServer(){
         try {

@@ -257,6 +257,136 @@ public class StoryDetailsDao implements IStoryDetailsDao<Story> {
     }
 
     @Override
+    public List<Story> getAllStoriesLikedByUserForContent(int contentId, int userId) {
+        String query = String.format("q={!join from=%s to=%s}%s:%s&fq=%s:%s AND %s:%s&%s&%s=%s&%s=%s",Constants.STORY_ID,Constants.STORY_ID, Constants.STORY_LIKED_USER_ID,userId,Constants.CONTENT_ID,contentId,Constants.STORY_DESC,Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if(userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND)>0){
+                    JSONArray storyJSONArray = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    List<Story> storyList = new ArrayList<Story>();
+                    Gson gson = new Gson();
+                    for(int i=0;i<storyJSONArray.length();i++){
+                        Story story = gson.fromJson(storyJSONArray.get(i).toString(),Story.class);
+                        storyList.add(story);
+                    }
+                    mResponseData.setSuccess(true);
+                    return storyList;
+                }else {
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Story>();
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Story> getAllStoriesContributedByUserForContent(int contentId, int userId) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s",Constants.STORY_ID,Constants.ALL,Constants.USER_ID,userId,Constants.CONTENT_ID,contentId,Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()){
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if(userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND)>0){
+                    JSONArray storyJSONArray = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    List<Story> storyList = new ArrayList<Story>();
+                    Gson gson = new Gson();
+                    for(int i=0;i<storyJSONArray.length();i++){
+                        Story story = gson.fromJson(storyJSONArray.get(i).toString(),Story.class);
+                        storyList.add(story);
+                    }
+                    mResponseData.setSuccess(true);
+                    return storyList;
+                }else{
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Story>();
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Integer> getContentIdListForStoriesLikedByUser(int userId) {
+        String query = String.format("q={!join from=%s to=%s}%s:%s&fq=%s:%s&%s&%s=%s&%s=%s",Constants.STORY_ID,Constants.STORY_ID, Constants.STORY_LIKED_USER_ID,userId,Constants.STORY_DESC,Constants.ALL, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if(userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND)>0){
+                    JSONArray storyJSONArray = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    List<Integer> contentIdList = new ArrayList<Integer>();
+                    Gson gson = new Gson();
+                    for(int i=0;i<storyJSONArray.length();i++){
+                        Story story = gson.fromJson(storyJSONArray.get(i).toString(),Story.class);
+                        if(contentIdList==null || !contentIdList.contains(story.getContentId()))
+                            contentIdList.add(story.getContentId());
+                    }
+                    mResponseData.setSuccess(true);
+                    return contentIdList;
+                }else {
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Integer>();
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Integer> getContentIdListForStoriesContributedByUser(int userId) {
+        String query = String.format("q=%s:%s AND %s:%s&%s",Constants.STORY_ID,Constants.ALL,Constants.USER_ID,userId,Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()){
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if(userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND)>0){
+                    JSONArray storyJSONArray = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    List<Integer> contentIdList = new ArrayList<Integer>();
+                    Gson gson = new Gson();
+                    for(int i=0;i<storyJSONArray.length();i++){
+                        Story story = gson.fromJson(storyJSONArray.get(i).toString(),Story.class);
+                        if(contentIdList==null || !contentIdList.contains(story.getContentId()))
+                            contentIdList.add(story.getContentId());
+                    }
+                    mResponseData.setSuccess(true);
+                    return contentIdList;
+                }else{
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Integer>();
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public ResponseData getDetailedResponse() {
         return mResponseData;
     }

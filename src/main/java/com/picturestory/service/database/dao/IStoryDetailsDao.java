@@ -23,6 +23,14 @@ public interface IStoryDetailsDao<T> {
 
     public List<T> getStoriesForContentWithRange(int contentId,int startIndex,int numRows);
 
+    public List<T> getAllStoriesLikedByUserForContent(int contentId, int userId);
+
+    public List<T> getAllStoriesContributedByUserForContent(int contentId, int userId);
+
+    public List<Integer> getContentIdListForStoriesLikedByUser(int userId);
+
+    public List<Integer> getContentIdListForStoriesContributedByUser(int userId);
+
     public ResponseData getDetailedResponse();
 
 }

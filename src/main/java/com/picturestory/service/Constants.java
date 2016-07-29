@@ -69,7 +69,6 @@ public class Constants {
     public static final String COMMENT = "comment";
     public static final String COMMENT_ID = "commentId";
     public static final String CONTENT_DESC = "contentDesc";
-    public static final String LIKED_CONTENT_LIST = "likedContentList";
     public static final String FOLLOWERS = "followers";
     public static final String FOLLOWING = "following";
     public static final String FOLLOWER_COUNT = "followerCount";
@@ -102,6 +101,8 @@ public class Constants {
     public static final String STORY_LIKED_BY_USER = "storyLikedByUser";
     public static final String STORY_LIKE_COUNT = "storyLikeCount";
     public static final String IS_PHOTOGRAPHERS_PIECE = "isPhotographersPiece";
+    public static final String LIKED_CONTENT_LIST = "likedContentList";
+    public static final String CONTRIBUTED_CONTENT_LIST = "contributedContentList";
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";
     public static final String INVALID_USER_NAME = "Invalid User Name";
