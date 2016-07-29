@@ -73,24 +73,34 @@ public class GetUserDetails {
             //get all content for the user
             List<Content> likeContentList = new ArrayList<Content>();
             List<Content> contributedContentList = new ArrayList<Content>();
+            List<Content> contentList = new ArrayList<Content>();
+            List<Content> contents = new ArrayList<Content>();
             if (personDetails.isContributor()) {
                 if (userId == personId)
                     contributedContentList = mContentDetailsDao.getAllContentDetailsContributedByUserId(personId);
                 else
                     contributedContentList = mContentDetailsDao.getAllContentDetailsContributedByUserIdTillSetId(personId, GetSetId.getSetIdForFeed(registeredTimeStamp));
-                return ResponseBuilder.successResponse(composeResponse(userId,personDetails, contributedContentList));
             } else {
-                List<Integer> likedIdList = new ArrayList<Integer>();
+
                 List<Integer> contributedIdList = new ArrayList<Integer>();
-                likedIdList = mStoryDetailsDao.getContentIdListForStoriesLikedByUser(userId);
-                if(likedIdList!=null)
-                    likeContentList = mContentDetailsDao.getAllContentDetailsForIds(likedIdList);
-                contributedIdList = mStoryDetailsDao.getContentIdListForStoriesContributedByUser(userId);
+                contributedIdList = mStoryDetailsDao.getContentIdListForStoriesContributedByUser(personId);
                 if(null!=contributedIdList)
                     contributedContentList = mContentDetailsDao.getAllContentDetailsForIds(contributedIdList);
-
-                return ResponseBuilder.successResponse(composeContentResponse(userId,personDetails,likeContentList,contributedContentList));
             }
+            List<Integer> likedIdList = new ArrayList<Integer>();
+            likedIdList = mStoryDetailsDao.getContentIdListForStoriesLikedByUser(personId);
+            if(likedIdList!=null)
+                likeContentList = mContentDetailsDao.getAllContentDetailsForIds(likedIdList);
+
+            contentList = mContentDetailsDao.getAllContentDetailsLikedByUser(personId);
+            if(likedIdList!=null)
+                for(Content content:contentList)
+                    if(!likedIdList.contains(content.getContentId()))
+                        contents.add(content);
+
+            return ResponseBuilder.successResponse(composeContentResponse(userId,personId, personDetails, contents, likeContentList,contributedContentList));
+
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseBuilder.error(Constants.ERRORCODE_IOEXCEPTION, "Internal Server Error");
@@ -140,13 +150,15 @@ public class GetUserDetails {
                     //Add category name list
                     JSONArray categoryJSONArray = new JSONArray();
                     List<Integer> categoryIdList = mContentCategoryDao.getCategoryIdListFromContentId(content.getContentId());
-                    for(int i=0;i<categoryIdList.size();i++){
-                        JSONObject categoryObject = new JSONObject();
-                        categoryObject.put(Constants.CATEGORY_ID,categoryIdList.get(i));
-                        categoryObject.put(Constants.CATEGORY_NAME,mCategoryDetailsDao.getCategoryName(categoryIdList.get(i)));
-                        categoryJSONArray.put(categoryObject);
+                    if(categoryIdList!=null) {
+                        for (int i = 0; i < categoryIdList.size(); i++) {
+                            JSONObject categoryObject = new JSONObject();
+                            categoryObject.put(Constants.CATEGORY_ID, categoryIdList.get(i));
+                            categoryObject.put(Constants.CATEGORY_NAME, mCategoryDetailsDao.getCategoryName(categoryIdList.get(i)));
+                            categoryJSONArray.put(categoryObject);
+                        }
+                        contentJSON.put(Constants.CATEGORY_NAME_LIST, categoryJSONArray);
                     }
-                    contentJSON.put(Constants.CATEGORY_NAME_LIST,categoryJSONArray);
 
                     contentJSONArray.put(contentJSON);
                 }
@@ -166,11 +178,11 @@ public class GetUserDetails {
         return response.toString();
     }
 
-    private String composeContentResponse(int userId,User personDetails,List<Content> likeList,List<Content> contributedList) {
+    private String composeContentResponse(int userId,int personId, User personDetails,List<Content> contentList,List<Content> likeList,List<Content> contributedList) {
         org.json.JSONObject response = new org.json.JSONObject();
         try {
             response.put(Constants.SUCCESS, true);
-            response.put(Constants.FULLCOUNT,likeList.size()+contributedList.size());
+            response.put(Constants.FULLCOUNT,likeList.size()+contributedList.size()+contentList.size());
             JSONArray likedContentJSONArray = new JSONArray();
             JSONArray contributedContentJSONArray = new JSONArray();
             if (null != likeList) {
@@ -208,7 +220,7 @@ public class GetUserDetails {
 
                     //Add storyList
                     JSONArray storyJSONArray = new JSONArray();
-                    List<Story> storyList = mStoryDetailsDao.getAllStoriesLikedByUserForContent(content.getContentId(),userId);
+                    List<Story> storyList = mStoryDetailsDao.getAllStoriesLikedByUserForContent(content.getContentId(),personId);
                     for(Story story:storyList){
                         JSONObject storyObject = new JSONObject();
                         storyObject.put(Constants.STORY_ID,story.getStoryId());
@@ -247,6 +259,82 @@ public class GetUserDetails {
                     likedContentJSONArray.put(contentJSON);
                 }
             }
+
+            if (null != contentList) {
+                for (int index = 0; index < contentList.size(); index++) {
+                    Content content = contentList.get(index);
+                    org.json.JSONObject contentJSON = new org.json.JSONObject();
+                    contentJSON.put(Constants.ID, content.getContentId());
+                    contentJSON.put(Constants.NAME, content.getName());
+                    contentJSON.put(Constants.PICTURE_URL,content.getPictureUrl());
+                    contentJSON.put(Constants.PLACE,content.getPlace());
+                    contentJSON.put(Constants.DATE,content.getDate());
+                    contentJSON.put(Constants.PICTURE_DESCRIPTION,content.getPictureDescription());
+                    contentJSON.put(Constants.PICTURE_SUMMARY,content.getPictureSummary());
+                    contentJSON.put(Constants.EDITORS_PICK,content.isEditorsPick());
+
+                    //set if liked by user
+
+                    ContentUserLikeAssociation contentUserAssociation = new ContentUserLikeAssociation();
+                    contentUserAssociation.setContentId(content.getContentId());
+                    contentUserAssociation.setLikeduserId(userId);
+                    contentJSON.put(Constants.LIKED_BY_USER, mContentUserLikeDao.isContentLikedByUser(contentUserAssociation));
+                    contentJSON.put(Constants.LIKE_COUNT, mContentUserLikeDao.fullCountOfUserLikesForContentId(content.getContentId()));
+
+                    //Add content creator details
+                    JSONObject contentCreatorJSON = new JSONObject();
+                    User user = (User) mUserDetailsDao.getUser(content.getUserId());
+                    if (user != null) {
+                        contentCreatorJSON.put(Constants.ID, user.getUserId());
+                        contentCreatorJSON.put(Constants.NAME, user.getUserName());
+                        contentCreatorJSON.put(Constants.DESCRIPTION,user.getUserDesc());
+                        contentCreatorJSON.put(Constants.IMAGE_URL,user.getUserImage());
+                        contentCreatorJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, user.getUserId()));
+                        contentJSON.put(Constants.PERSON_DETAILS, contentCreatorJSON);
+                    }
+
+                    //Add storyList
+                    JSONArray storyJSONArray = new JSONArray();
+                    List<Story> storyList = mStoryDetailsDao.getStoriesForContentWithRange(content.getContentId(),0,3);
+                    for(Story story:storyList){
+                        JSONObject storyObject = new JSONObject();
+                        storyObject.put(Constants.STORY_ID,story.getStoryId());
+                        storyObject.put(Constants.STORY_DESC,story.getStoryDesc());
+                        storyObject.put(Constants.CONTENT_ID,story.getContentId());
+
+                        //Add story contributor details
+                        User storyUser = (User) mUserDetailsDao.getUser(story.getUserId());
+                        JSONObject storyCreatorJSON = new JSONObject();
+                        if (storyUser != null) {
+                            storyCreatorJSON.put(Constants.ID, storyUser.getUserId());
+                            storyCreatorJSON.put(Constants.NAME, storyUser.getUserName());
+                            storyCreatorJSON.put(Constants.DESCRIPTION,storyUser.getUserDesc());
+                            storyCreatorJSON.put(Constants.IMAGE_URL,storyUser.getUserImage());
+                            storyCreatorJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, storyUser.getUserId()));
+                            storyObject.put(Constants.PERSON_DETAILS, storyCreatorJSON);
+                        }
+
+                        //add story like count and is story liked by user
+                        storyObject.put(Constants.STORY_LIKE_COUNT,mStoryUserLikeDao.fullCountOfUserLikesForStoryId(story.getStoryId()));
+                        StoryUserLikeAssocation storyUserLikeAssocation = new StoryUserLikeAssocation();
+                        storyUserLikeAssocation.setStoryId(story.getStoryId());
+                        storyUserLikeAssocation.setStoryLikedUserId(userId);
+                        storyObject.put(Constants.STORY_LIKED_BY_USER,mStoryUserLikeDao.isStoryLikedByUser(storyUserLikeAssocation));
+
+                        //add isPhotographer's piece
+                        boolean flag = false;
+                        if(content.getUserId() == story.getUserId())
+                            flag = true;
+                        storyObject.put(Constants.IS_PHOTOGRAPHERS_PIECE,flag);
+
+                        storyJSONArray.put(storyObject);
+                    }
+                    contentJSON.put(Constants.STORY_LIST,storyJSONArray);
+
+                    likedContentJSONArray.put(contentJSON);
+                }
+            }
+
             response.put(Constants.LIKED_CONTENT_LIST, likedContentJSONArray);
 
             if (null != contributedList) {
@@ -284,7 +372,7 @@ public class GetUserDetails {
 
                     //Add storyList
                     JSONArray storyJSONArray = new JSONArray();
-                    List<Story> storyList = mStoryDetailsDao.getAllStoriesContributedByUserForContent(content.getContentId(),userId);
+                    List<Story> storyList = mStoryDetailsDao.getAllStoriesContributedByUserForContent(content.getContentId(),personId);
                     for(Story story:storyList){
                         JSONObject storyObject = new JSONObject();
                         storyObject.put(Constants.STORY_ID,story.getStoryId());
