@@ -7,33 +7,11 @@ public class Content {
     private int contentId;
     private int userId;
     private String pictureUrl;
-    private String pictureDescription;
     private String ingestionTime;
     private String name;
     private String place;
     private String date;
-    private String pictureSummary;
     private boolean editorsPick;
-    private long wallpaperEndTime;
-
-
-
-    public long getWallpaperEndTime() {
-        return wallpaperEndTime;
-    }
-
-    public void setWallpaperEndTime(long wallpaperEndTime) {
-        this.wallpaperEndTime = wallpaperEndTime;
-    }
-
-
-    public String getPictureSummary() {
-        return pictureSummary;
-    }
-
-    public void setPictureSummary(String pictureSummary) {
-        this.pictureSummary = pictureSummary;
-    }
 
     public boolean isEditorsPick() {
         return editorsPick;
@@ -91,13 +69,6 @@ public class Content {
         this.pictureUrl = pictureUrl;
     }
 
-    public String getPictureDescription() {
-        return pictureDescription;
-    }
-
-    public void setPictureDescription(String pictureDescription) {
-        this.pictureDescription = pictureDescription;
-    }
 
     public String getIngestionTime() {
         return ingestionTime;

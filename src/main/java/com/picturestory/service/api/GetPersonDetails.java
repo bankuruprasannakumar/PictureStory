@@ -100,8 +100,6 @@ public class GetPersonDetails {
                     contentJSON.put(Constants.PICTURE_URL,content.getPictureUrl());
                     contentJSON.put(Constants.PLACE,content.getPlace());
                     contentJSON.put(Constants.DATE,content.getDate());
-                    contentJSON.put(Constants.PICTURE_DESCRIPTION,content.getPictureDescription());
-                    contentJSON.put(Constants.PICTURE_SUMMARY,content.getPictureSummary());
                     contentJSON.put(Constants.EDITORS_PICK,content.isEditorsPick());
 
                     //set if liked by user
