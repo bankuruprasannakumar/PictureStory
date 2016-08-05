@@ -5,8 +5,8 @@ package com.picturestory.service;
  */
 public class Constants {
 
-    public static final String DB_SELECT_ENDPOINT = "http://localhost:8983/solr/pixtoryNewContent/select";
-    public static final String DB_UPDATE_ENDPOINT = "http://localhost:8983/solr/pixtoryNewContent/update?commit=true ";
+    public static final String DB_SELECT_ENDPOINT = "http://localhost:8983/solr/pixtoryContentShortStroies/select";
+    public static final String DB_UPDATE_ENDPOINT = "http://localhost:8983/solr/pixtoryContentShortStroies/update?commit=true ";
 
     //Solr params
     public static final String SUCCESS = "success";
@@ -84,6 +84,7 @@ public class Constants {
     public static final String DOWNLOADED_BY_USER = "downloadedByUser";
     public static final String FULLCOUNT = "fullCount";
     public static final String PERSON_DETAILS="personDetails";
+    public static final String AUTHOR_DETAILS="authorDetails";
     public static final String USER_DETAILS="userDetails";
     public static final String PERSON_LIST="personList";
     public static final String CONTENT_LIST = "contentList";

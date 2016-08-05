@@ -107,79 +107,8 @@ public class GetUserDetails {
         }
     }
 
-    private String composeResponse(int userId,User personDetails,List<Content> contentList) {
-        org.json.JSONObject response = new org.json.JSONObject();
-        try {
-            response.put(Constants.SUCCESS, true);
-            response.put(Constants.FULLCOUNT,contentList.size());
-            JSONArray contentJSONArray = new JSONArray();
-            if (null != contentList) {
-                for (int index = 0; index < contentList.size(); index++) {
-                    Content content = contentList.get(index);
-                    org.json.JSONObject contentJSON = new org.json.JSONObject();
-                    contentJSON.put(Constants.ID, content.getContentId());
-                    contentJSON.put(Constants.NAME, content.getName());
-                    contentJSON.put(Constants.PICTURE_URL,content.getPictureUrl());
-                    contentJSON.put(Constants.PLACE,content.getPlace());
-                    contentJSON.put(Constants.DATE,content.getDate());
-                    contentJSON.put(Constants.PICTURE_DESCRIPTION,content.getPictureDescription());
-                    contentJSON.put(Constants.PICTURE_SUMMARY,content.getPictureSummary());
-                    contentJSON.put(Constants.EDITORS_PICK,content.isEditorsPick());
-
-                    //set if liked by user
-
-                    ContentUserLikeAssociation contentUserAssociation = new ContentUserLikeAssociation();
-                    contentUserAssociation.setContentId(content.getContentId());
-                    contentUserAssociation.setLikeduserId(userId);
-                    contentJSON.put(Constants.LIKED_BY_USER, mContentUserLikeDao.isContentLikedByUser(contentUserAssociation));
-                    contentJSON.put(Constants.LIKE_COUNT, mContentUserLikeDao.fullCountOfUserLikesForContentId(content.getContentId()));
-
-                    //Add content creator details
-                    //Add content creator details
-                    JSONObject contentCreatorJSON = new JSONObject();
-                    User user = (User) mUserDetailsDao.getUser(content.getUserId());
-                    if (user != null) {
-                        contentCreatorJSON.put(Constants.ID, user.getUserId());
-                        contentCreatorJSON.put(Constants.NAME, user.getUserName());
-                        contentCreatorJSON.put(Constants.DESCRIPTION,user.getUserDesc());
-                        contentCreatorJSON.put(Constants.IMAGE_URL,user.getUserImage());
-                        contentCreatorJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, user.getUserId()));
-                        contentJSON.put(Constants.PERSON_DETAILS, contentCreatorJSON);
-                    }
-
-                    //Add category name list
-                    JSONArray categoryJSONArray = new JSONArray();
-                    List<Integer> categoryIdList = mContentCategoryDao.getCategoryIdListFromContentId(content.getContentId());
-                    if(categoryIdList!=null) {
-                        for (int i = 0; i < categoryIdList.size(); i++) {
-                            JSONObject categoryObject = new JSONObject();
-                            categoryObject.put(Constants.CATEGORY_ID, categoryIdList.get(i));
-                            categoryObject.put(Constants.CATEGORY_NAME, mCategoryDetailsDao.getCategoryName(categoryIdList.get(i)));
-                            categoryJSONArray.put(categoryObject);
-                        }
-                        contentJSON.put(Constants.CATEGORY_NAME_LIST, categoryJSONArray);
-                    }
-
-                    contentJSONArray.put(contentJSON);
-                }
-            }
-            response.put(Constants.CONTENT_LIST, contentJSONArray);
-            JSONObject personDetailsJSONObject = new JSONObject();
-            personDetailsJSONObject.put(Constants.ID, personDetails.getUserId());
-            personDetailsJSONObject.put(Constants.NAME, personDetails.getUserName());
-            personDetailsJSONObject.put(Constants.DESCRIPTION,personDetails.getUserDesc());
-            personDetailsJSONObject.put(Constants.IMAGE_URL,personDetails.getUserImage());
-            personDetailsJSONObject.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, personDetails.getUserId()));
-            response.put(Constants.USER_DETAILS,personDetailsJSONObject);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return response.toString();
-    }
-
     private String composeContentResponse(int userId,int personId, User personDetails,List<Content> contentList,List<Content> likeList,List<Content> contributedList) {
-        org.json.JSONObject response = new org.json.JSONObject();
+        JSONObject response = new JSONObject();
         try {
             response.put(Constants.SUCCESS, true);
             response.put(Constants.FULLCOUNT,likeList.size()+contributedList.size()+contentList.size());

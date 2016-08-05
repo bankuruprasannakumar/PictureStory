@@ -69,7 +69,6 @@ public class GetStoriesForContent {
                    JSONObject storyObject = new JSONObject();
                    storyObject.put(Constants.STORY_ID,story.getStoryId());
                    storyObject.put(Constants.STORY_DESC,story.getStoryDesc());
-                   storyObject.put(Constants.CONTENT_ID,story.getContentId());
 
                    //Add story contributor details
                    User storyUser = (User) mUserDetailsDao.getUser(story.getUserId());
