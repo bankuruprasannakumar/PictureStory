@@ -51,9 +51,11 @@ public class AddStory {
         int contentId = addNewStoryRequest.getContentId();
         if(null == mContentDtailsDao.getContentDetails(contentId))
             return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT,Constants.INVALID_CONTENT_ID);
-        boolean isStoryAlreadyPresent = mContentDtailsDao.isStoryPresentForContentByUser(userId, contentId);
-        if (isStoryAlreadyPresent){
-            return ResponseBuilder.error(Constants.ERRORCODE_INVALID_USER_STORY, Constants.INVALID_USER_STORY_CONTENT);
+        if (userId != 1){
+            boolean isStoryAlreadyPresent = mContentDtailsDao.isStoryPresentForContentByUser(userId, contentId);
+            if (isStoryAlreadyPresent){
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_USER_STORY, Constants.INVALID_USER_STORY_CONTENT);
+            }
         }
         String storyDesc = addNewStoryRequest.getStoryDescription();
         Story story = new Story();
