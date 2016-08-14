@@ -1,5 +1,6 @@
 package com.picturestory.service.api;
 
+import com.picturestory.service.Configs;
 import com.picturestory.service.Constants;
 import com.picturestory.service.api.utilities.GetSetId;
 import com.picturestory.service.database.dao.*;
@@ -220,7 +221,7 @@ public class GetUserDetails {
 
                     //Add storyList
                     JSONArray storyJSONArray = new JSONArray();
-                    List<Story> storyList = mStoryDetailsDao.getStoriesForContentWithRange(content.getContentId(),0,3);
+                    List<Story> storyList = mStoryDetailsDao.getStoriesForContentWithRange(content.getContentId(),0, Configs.MAX_LIMIT);
                     for(Story story:storyList){
                         JSONObject storyObject = new JSONObject();
                         storyObject.put(Constants.STORY_ID,story.getStoryId());

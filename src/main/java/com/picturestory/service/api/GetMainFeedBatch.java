@@ -18,6 +18,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+import static com.picturestory.service.Configs.MAX_LIMIT;
+
 /**
  * Created by krish on 04/07/2016.
  */
@@ -119,7 +121,7 @@ public class GetMainFeedBatch {
 
                     //Add storyList
                     JSONArray storyJSONArray = new JSONArray();
-                    List<Story> storyList = mStoryDetailsDao.getStoriesForContentWithRange(content.getContentId(),0,6);
+                    List<Story> storyList = mStoryDetailsDao.getStoriesForContentWithRange(content.getContentId(),0,MAX_LIMIT);
                     for(Story story:storyList){
                         JSONObject storyObject = new JSONObject();
                         storyObject.put(Constants.STORY_ID,story.getStoryId());

@@ -38,5 +38,7 @@ public interface IContentDetailsDao<T> {
 
     public List<T> getAllContentTillSetIdWithRange(long setId,int startIndex,int numRows);
 
+    public boolean isStoryPresentForContentByUser(int userId, int contentId);
+
     public ResponseData getDetailedResponse();
 }

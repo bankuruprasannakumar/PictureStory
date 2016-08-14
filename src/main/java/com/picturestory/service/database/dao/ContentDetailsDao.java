@@ -34,6 +34,28 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         mResponseData = new ResponseData();
     }
 
+    @Override
+    public boolean isStoryPresentForContentByUser(int userId, int contentId) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s", Constants.CONTENT_ID, contentId, Constants.USER_ID, userId, Constants.STORY_ID, Constants.ALL, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return false;
+            }
+        }
+        return false;
+    }
 
     @Override
     public Content getContentDetails(int id) {
@@ -63,6 +85,8 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         }
         return null;
     }
+
+
 
     @Override
     public List<Content> getAllContentDetailsContributedByUserId(int userId) {
