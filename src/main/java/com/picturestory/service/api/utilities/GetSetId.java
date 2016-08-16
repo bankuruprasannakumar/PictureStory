@@ -107,6 +107,6 @@ public class GetSetId {
     }
 
 //    public static void main (String[] args){
-//        System.out.println(getSetIdForWallPaper(1467898966299l));
+//        System.out.println(getSetIdForFeed(1468089547524l));
 //    }
 }

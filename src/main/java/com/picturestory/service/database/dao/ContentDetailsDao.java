@@ -1,7 +1,6 @@
 package com.picturestory.service.database.dao;
 
 import com.google.common.reflect.TypeToken;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.picturestory.service.Configs ;
@@ -16,9 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -326,8 +322,15 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public List<Content> getAllContentDetailsTillSetId(long setId) {
-	String startSet = (setId<9? Constants.ALL:(setId<11?"1":""+(setId-9)));
-        String query = String.format("q=%s:[%s TO %s]&%s=%s&%s",Constants.SET_ID,startSet, setId,Constants.ROWS,Configs.MAX_LIMIT, Constants.WT_JSON);
+        int totalNumberOfContents = getNumberOfContentsTillSetId(setId);
+        if (totalNumberOfContents == 0) {
+            return new ArrayList<Content>();
+        }
+        int startRow = 0;
+        if (totalNumberOfContents > 100) {
+            startRow = totalNumberOfContents - 100;
+        }
+        String query = String.format("q=%s:[%s TO %s]&%s=%s&%s=%s&%s&sort=setId asc",Constants.SET_ID,Constants.ALL, setId, Constants.START, startRow,Constants.ROWS,Configs.MAX_LIMIT, Constants.WT_JSON);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -355,6 +358,27 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         mResponseData = responseData;
         return null;
     }
+
+    private int getNumberOfContentsTillSetId(long setId){
+        String query = String.format("q=%s:[%s TO %s]&%s",Constants.SET_ID, Constants.ALL, setId, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                return responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND);
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return 0;
+            }
+        }
+        mResponseData = responseData;
+        return 0;
+    }
+
+
 
     @Override
     public List<Content> getAllContentDetailsContributedByUserIdTillSetId(int userId, long setId) {
