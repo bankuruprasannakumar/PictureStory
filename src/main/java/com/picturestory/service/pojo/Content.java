@@ -14,18 +14,15 @@ public class Content {
     private String date;
     private String pictureSummary;
     private boolean editorsPick;
-    private long wallpaperEndTime;
+    private int pixtoryStatus;
 
-
-
-    public long getWallpaperEndTime() {
-        return wallpaperEndTime;
+    public int getPixtoryStatus() {
+        return pixtoryStatus;
     }
 
-    public void setWallpaperEndTime(long wallpaperEndTime) {
-        this.wallpaperEndTime = wallpaperEndTime;
+    public void setPixtoryStatus(int pixtoryStatus) {
+        this.pixtoryStatus = pixtoryStatus;
     }
-
 
     public String getPictureSummary() {
         return pictureSummary;

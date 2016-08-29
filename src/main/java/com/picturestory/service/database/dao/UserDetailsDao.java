@@ -7,6 +7,7 @@ import com.picturestory.service.Configs ;
 import com.picturestory.service.Constants ;
 import com.picturestory.service.database.adapters.IDataAccessAdapter ;
 import com.picturestory.service.pojo.Contributor;
+import com.picturestory.service.pojo.CookieObject;
 import com.picturestory.service.response.ResponseData ;
 import com.picturestory.service.pojo.User;
 import com.sun.xml.bind.v2.runtime.reflect.opt.Const;
@@ -97,7 +98,7 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
         return 0;
     }
 
-    private int isUserPresentForFbId(User user) {
+    public int isUserPresentForFbId(User user) {
         String query = String.format("q=%s:\"%s\"&%s", Constants.FB_ID, user.getFbId(),Constants.WT_JSON);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
@@ -344,6 +345,57 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
     }
 
     @Override
+    public boolean createCookieForUser(CookieObject cookieObject) {
+        String query = "";
+        try {
+            Gson gson = new Gson();
+            String cookieJSON = gson.toJson(cookieObject);
+            query = Constants.INSERT_START + cookieJSON + Constants.INSERT_END;
+            mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return true;
+            }
+        }catch (Exception j){
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return false;
+        }
+        return false;
+    }
+
+
+    @Override
+    public int isCookiePresent(String cookieId) {
+        String query = String.format("q=%s:\"%s\"&%s", Constants.COOKIE_ID, cookieId,Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject cookieResponse = new JSONObject(responseData.getData());
+                if (cookieResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0 ) {
+                    int currentUserId = cookieResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getInt(Constants.USER_ID);
+                    responseData.setData(String.valueOf(currentUserId));
+                    mResponseData.setSuccess(true);
+                    return currentUserId;
+                }
+                else {
+                    return 0;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return 0;
+            }
+        }else {
+            mResponseData = responseData;
+        }
+        return 0;
+    }
+
+    @Override
     public int addUserForEmail(User user) {
         int currentUserId = isUserPresentForEmail(user);
         if(currentUserId != 0){
@@ -355,7 +407,7 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
         }
     }
 
-    private int isUserPresentForEmail(User user) {
+    public int isUserPresentForEmail(User user) {
         String query = String.format("q=%s:\"%s\"&%s", Constants.USER_EMAIL, user.getUserEmail(),Constants.WT_JSON);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {

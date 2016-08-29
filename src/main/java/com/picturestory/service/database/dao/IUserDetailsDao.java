@@ -1,6 +1,7 @@
 package com.picturestory.service.database.dao;
 
 import com.picturestory.service.pojo.Contributor;
+import com.picturestory.service.pojo.CookieObject;
 import com.picturestory.service.pojo.User;
 import com.picturestory.service.response.ResponseData;
 
@@ -35,5 +36,12 @@ public interface IUserDetailsDao<T> {
 
     public int addUserForEmail(T user);
 
+    public int isUserPresentForEmail(T user);
+
+    public int isUserPresentForFbId(T user);
+
+    public boolean createCookieForUser(CookieObject cookieObject);
+
+    public int isCookiePresent(String cookieId);
 
 }

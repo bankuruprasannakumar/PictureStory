@@ -5,8 +5,8 @@ package com.picturestory.service;
  */
 public class Constants {
 
-    public static final String DB_SELECT_ENDPOINT = "http://172.31.2.50:8983/solr/pixtoryContent/select";
-    public static final String DB_UPDATE_ENDPOINT = "http://172.31.2.50:8983/solr/pixtoryContent/update?commit=true";
+    public static final String DB_SELECT_ENDPOINT = "http://localhost:8983/solr/strandsContent/select";
+    public static final String DB_UPDATE_ENDPOINT = "http://localhost:8983/solr/strandsContent/update?commit=true";
 
     //Solr params
     public static final String SUCCESS = "success";
@@ -29,6 +29,7 @@ public class Constants {
     public static final int ERRORCODE_IOEXCEPTION = 102;
     public static final int ERRORCODE_INVALID_INPUT = 103;
     public static final int ERRORCODE_JSON_EXCEPTION = 101;
+    public static final int ERRORCODE_INVALID_AUTH = 104;
     public static final String ACCEPT_CHARSET = "Accept-Charset";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String NUMFOUND = "numFound";
@@ -37,11 +38,13 @@ public class Constants {
     public static final String FOLLOWED_USER_ID = "followedUserId";
     public static final String WALL_PAPER = "wallPaper";
     public static final String SHARED_CONTEND_ID = "sharedContentId";
+    public static final String PIXTORY_STATUS = "pixtoryStatus";
 
     //Network params
     public static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
 
     //Request params
+    public static final String COOKIE_ID = "cookieId";
     public static final String USER_ID = "userId";
     public static final String LIKED_USER_ID = "likedUserId";
     public static final String USER_EMAIL = "userEmail";
@@ -49,6 +52,14 @@ public class Constants {
     public static final String USER_NAME = "userName";
     public static final String USER_DESCRIPTION = "userDesc";
     public static final String PICTURE_DESCRIPTION = "pictureDescription";
+    public static final String TITLE = "title";
+    public static final String STORY = "story";
+    public static final String STATUS = "status";
+    public static final String COMMENTS = "comments";
+    public static final String PROFILE_IMAGE = "profileImage";
+    public static final String LIKED_USERS = "likedUsers";
+
+
     public static final String PICTURE_SUMMARY = "pictureSummary";
     public static final String EDITORS_PICK = "editorsPick";
     public static final String PLACE = "place";
@@ -95,6 +106,9 @@ public class Constants {
     public static final String NUMBER_OF_USERS = "numberOfUsers";
     public static final String PNF_DATA = "pNfData";
     public static final String CONTENT = "content";
+    public static final String DATA = "data";
+    public static final String DIAGNOSTICS = "diagnostics";
+
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";
     public static final String INVALID_USER_NAME = "Invalid User Name";
@@ -108,6 +122,8 @@ public class Constants {
     public static final String INVALID_REQUEST = "Invalid request body";
     public static final String INVALID_GCMID = "Invalid gcmId";
     public static final String INVALID_FEEDBACK = "Invalid feedBack";
-
+    public static final String INVALID_IMAGE = "Invalid Image";
+    public static final String INVALID_STORY = "Invalid Story";
+    public static final String INVALID_COOKIE = "Invalid Cookie";
     public static final String INVALID_MESSAGE = "Invalid message";
 }
