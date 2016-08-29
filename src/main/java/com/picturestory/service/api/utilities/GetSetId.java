@@ -106,8 +106,8 @@ public class GetSetId {
         return time;
     }
 
-    public static void main (String[] args){
-        System.out.println(getSetIdForFeed(1468080224000l));
-
-    }
+//    public static void main (String[] args){
+//        System.out.println(getSetIdForFeed(1468080224000l));
+//
+//    }
 }
