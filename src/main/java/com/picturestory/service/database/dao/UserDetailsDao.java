@@ -7,12 +7,16 @@ import com.picturestory.service.Configs ;
 import com.picturestory.service.Constants ;
 import com.picturestory.service.database.adapters.IDataAccessAdapter ;
 import com.picturestory.service.pojo.Contributor;
+import com.picturestory.service.pojo.CookieObject;
 import com.picturestory.service.response.ResponseData ;
 import com.picturestory.service.pojo.User;
+import com.sun.xml.bind.v2.runtime.reflect.opt.Const;
+import com.sun.xml.internal.fastinfoset.sax.SystemIdResolver;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.jws.soap.SOAPBinding;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,50 +35,70 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
         mResponseData = new ResponseData();
     }
 
-
-    @Override
-    public int addUser(User user) {
-        ResponseData responseData = isUserPresent(user);
-        if(responseData.isSuccess()){
-            System.out.println("User present check success");
-            if(Integer.parseInt(responseData.getData())!=0){
-                user.setUserId(Integer.parseInt(responseData.getData()));
-                updateUser(user);
-                return Integer.parseInt(responseData.getData()) ;
-            }
-            else {
-                int currntUserId = createUser(user);
-                if(currntUserId != 0){
-                    return currntUserId;
-                }
-                return 0;
-            }
-        }
-        return 0;
-    }
-
     @Override
     public int addUserForFbId(User user) {
-        ResponseData responseData = isUserPresentForFbId(user);
+        int currentUserId = isUserPresentForFbId(user);
+        if(currentUserId != 0){
+            return currentUserId;
+        }
+        else {
+            currentUserId = createUser(user);
+            return currentUserId;
+        }
+    }
+
+    @Override
+    public ArrayList<User> getUsersForIndex(int startIndex, int endIndex) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.USER_ID,Constants.ALL, Constants.USER_NAME,Constants.ALL, Constants.GCMID, Constants.ALL, Constants.WT_JSON, Constants.START, startIndex, Constants.ROWS, endIndex);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if(responseData.isSuccess()){
-            System.out.println("User present check success");
-            if(Integer.parseInt(responseData.getData())!=0){
-                user.setUserId(Integer.parseInt(responseData.getData()));
-                updateUser(user);
-                return Integer.parseInt(responseData.getData()) ;
-            }
-            else {
-                int currntUserId = createUser(user);
-                if(currntUserId != 0){
-                    return currntUserId;
+            try {
+
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    JSONArray userJsonArray = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<User>>(){}.getType();
+                    ArrayList<User> users = gson.fromJson(userJsonArray.toString(),listType);
+                    return users;
                 }
+                else {
+                    mResponseData.setErrorMessage("Invalid userId");
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return null;
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public int getTotalCount() {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s", Constants.USER_ID,Constants.ALL, Constants.USER_NAME,Constants.ALL,Constants.GCMID,Constants.ALL,Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                return userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND);
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
                 return 0;
             }
         }
         return 0;
     }
 
-    private ResponseData isUserPresentForFbId(User user) {
+    public int isUserPresentForFbId(User user) {
         String query = String.format("q=%s:\"%s\"&%s", Constants.FB_ID, user.getFbId(),Constants.WT_JSON);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
@@ -84,21 +108,22 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
                     int currentUserId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getInt(Constants.USER_ID);
                     responseData.setData(String.valueOf(currentUserId));
                     mResponseData.setSuccess(true);
+                    return currentUserId;
                 }
                 else {
-                    responseData.setData(String.valueOf(0));
+                    return 0;
                 }
             } catch (JSONException j) {
                 j.printStackTrace();
                 mResponseData.setErrorMessage(j.toString());
                 mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
                 mResponseData.setSuccess(false);
-                return null;
+                return 0;
             }
         }else {
             mResponseData = responseData;
         }
-        return responseData;
+        return 0;
     }
 
     @Override
@@ -131,6 +156,110 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
     }
 
     @Override
+    public boolean updateGcmIdOfUser(User user){
+        JSONObject userJsonObject = new JSONObject();
+        JSONObject setQuery = new JSONObject();
+        String query = "";
+        String recordId;
+        query = String.format("q=%s:%s AND %s:%s&%s", Constants.USER_ID,user.getUserId(),Constants.USER_NAME,Constants.ALL, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) == 1) {
+                    recordId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getString(Constants.ID);
+                } else {
+                    mResponseData.setSuccess(false);
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setErrorMessage(Constants.INVALID_USER_ID);
+                    return false;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return false;
+            }
+        } else {
+            mResponseData = responseData;
+            return false;
+        }
+        try {
+            setQuery = new JSONObject();
+            setQuery.put(Constants.SET,user.getGcmId());
+            userJsonObject.put(Constants.GCMID, setQuery);
+            userJsonObject.put(Constants.ID, recordId);
+            query = userJsonObject.toString();
+            query = Constants.INSERT_START + query +Constants.INSERT_END;
+            mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return true;
+            }
+        } catch (JSONException j) {
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateFbIdOfUser(User user){
+        JSONObject userJsonObject = new JSONObject();
+        JSONObject setQuery = new JSONObject();
+        String query = "";
+        String recordId;
+        query = String.format("q=%s:%s AND %s:%s&%s", Constants.USER_ID,user.getUserId(),Constants.USER_NAME,Constants.ALL, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) == 1) {
+                    recordId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getString(Constants.ID);
+                } else {
+                    mResponseData.setSuccess(false);
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setErrorMessage(Constants.INVALID_USER_ID);
+                    return false;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return false;
+            }
+        } else {
+            mResponseData = responseData;
+            return false;
+        }
+        try {
+            setQuery = new JSONObject();
+            setQuery.put(Constants.SET,user.getFbId());
+            userJsonObject.put(Constants.FB_ID, setQuery);
+            userJsonObject.put(Constants.ID, recordId);
+            query = userJsonObject.toString();
+            query = Constants.INSERT_START + query +Constants.INSERT_END;
+            mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return true;
+            }
+        } catch (JSONException j) {
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return false;
+        }
+        return false;
+
+    }
+
+
+    @Override
     public boolean addContributor(Contributor contributor) {
         String query = "";
         try {
@@ -155,17 +284,6 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
 
 
 
-    @Override
-    public boolean deleteUser(int userId) {
-        String query = "";
-        query = String.format("%s:%s", Constants.USER_ID,userId);
-        query = Constants.DELETE_START +query + Constants.DELETE_END;
-        mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
-        if (mResponseData.isSuccess()) {
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public User getUser(int userId) {
@@ -199,62 +317,6 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
     }
 
 
-    private ResponseData isUserPresent(User user) {
-        String query = String.format("q=%s:\"%s\"&%s", Constants.USER_EMAIL, user.getUserEmail(),Constants.WT_JSON);
-        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
-        if (responseData.isSuccess()) {
-            try {
-                JSONObject userResponse = new JSONObject(responseData.getData());
-                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) == 1) {
-                    int currentUserId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getInt(Constants.USER_ID);
-                    responseData.setData(String.valueOf(currentUserId));
-                    mResponseData.setSuccess(true);
-                }
-                else {
-                    responseData.setData(String.valueOf(0));
-                }
-            } catch (JSONException j) {
-                j.printStackTrace();
-                mResponseData.setErrorMessage(j.toString());
-                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
-                mResponseData.setSuccess(false);
-                return null;
-            }
-        }else {
-            mResponseData = responseData;
-        }
-        return responseData;
-    }
-
-    @Override
-    public int isUserNamePresent(User user) {
-        String query = String.format("q=%s:\"%s\"&%s", Constants.USER_NAME, user.getUserName(),Constants.WT_JSON);
-        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
-        if (responseData.isSuccess()) {
-            try {
-                JSONObject userResponse = new JSONObject(responseData.getData());
-                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) >= 1) {
-                    int currentUserId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getInt(Constants.USER_ID);
-                    return currentUserId;
-                }
-                else {
-                    mResponseData.setErrorMessage(Constants.INVALID_USER_NAME);
-                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
-                    return 0;
-                }
-            } catch (JSONException j) {
-                j.printStackTrace();
-                mResponseData.setErrorMessage(j.toString());
-                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
-                mResponseData.setSuccess(false);
-                return 0;
-            }
-        }else {
-            mResponseData = responseData;
-        }
-        return 0;
-    }
-
     @Override
     public int createUser(User user) {
         String query = "";
@@ -263,6 +325,7 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
             String jsonUser = gson.toJson(user);
             JSONObject userObject = new JSONObject(jsonUser);
             userObject.put(Constants.INGESTION_TIME,System.currentTimeMillis());
+            userObject.put(Constants.REGISTERED_TIME, System.currentTimeMillis());
             Random rand = new Random();
             int currentuserId = rand.nextInt( Integer.MAX_VALUE ) + 1;
             userObject.put(Constants.USER_ID, currentuserId);
@@ -281,30 +344,95 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
         return 0;
     }
 
-    private List<User> convertResponseDataToUserList(ResponseData responseData) {
+    @Override
+    public boolean createCookieForUser(CookieObject cookieObject) {
+        String query = "";
         try {
-            JSONObject userResponseObject = new JSONObject(responseData.getData());
-            if (userResponseObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
-                List<User> users = new ArrayList<User>();
-                mResponseData.setSuccess(true);
-                JSONArray userArray = userResponseObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
-                Gson gson = new Gson();
-                for (int i = 0; i < userArray.length(); i++) {
-                    JSONObject userObject = userArray.getJSONObject(i);
-                    User user = gson.fromJson(userObject.toString(), User.class);
-                    users.add(user);
-                }
-                return users;
-            } else {
-                mResponseData.setSuccess(true);
-                return null;
+            Gson gson = new Gson();
+            String cookieJSON = gson.toJson(cookieObject);
+            query = Constants.INSERT_START + cookieJSON + Constants.INSERT_END;
+            mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return true;
             }
-        } catch (JSONException j) {
+        }catch (Exception j){
+            j.printStackTrace();
             mResponseData.setErrorMessage(j.toString());
             mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
             mResponseData.setSuccess(false);
-            return null;
+            return false;
         }
+        return false;
+    }
+
+
+    @Override
+    public int isCookiePresent(String cookieId) {
+        String query = String.format("q=%s:\"%s\"&%s", Constants.COOKIE_ID, cookieId,Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject cookieResponse = new JSONObject(responseData.getData());
+                if (cookieResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0 ) {
+                    int currentUserId = cookieResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getInt(Constants.USER_ID);
+                    responseData.setData(String.valueOf(currentUserId));
+                    mResponseData.setSuccess(true);
+                    return currentUserId;
+                }
+                else {
+                    return 0;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return 0;
+            }
+        }else {
+            mResponseData = responseData;
+        }
+        return 0;
+    }
+
+    @Override
+    public int addUserForEmail(User user) {
+        int currentUserId = isUserPresentForEmail(user);
+        if(currentUserId != 0){
+            return currentUserId;
+        }
+        else {
+            currentUserId = createUser(user);
+            return currentUserId;
+        }
+    }
+
+    public int isUserPresentForEmail(User user) {
+        String query = String.format("q=%s:\"%s\"&%s", Constants.USER_EMAIL, user.getUserEmail(),Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0 ) {
+                    int currentUserId = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0).getInt(Constants.USER_ID);
+                    responseData.setData(String.valueOf(currentUserId));
+                    mResponseData.setSuccess(true);
+                    return currentUserId;
+                }
+                else {
+                    return 0;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return 0;
+            }
+        }else {
+            mResponseData = responseData;
+        }
+        return 0;
     }
 
     @Override

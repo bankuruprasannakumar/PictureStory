@@ -1,6 +1,7 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
+import com.picturestory.service.api.utilities.GetSetId;
 import com.picturestory.service.database.dao.*;
 import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.ContentUserLikeAssociation;
@@ -63,15 +64,16 @@ public class GetPersonDetails {
             if (null == mUserDetailsDao.getUser(personId)) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_PERSON_ID);
             }
-            long setId=0;
-            long registeredTimeStamp = getPersonDetailRequest.getRegisteredTimeStamp();
-            if( registeredTimeStamp>0)
-                setId = timeStampTosetId(registeredTimeStamp);
+            User user =(User)mUserDetailsDao.getUser(userId);
+            long registeredTimeStamp = user.getRegisteredTime();
             User personDetails = (User) mUserDetailsDao.getUser(personId);
             //get all content for the user
             List<Content> contentList;
             if (personDetails.isContributor()) {
-                contentList = mContentDetailsDao.getAllContentDetailsContributedByUserIdTillSetId(personId,setId);
+                if (userId == personId)
+                    contentList = mContentDetailsDao.getAllContentDetailsContributedByUserId(personId);
+                else
+                    contentList = mContentDetailsDao.getAllContentDetailsContributedByUserIdTillSetId(personId, GetSetId.getSetIdForFeed(registeredTimeStamp));
             } else {
                 contentList = mContentDetailsDao.getAllContentCommentedAndLikedByUser(personId);
             }
@@ -159,7 +161,4 @@ public class GetPersonDetails {
         return mUserUserDao.isFollowedByUser(userUserAssociation);
     }
 
-    private long timeStampTosetId(long timeStamp){
-        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
-    }
 }

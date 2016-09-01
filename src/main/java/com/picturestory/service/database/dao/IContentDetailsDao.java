@@ -12,6 +12,8 @@ public interface IContentDetailsDao<T> {
 
     public List<T> getAllContentDetailsContributedByUserId(int userId);
 
+    public List<T> getAllContentDetailsContributedByUserId(int userId, int pixtoryStatus);
+
     public List<T> getAllContentDetailsLikedByUser(int userId);
 
     public List<Integer> getAllContentIdsLikedByUser(int userId);
@@ -26,6 +28,8 @@ public interface IContentDetailsDao<T> {
 
     public T getContentDetails(int id);
 
+    public T getContentDetailsForUser(int contentId, int userId);
+
     public List<T> getAllContentDetailsForSet(long setId);
 
     public List<T> getAllContentDetailsTillSetId(long setId);
@@ -33,6 +37,10 @@ public interface IContentDetailsDao<T> {
     public List<T> getAllContentDetailsContributedByUserIdTillSetId(int userId, long setId);
 
     public List<T> getAllContentDetailsForIdsTillSetId(List<Integer> ids,long setId);
+
+    public String getImageForSetId(long setId);
+
+    public int addContent(T t);
 
     public ResponseData getDetailedResponse();
 }

@@ -47,11 +47,9 @@ public class UserUserDao implements IUserUserDao<UserUserAssociation>{
     public boolean isFollowedByUser(UserUserAssociation userUser){
         String query = String.format("q=%s:%s AND %s:%s&%s",Constants.USER_ID, userUser.getUserId(),Constants.FOLLOWED_USER_ID, userUser.getFollowedUserId(),Constants.WT_JSON);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
-        System.out.println(query);
         if (responseData.isSuccess()) {
             try {
                 JSONObject userResponse = new JSONObject(responseData.getData());
-                System.out.println(userResponse.toString());
                 if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
                     mResponseData.setSuccess(true);
                     mResponseData.setData(Constants.INVALID_USER_ID);

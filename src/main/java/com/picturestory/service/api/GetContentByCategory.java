@@ -1,6 +1,7 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
+import com.picturestory.service.api.utilities.GetSetId;
 import com.picturestory.service.database.dao.*;
 import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.ContentUserLikeAssociation;
@@ -53,23 +54,20 @@ public class GetContentByCategory {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_REQUEST);
             if (!getContentByCategoryRequest.isValid())
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getContentByCategoryRequest.errorMessage());
-            Integer categoryId;
-            if(getContentByCategoryRequest.getCategoryName()!=null && getContentByCategoryRequest.getCategoryName()!=""){
-                String categoryName = getContentByCategoryRequest.getCategoryName();
-                categoryId = (Integer) mCategoryDetailsDao.getCategoryId(categoryName);
-            }
-            else
-                categoryId = getContentByCategoryRequest.getCategoryId();
+            int categoryId = getContentByCategoryRequest.getCategoryId();
             int userId = getContentByCategoryRequest.getUserId();
+            if (null == mUserDetailsDao.getUser(userId)) {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
+            }
+            if (null == mCategoryDetailsDao.getCategoryName(categoryId)) {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
+            }
 
             List<Integer> contentIdList = mContentCategoryDao.getContentIdsFromCategoryId(categoryId);
-            long registeredTimeStamp = getContentByCategoryRequest.getRegisteredTimeStamp();
-            long setId=0;
-            if( registeredTimeStamp>0)
-                setId = timeStampTosetId(registeredTimeStamp);
-
+            User user =(User)mUserDetailsDao.getUser(userId);
+            long registeredTimeStamp = user.getRegisteredTime();
             if (contentIdList != null) {
-                JSONObject responseObj = composeResponse(userId,contentIdList,setId);
+                JSONObject responseObj = composeResponse(userId,contentIdList, GetSetId.getSetIdForFeed(registeredTimeStamp));
                 return ResponseBuilder.successResponse(responseObj.toString());
             } else {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mContentCategoryDao.getDetailedResponse().getErrorMessage());
@@ -145,10 +143,6 @@ public class GetContentByCategory {
         userUserAssociation.setUserId(userId);
         userUserAssociation.setFollowedUserId(personId);
         return mUserUserDao.isFollowedByUser(userUserAssociation);
-    }
-
-    private long timeStampTosetId(long timeStamp){
-        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
     }
 }
 

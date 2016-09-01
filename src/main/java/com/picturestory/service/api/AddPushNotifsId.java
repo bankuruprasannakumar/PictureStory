@@ -46,7 +46,7 @@ public class AddPushNotifsId {
             boolean status;
             User u = (User) mUserDetailsDao.getUser(userId);
             u.setGcmId(addPushNotifsIdRequest.getGcmId());
-            status = mUserDetailsDao.updateUser(u);
+            status = mUserDetailsDao.updateGcmIdOfUser(u);
             if(status == false){
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserDetailsDao.getDetailedResponse().getErrorMessage());
             }else{
