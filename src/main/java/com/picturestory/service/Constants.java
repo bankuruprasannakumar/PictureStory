@@ -58,6 +58,7 @@ public class Constants {
     public static final String COMMENTS = "comments";
     public static final String PROFILE_IMAGE = "profileImage";
     public static final String LIKED_USERS = "likedUsers";
+    public static final String LIKED_USER_LIST = "likedUserList";
 
 
     public static final String PICTURE_SUMMARY = "pictureSummary";

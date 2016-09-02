@@ -103,7 +103,7 @@ public class ContentUserLikeDao implements IContentUserLikeDao<ContentUserLikeAs
 
     @Override
     public List<User> usersWhoLikedContentId(int contentId) {
-        String query = String.format("fq=userName:*&q={!join from=likedUserId to=userId}contentId:%s&wt=json", contentId);
+        String query = String.format("fq=userName:*&q={!join from=likedUserId to=userId}contentId:%s&rows=50&wt=json", contentId);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if(responseData.isSuccess()){
             try {
