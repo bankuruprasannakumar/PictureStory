@@ -23,21 +23,11 @@ import java.util.List;
 public class PixtoriesInApp {
     private final IUserDetailsDao mUserDetailsDao;
     private final IContentDetailsDao mContentDetailsDao;
-    private final IContentUserLikeDao mContentUserLikeDao;
-    private final IUserUserDao mUserUserDao;
-    private final IContentCategoryDao mContentCategoryDao;
-    private final ICategoryDetailsDao mCategoryDetailsDao;
 
     @Inject
-    public PixtoriesInApp(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao,
-                       IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
-                       ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao) {
+    public PixtoriesInApp(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao) {
         mUserDetailsDao = userDetailsDao;
         mContentDetailsDao = contentDetailsDao;
-        mContentUserLikeDao = contentUserDao;
-        mUserUserDao = userUserDao;
-        this.mCategoryDetailsDao = mCategoryDetailsDao;
-        this.mContentCategoryDao = mContentCategoryDao;
     }
 
     @GET
@@ -68,7 +58,6 @@ public class PixtoriesInApp {
     private String composeResponse(List<Content> contentList) throws JSONException{
         JSONObject responseJSON = new JSONObject();
         JSONObject diagnosticsJSON = new JSONObject();
-        JSONObject dataJSON = new JSONObject();
 
         //construct userDetails
         JSONArray contentJSONArray = new JSONArray();
@@ -83,18 +72,8 @@ public class PixtoriesInApp {
             }
         }
         //construct data
-        dataJSON.put(Constants.SUCCESS, true);
-        dataJSON.put(Constants.CONTENT_LIST, contentJSONArray);
         responseJSON.put(Constants.DIAGNOSTICS, diagnosticsJSON);
-        responseJSON.put(Constants.DATA, dataJSON);
+        responseJSON.put(Constants.DATA, contentJSONArray);
         return responseJSON.toString();
     }
-
-    private boolean isPersonFollowedByUser(int userId, int personId) {
-        UserUserAssociation userUserAssociation = new UserUserAssociation();
-        userUserAssociation.setUserId(userId);
-        userUserAssociation.setFollowedUserId(personId);
-        return mUserUserDao.isFollowedByUser(userUserAssociation);
-    }
-
 }

@@ -88,10 +88,10 @@ public class PixtoriesSubmitted {
             }
         }
         //construct data
-        dataJSON.put(Constants.SUCCESS, true);
-        dataJSON.put(Constants.CONTENT_LIST, contentJSONArray);
+//        dataJSON.put(Constants.SUCCESS, true);
+//        dataJSON.put(Constants.CONTENT_LIST, contentJSONArray);
         responseJSON.put(Constants.DIAGNOSTICS, diagnosticsJSON);
-        responseJSON.put(Constants.DATA, dataJSON);
+        responseJSON.put(Constants.DATA, contentJSONArray);
         return responseJSON.toString();
     }
 }

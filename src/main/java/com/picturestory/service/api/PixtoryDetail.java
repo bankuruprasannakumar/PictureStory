@@ -26,22 +26,15 @@ public class PixtoryDetail {
     private final IUserDetailsDao mUserDetailsDao;
     private final IContentDetailsDao mContentDetailsDao;
     private final IContentUserLikeDao mContentUserLikeDao;
-    private final IUserUserDao mUserUserDao;
-    private final IContentCategoryDao mContentCategoryDao;
-    private final ICategoryDetailsDao mCategoryDetailsDao;
     private final IContentUserCommentDao mContentUserCommentDao;
 
     @Inject
     public PixtoryDetail(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao,
-                         IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
-                         ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao,
+                         IContentUserLikeDao contentUserDao,
                          IContentUserCommentDao contentUserCommentDao) {
         mUserDetailsDao = userDetailsDao;
         mContentDetailsDao = contentDetailsDao;
         mContentUserLikeDao = contentUserDao;
-        mUserUserDao = userUserDao;
-        this.mCategoryDetailsDao = mCategoryDetailsDao;
-        this.mContentCategoryDao = mContentCategoryDao;
         mContentUserCommentDao = contentUserCommentDao;
     }
 
@@ -113,10 +106,10 @@ public class PixtoryDetail {
         contentJSON.put(Constants.COMMENT_LIST, contentUserCommentList);
 
         //construct data
-        dataJSON.put(Constants.SUCCESS, true);
-        dataJSON.put(Constants.CONTENT, contentJSON);
+//        dataJSON.put(Constants.SUCCESS, true);
+//        dataJSON.put(Constants.CONTENT, contentJSON);
         responseJSON.put(Constants.DIAGNOSTICS, diagnosticsJSON);
-        responseJSON.put(Constants.DATA, dataJSON);
+        responseJSON.put(Constants.DATA, contentJSON);
         return responseJSON.toString();
     }
 }

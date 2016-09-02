@@ -128,8 +128,12 @@ public class WebRegisterUser {
 
         //construct userDetails
         JSONObject userJSON = new JSONObject();
-        userJSON.put(Constants.USER_NAME, user.getUserName());
-        userJSON.put(Constants.IMAGE_URL, user.getUserImage());
+        if (null != user.getUserName() && !user.getUserName().trim().isEmpty()){
+            userJSON.put(Constants.USER_NAME, user.getUserName());
+        }
+        if (user.getUserImage() != null && !user.getUserImage().trim().isEmpty()){
+            userJSON.put(Constants.IMAGE_URL, user.getUserImage());
+        }
         //construct data
         dataJSON.put(Constants.SUCCESS, true);
         dataJSON.put(Constants.USER_DETAILS, userJSON);

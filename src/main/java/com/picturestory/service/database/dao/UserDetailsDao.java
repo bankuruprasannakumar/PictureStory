@@ -3,20 +3,16 @@ package com.picturestory.service.database.dao;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
-import com.picturestory.service.Configs ;
 import com.picturestory.service.Constants ;
 import com.picturestory.service.database.adapters.IDataAccessAdapter ;
 import com.picturestory.service.pojo.Contributor;
 import com.picturestory.service.pojo.CookieObject;
 import com.picturestory.service.response.ResponseData ;
 import com.picturestory.service.pojo.User;
-import com.sun.xml.bind.v2.runtime.reflect.opt.Const;
-import com.sun.xml.internal.fastinfoset.sax.SystemIdResolver;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.jws.soap.SOAPBinding;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -329,10 +325,16 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
             Random rand = new Random();
             int currentuserId = rand.nextInt( Integer.MAX_VALUE ) + 1;
             userObject.put(Constants.USER_ID, currentuserId);
-            query = Constants.INSERT_START + userObject.toString() + Constants.INSERT_END;
-            mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
-            if (mResponseData.isSuccess()) {
-                return currentuserId;
+            if (user.getUserName() != null && !user.getUserName().trim().isEmpty()) {
+                query = Constants.INSERT_START + userObject.toString() + Constants.INSERT_END;
+                mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
+                if (mResponseData.isSuccess()) {
+                    return currentuserId;
+                }
+            } else {
+                mResponseData.setSuccess(false);
+                mResponseData.setErrorMessage(Constants.INVALID_USER_NAME);
+                mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
             }
         }catch (JSONException j){
             j.printStackTrace();
