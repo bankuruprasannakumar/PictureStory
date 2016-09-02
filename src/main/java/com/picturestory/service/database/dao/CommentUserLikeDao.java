@@ -105,7 +105,7 @@ public class CommentUserLikeDao implements ICommentUserLikeDao<CommentUserLikeAs
 
     @Override
     public List<User> usersWhoLikedCommentId(int commentId) {
-        String query = String.format("fq=userName:*&q={!join from=commentLikedUserId to=userId}commentId:%s&wt=json", commentId);
+        String query = String.format("fq=userName:*&q={!join from=commentLikedUserId to=userId}commentId:%s&rows=100&wt=json", commentId);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if(responseData.isSuccess()){
             try {

@@ -2,10 +2,14 @@ package com.picturestory.service.api;
 
 import com.google.gson.Gson;
 import com.picturestory.service.Constants;
+import com.picturestory.service.database.dao.ICommentUserLikeDao;
 import com.picturestory.service.database.dao.IContentUserCommentDao;
 import com.picturestory.service.database.dao.IUserDetailsDao;
+import com.picturestory.service.database.dao.IUserUserDao;
+import com.picturestory.service.pojo.CommentUserLikeAssociation;
 import com.picturestory.service.pojo.ContentUserCommentAssociation;
 import com.picturestory.service.pojo.User;
+import com.picturestory.service.pojo.UserUserAssociation;
 import com.picturestory.service.request.GetCommentDetailListRequest;
 import com.picturestory.service.response.ResponseBuilder;
 import org.json.JSONArray;
@@ -17,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,11 +33,16 @@ import java.util.List;
 public class GetCommentDetailList {
     private final IUserDetailsDao mUserDetailsDao;
     private final IContentUserCommentDao mContentUserCommentDao;
+    private final ICommentUserLikeDao mCommentUserLikeDao;
+    private final IUserUserDao mUserUserDao;
 
     @Inject
-    public GetCommentDetailList(IUserDetailsDao userDetailsDao, IContentUserCommentDao contentUserCommentDao) {
+    public GetCommentDetailList(IUserDetailsDao userDetailsDao, IContentUserCommentDao contentUserCommentDao,
+                                ICommentUserLikeDao mCommentUserLikeDao, IUserUserDao mUserUserDao) {
         mUserDetailsDao = userDetailsDao;
         mContentUserCommentDao = contentUserCommentDao;
+        this.mCommentUserLikeDao = mCommentUserLikeDao;
+        this.mUserUserDao = mUserUserDao;
     }
 
     @POST
@@ -50,14 +60,14 @@ public class GetCommentDetailList {
             }
             int contentId = getCommentDetailListRequest.getContentId();
             List<ContentUserCommentAssociation> contentUserCommentAssociations = mContentUserCommentDao.getAllCommentsForContentId(contentId);
-            return ResponseBuilder.successResponse(composeResponse(contentUserCommentAssociations));
+            return ResponseBuilder.successResponse(composeResponse(userId,contentUserCommentAssociations));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseBuilder.error(Constants.ERRORCODE_IOEXCEPTION, "Internal Server Error");
         }
     }
 
-    private String composeResponse(List<ContentUserCommentAssociation> commentList) {
+    private String composeResponse(int userId,List<ContentUserCommentAssociation> commentList) {
         JSONObject response = new JSONObject();
         try {
             response.put(Constants.SUCCESS, true);
@@ -75,6 +85,32 @@ public class GetCommentDetailList {
                         contentCreatorJSON.put(Constants.DESCRIPTION, user.getUserDesc());
                         contentJSON.put(Constants.PERSON_DETAILS, contentCreatorJSON);
                     }
+
+                    //set comment like count
+                    contentJSON.put(Constants.LIKE_COUNT,mCommentUserLikeDao.fullCountOfUserLikesForCommentId(contentUserCommentAssociation.getCommentId()));
+
+                    //set if liked by user
+                    CommentUserLikeAssociation commentUserLikeAssociation = new CommentUserLikeAssociation();
+                    commentUserLikeAssociation.setCommentId(contentUserCommentAssociation.getCommentId());
+                    commentUserLikeAssociation.setCommentLikedUserId(userId);
+                    contentJSON.put(Constants.LIKED_BY_USER,mCommentUserLikeDao.isCommentLikedByUser(commentUserLikeAssociation));
+
+                    //set comment liked user list
+                    List<User> userList = new ArrayList<User>();
+                    userList = mCommentUserLikeDao.usersWhoLikedCommentId(contentUserCommentAssociation.getCommentId());
+                    JSONArray userJSONArray = new JSONArray();
+                    if(userList!=null)
+                            for(User user1:userList){
+                                JSONObject userJSON = new JSONObject();
+                                userJSON.put(Constants.ID, user1.getUserId());
+                                userJSON.put(Constants.NAME, user1.getUserName());
+                                userJSON.put(Constants.DESCRIPTION,user1.getUserDesc());
+                                userJSON.put(Constants.IMAGE_URL,user1.getUserImage());
+                                userJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, user1.getUserId()));
+                                userJSONArray.put(userJSON);
+                            }
+                     contentJSON.put(Constants.LIKED_USER_LIST,userJSONArray);
+
                     contentUserCommentList.put(contentJSON);
                 }
             }
@@ -85,5 +121,12 @@ public class GetCommentDetailList {
             return null;
         }
         return response.toString();
+    }
+
+    private boolean isPersonFollowedByUser(int userId, int personId) {
+        UserUserAssociation userUserAssociation = new UserUserAssociation();
+        userUserAssociation.setUserId(userId);
+        userUserAssociation.setFollowedUserId(personId);
+        return mUserUserDao.isFollowedByUser(userUserAssociation);
     }
 }
