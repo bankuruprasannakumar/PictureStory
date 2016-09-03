@@ -76,6 +76,7 @@ public class PixtoryDetail {
         contentJSON.put(Constants.ID, content.getContentId());
         contentJSON.put(Constants.IMAGE_URL, content.getPictureUrl());
         contentJSON.put(Constants.TITLE, content.getPictureSummary());
+        contentJSON.put(Constants.STORY, content.getPictureDescription());
 
         //likedUsers
         List<User> userList = mContentUserLikeDao.usersWhoLikedContentId(content.getContentId());
