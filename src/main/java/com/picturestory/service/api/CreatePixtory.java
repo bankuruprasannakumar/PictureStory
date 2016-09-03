@@ -75,6 +75,14 @@ public class CreatePixtory {
             content.setUserId(userId);
             content.setPictureUrl(pictureUrl);
             content.setPictureDescription(story);
+            if (addContentRequest.getTitle() != null && !addContentRequest.getTitle().trim().isEmpty()) {
+                content.setPictureSummary(addContentRequest.getTitle());
+            }
+
+            if (addContentRequest.getLocation() != null && !addContentRequest.getLocation().trim().isEmpty()) {
+                content.setPlace(addContentRequest.getTitle());
+            }
+
             content.setPixtoryStatus(PixtoryStatus.SUBMITTED.getValue());
             int id = mContentDetailsDao.addContent(content);
             if (id == 0) {
