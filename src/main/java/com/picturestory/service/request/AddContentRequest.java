@@ -14,6 +14,24 @@ public class AddContentRequest implements IRequest{
     private InputStream image;
     private String format;
     private String story;
+    private String title;
+    private String location;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
     public String getFormat() {
         return format;
@@ -40,10 +58,12 @@ public class AddContentRequest implements IRequest{
         this.story = story;
     }
 
-    public AddContentRequest(InputStream image, String format, String story) {
+    public AddContentRequest(InputStream image, String format, String story, String title, String location) {
         this.image = image;
         this.format = format;
         this.story = story;
+        this.title = title;
+        this.location = location;
     }
 
     @Override

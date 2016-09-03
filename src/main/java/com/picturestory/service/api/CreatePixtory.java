@@ -51,6 +51,8 @@ public class CreatePixtory {
     public Response createpixtory(@FormDataParam("image") InputStream image,
                                   @FormDataParam("imageFormat") String format,
                                   @FormDataParam("story") String story,
+                                  @FormDataParam("title") String title,
+                                  @FormDataParam("location") String location,
                                   @CookieParam("cookieId") String cookieId) {
         try {
             if (cookieId == null){
@@ -61,7 +63,7 @@ public class CreatePixtory {
                 return WebResponseBuilder.error(Constants.ERRORCODE_INVALID_AUTH, Constants.INVALID_COOKIE);
             }
             User user = (User) mUserDetailsDao.getUser(userId);
-            AddContentRequest addContentRequest = new AddContentRequest(image, format, story);
+            AddContentRequest addContentRequest = new AddContentRequest(image, format, story, title, location);
             if (!addContentRequest.isValid()) {
                 return WebResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, addContentRequest.errorMessage());
             }

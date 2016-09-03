@@ -67,7 +67,7 @@ public class PixtoriesInApp {
                 JSONObject contentJSON = new JSONObject();
                 contentJSON.put(Constants.ID, content.getContentId());
                 contentJSON.put(Constants.IMAGE_URL, content.getPictureUrl());
-                contentJSON.put(Constants.TITLE, content.getPictureDescription());
+                contentJSON.put(Constants.TITLE, content.getPictureSummary());
                 contentJSONArray.put(contentJSON);
             }
         }

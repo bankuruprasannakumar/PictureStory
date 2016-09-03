@@ -33,9 +33,9 @@ public class webAddComment {
         mContentDetailsDao = contentDetailsDao;
     }
 
-    @GET
-    public Response getContentDetailList(@CookieParam("cookieId") String cookieId,
-                                         WebAddCommentOnContentRequest webAddCommentOnContentRequest) {
+    @POST
+    public Response addComment(@CookieParam("cookieId") String cookieId,
+                               WebAddCommentOnContentRequest webAddCommentOnContentRequest) {
         try {
             if (cookieId == null) {
                 return WebResponseBuilder.error(Constants.ERRORCODE_INVALID_AUTH, Constants.INVALID_COOKIE);
