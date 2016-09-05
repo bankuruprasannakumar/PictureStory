@@ -398,6 +398,18 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
     }
 
     @Override
+    public boolean deleteCookiesForUser(int userId) {
+        String query = "";
+        query = String.format("%s:%s AND %s:%s",Constants.USER_ID,userId, Constants.COOKIE_ID, Constants.ALL);
+        query = Constants.DELETE_START +query + Constants.DELETE_END;
+        mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
+        if (mResponseData.isSuccess()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public int addUserForEmail(User user) {
         int currentUserId = isUserPresentForEmail(user);
         if(currentUserId != 0){

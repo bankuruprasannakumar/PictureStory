@@ -9,11 +9,9 @@ import com.picturestory.service.pojo.User;
 import com.picturestory.service.request.AddContentRequest;
 import com.picturestory.service.response.WebResponseBuilder;
 import com.sun.jersey.multipart.FormDataParam;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
@@ -26,12 +24,12 @@ import java.util.Random;
 @Produces("application/json")
 @Consumes(MediaType.MULTIPART_FORM_DATA)
 
-public class CreatePixtory {
+public class ContestCreatePixtory {
     private final IUserDetailsDao mUserDetailsDao;
     private final IContentDetailsDao mContentDetailsDao;
 
     @Inject
-    public CreatePixtory(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao) {
+    public ContestCreatePixtory(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao) {
         mUserDetailsDao = userDetailsDao;
         mContentDetailsDao = contentDetailsDao;
     }

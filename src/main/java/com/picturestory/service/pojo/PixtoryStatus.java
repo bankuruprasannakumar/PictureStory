@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by bankuru on 27/8/16.
  */
 public enum PixtoryStatus {
-        SUBMITTED(1), EDITING(2), EDITED(3), CONTENT_SET(4), APPROVED(5), INAPP(6);
+        SUBMITTED(1), EDITING(2), REJECTED(3), INAPP(4);
 
         private int value;
 
