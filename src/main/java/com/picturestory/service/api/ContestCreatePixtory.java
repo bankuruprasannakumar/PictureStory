@@ -20,7 +20,7 @@ import java.util.Random;
 /**
  * Created by bankuru on 26/8/16.
  */
-@Path("/contributor/createpixtory")
+@Path("/contest/createpixtory")
 @Produces("application/json")
 @Consumes(MediaType.MULTIPART_FORM_DATA)
 
