@@ -21,9 +21,7 @@ public class UploadVideoToS3 {
             // user must have AWSConnector and AmazonS3FullAccess for
             // this to work
 
-            AWSCredentials credentials = new BasicAWSCredentials(
-                    "AKIAJBJ5XROOYK3HGAPQ",
-                    "dg7mxOMuGO6yzzoJeiDnjerXXdiRiZrnNn68EtSn");
+            
 
             // create a client connection based on credentials
             AmazonS3 s3client = new AmazonS3Client(credentials);
