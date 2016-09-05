@@ -24,7 +24,7 @@ public class UploadVideoToS3 {
             
 
             // create a client connection based on credentials
-            AmazonS3 s3client = new AmazonS3Client(credentials);
+//            AmazonS3 s3client = new AmazonS3Client(credentials);
 
             // create bucket - name must be unique for all S3 users
             String bucketName = "pixtorycontent";
@@ -34,10 +34,10 @@ public class UploadVideoToS3 {
             // upload file to folder and set it to public
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType("image/jpeg");
-            s3client.putObject(new PutObjectRequest(bucketName, fileName+".jpeg",
-                    new File(fileUrl))
-                    .withCannedAcl(CannedAccessControlList.PublicRead)
-                    .withMetadata(metadata));
+//            s3client.putObject(new PutObjectRequest(bucketName, fileName+".jpeg",
+//                    new File(fileUrl))
+//                    .withCannedAcl(CannedAccessControlList.PublicRead)
+//                    .withMetadata(metadata));
             return fileName;
         }catch (Exception e){
             e.printStackTrace();
