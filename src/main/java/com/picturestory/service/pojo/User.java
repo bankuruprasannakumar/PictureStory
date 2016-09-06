@@ -1,5 +1,7 @@
 package com.picturestory.service.pojo;
 
+import java.util.List;
+
 /**
  * Created by bankuru on 30/4/16.
  */
@@ -13,6 +15,15 @@ public class User {
     private String gcmId;
     private boolean isContributor;
     private long registeredTime;
+    private List<Integer> userInterests;
+
+    public List<Integer> getUserInterests() {
+        return userInterests;
+    }
+
+    public void setUserInterests(List<Integer> userInterests) {
+        this.userInterests = userInterests;
+    }
 
     public long getRegisteredTime() {
         return registeredTime;

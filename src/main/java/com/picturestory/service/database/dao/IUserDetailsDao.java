@@ -44,4 +44,7 @@ public interface IUserDetailsDao<T> {
 
     public int isCookiePresent(String cookieId);
 
+    public boolean updateUserInterests(int userId,List<Integer> userInterests);
+
+
 }
