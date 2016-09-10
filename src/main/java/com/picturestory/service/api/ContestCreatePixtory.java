@@ -1,7 +1,7 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
-import com.picturestory.service.api.utilities.UploadVideoToS3;
+import com.picturestory.service.api.utilities.UploadPictureToS3;
 import com.picturestory.service.database.dao.*;
 import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.PixtoryStatus;
@@ -111,7 +111,7 @@ public class ContestCreatePixtory {
             int fileid = rand.nextInt();
             String uploadedFileLocation = "/home/ubuntu/" + fileid;
             writeToFile(image, uploadedFileLocation);
-            UploadVideoToS3 uploadVideoToS3 = new UploadVideoToS3();
+            UploadPictureToS3 uploadVideoToS3 = new UploadPictureToS3();
             imageURL = uploadVideoToS3.uploadImagesToS3(uploadedFileLocation, fileid + "", userName);
             File file = new File(uploadedFileLocation);
             if (file.exists()) {

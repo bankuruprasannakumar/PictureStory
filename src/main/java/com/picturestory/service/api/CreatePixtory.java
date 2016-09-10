@@ -1,7 +1,7 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
-import com.picturestory.service.api.utilities.UploadVideoToS3;
+import com.picturestory.service.api.utilities.UploadPictureToS3;
 import com.picturestory.service.database.dao.*;
 import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.PixtoryStatus;
@@ -9,11 +9,9 @@ import com.picturestory.service.pojo.User;
 import com.picturestory.service.request.AddContentRequest;
 import com.picturestory.service.response.WebResponseBuilder;
 import com.sun.jersey.multipart.FormDataParam;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
@@ -58,7 +56,7 @@ public class CreatePixtory {
                 return WebResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, addContentRequest.errorMessage());
             }
             String userName = user.getUserName();
-            String fileName = getVideoUrl(addContentRequest, userName);
+            String fileName = getVideoUrl(addContentRequest, userName.replaceAll(" ", "_").toLowerCase());
             //https://dabx1e3n0nllc.cloudfront.net/Devesh+-+Texts+in+the+making
             String pictureUrl = "https://dabx1e3n0nllc.cloudfront.net/"+fileName+".jpeg";
             Content content = new Content();
@@ -113,7 +111,7 @@ public class CreatePixtory {
             int fileid = rand.nextInt();
             String uploadedFileLocation = "/home/ubuntu/" + fileid;
             writeToFile(image, uploadedFileLocation);
-            UploadVideoToS3 uploadVideoToS3 = new UploadVideoToS3();
+            UploadPictureToS3 uploadVideoToS3 = new UploadPictureToS3();
             imageURL = uploadVideoToS3.uploadImagesToS3(uploadedFileLocation, fileid + "", userName);
             File file = new File(uploadedFileLocation);
             if (file.exists()) {
