@@ -1,6 +1,7 @@
 package com.picturestory.service.database.dao;
 
 import com.picturestory.service.pojo.Content;
+import com.picturestory.service.pojo.ContestContent;
 import com.picturestory.service.response.ResponseData ;
 
 import java.util.List;
@@ -41,6 +42,8 @@ public interface IContentDetailsDao<T> {
     public String getImageForSetId(long setId);
 
     public int addContent(T t);
+
+    public int addContestContent(ContestContent contestContent);
 
     public ResponseData getDetailedResponse();
 }

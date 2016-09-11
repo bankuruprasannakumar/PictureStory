@@ -56,6 +56,31 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
     }
 
     @Override
+    public int addContestContent(ContestContent contestContent) {
+        String query = "";
+        try {
+            Gson gson = new Gson();
+            Random rand = new Random();
+            int currentContestId = rand.nextInt( Integer.MAX_VALUE ) + 1;
+            contestContent.setContestId(currentContestId);
+            String contentJSON = gson.toJson(contestContent);
+            query = Constants.INSERT_START + contentJSON + Constants.INSERT_END;
+            mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return currentContestId;
+            }
+        } catch (Exception j) {
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return 0;
+        }
+        mResponseData.setSuccess(true);
+        return 0;
+    }
+
+    @Override
     public Content getContentDetails(int id) {
         String query = String.format("q=%s:%s AND %s:%s&%s", Constants.CONTENT_ID, id, Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.WT_JSON);
         ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);

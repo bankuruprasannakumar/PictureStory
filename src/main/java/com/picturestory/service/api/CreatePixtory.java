@@ -58,7 +58,7 @@ public class CreatePixtory {
             String userName = user.getUserName();
             String fileName = getVideoUrl(addContentRequest, userName.replaceAll(" ", "_").toLowerCase());
             //https://dabx1e3n0nllc.cloudfront.net/Devesh+-+Texts+in+the+making
-            String pictureUrl = "https://dabx1e3n0nllc.cloudfront.net/"+fileName+".jpeg";
+            String pictureUrl = "https://s3.ap-south-1.amazonaws.com/pixtory-uploaded-content/"+fileName+".jpeg";
             Content content = new Content();
             content.setUserId(userId);
             content.setPictureUrl(pictureUrl);
@@ -112,7 +112,7 @@ public class CreatePixtory {
             String uploadedFileLocation = "/home/ubuntu/" + fileid;
             writeToFile(image, uploadedFileLocation);
             UploadPictureToS3 uploadVideoToS3 = new UploadPictureToS3();
-            imageURL = uploadVideoToS3.uploadImagesToS3(uploadedFileLocation, fileid + "", userName);
+            imageURL = uploadVideoToS3.uploadImagesToS3(uploadedFileLocation, fileid + "", userName, "contributor");
             File file = new File(uploadedFileLocation);
             if (file.exists()) {
                 file.delete();

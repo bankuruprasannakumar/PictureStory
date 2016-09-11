@@ -17,7 +17,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 public class UploadPictureToS3 {
     private static final String SUFFIX = "/";
 
-    public static String uploadImagesToS3(String fileUrl, String fileName, String userName){
+    public static String uploadImagesToS3(String fileUrl, String fileName, String userName, String prefix){
         try {
 
             // create a client connection based on credentials
@@ -28,7 +28,11 @@ public class UploadPictureToS3 {
             // create bucket - name must be unique for all S3 users
             String bucketName = "pixtory-uploaded-content";
 
-            fileName = "contributor" + SUFFIX + userName + SUFFIX + fileName;
+            if (userName != null) {
+                fileName = prefix + SUFFIX + userName + SUFFIX + fileName;
+            } else {
+                fileName = prefix + SUFFIX + fileName;
+            }
 
             // upload file to folder and set it to public
             ObjectMetadata metadata = new ObjectMetadata();
