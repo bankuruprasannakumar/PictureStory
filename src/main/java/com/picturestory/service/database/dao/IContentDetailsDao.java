@@ -43,7 +43,10 @@ public interface IContentDetailsDao<T> {
 
     public int addContent(T t);
 
+<<<<<<< HEAD
     public int addContestContent(ContestContent contestContent);
 
+=======
+>>>>>>> bc0aac06c004004b597969235adeb5a07b9f99ab
     public ResponseData getDetailedResponse();
 }

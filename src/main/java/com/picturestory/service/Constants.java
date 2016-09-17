@@ -59,6 +59,11 @@ public class Constants {
     public static final String COMMENTS = "comments";
     public static final String PROFILE_IMAGE = "profileImage";
     public static final String LIKED_USERS = "likedUsers";
+    public static final String LIKED_USER_LIST = "likedUserList";
+    public static final String FAVOUOURITE_LIST = "favouriteList";
+    public static final String POSTCARD_LIST = "postcardList";
+    public static final String CONTRIBUTED_LIST = "contributedList";
+    public static final String USER_INTERESTS = "userInterests";
 
 
     public static final String PICTURE_SUMMARY = "pictureSummary";
@@ -111,6 +116,7 @@ public class Constants {
     public static final String CONTENT = "content";
     public static final String DATA = "data";
     public static final String DIAGNOSTICS = "diagnostics";
+    public static final String COMMENT_LIKED_USER_ID = "commentLikedUserId";
 
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";

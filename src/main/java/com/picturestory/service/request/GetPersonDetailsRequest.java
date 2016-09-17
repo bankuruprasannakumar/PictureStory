@@ -11,15 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GetPersonDetailsRequest implements IRequest {
     int userId;
     int personId;
-    long registeredTimeStamp;
-
-    public long getRegisteredTimeStamp() {
-        return registeredTimeStamp;
-    }
-
-    public void setRegisteredTimeStamp(long registeredTimeStamp) {
-        this.registeredTimeStamp = registeredTimeStamp;
-    }
 
 
     public int getPersonId() {

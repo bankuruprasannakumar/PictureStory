@@ -144,9 +144,5 @@ public class GetContentByCategory {
         userUserAssociation.setFollowedUserId(personId);
         return mUserUserDao.isFollowedByUser(userUserAssociation);
     }
-
-    private long timeStampTosetId(long timeStamp){
-        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
-    }
 }
 

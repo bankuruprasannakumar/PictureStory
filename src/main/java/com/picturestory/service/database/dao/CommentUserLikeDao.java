@@ -4,8 +4,8 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.picturestory.service.Constants;
-import com.picturestory.service.database.adapters.IDataAccessAdapter ;
-import com.picturestory.service.pojo.ContentUserLikeAssociation;
+import com.picturestory.service.database.adapters.IDataAccessAdapter;
+import com.picturestory.service.pojo.CommentUserLikeAssociation;
 import com.picturestory.service.pojo.User;
 import com.picturestory.service.response.ResponseData;
 import org.json.JSONArray;
@@ -17,25 +17,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by aasha.medhi on 10/19/15.
+ * Created by sriram on 2/9/16.
  */
-public class ContentUserLikeDao implements IContentUserLikeDao<ContentUserLikeAssociation> {
+public class CommentUserLikeDao implements ICommentUserLikeDao<CommentUserLikeAssociation> {
+
     private IDataAccessAdapter mSolrAdapter;
     private ResponseData mResponseData;
 
     @Inject
-    public ContentUserLikeDao(IDataAccessAdapter solrAdapter) {
+    public CommentUserLikeDao(IDataAccessAdapter solrAdapter) {
         mSolrAdapter = solrAdapter;
         mResponseData = new ResponseData();
     }
+
     @Override
-    public boolean addContentUserLike(ContentUserLikeAssociation contentUserAssociation) {
-        if(!isContentLikedByUser(contentUserAssociation)){
+    public boolean addCommentUserLike(CommentUserLikeAssociation commentUserAssociation) {
+        if(!isCommentLikedByUser(commentUserAssociation)){
             String query = "";
             try {
                 Gson gson = new Gson();
-                String contentUserJSON = gson.toJson(contentUserAssociation);
-                query = Constants.INSERT_START + contentUserJSON + Constants.INSERT_END;
+                String commentUserJSON = gson.toJson(commentUserAssociation);
+                query = Constants.INSERT_START + commentUserJSON + Constants.INSERT_END;
                 mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
                 if (mResponseData.isSuccess()) {
                     return true;
@@ -54,9 +56,9 @@ public class ContentUserLikeDao implements IContentUserLikeDao<ContentUserLikeAs
     }
 
     @Override
-    public boolean deleteContentUserLike(ContentUserLikeAssociation contentUserAssociation) {
+    public boolean deleteCommentUserLike(CommentUserLikeAssociation commentUserAssociation) {
         String query = "";
-        query = String.format("%s:%s AND %s:%s", Constants.LIKED_USER_ID, contentUserAssociation.getLikeduserId(), Constants.CONTENT_ID, contentUserAssociation.getContentId());
+        query = String.format("%s:%s AND %s:%s", Constants.COMMENT_LIKED_USER_ID, commentUserAssociation.getCommentLikedUserId(), Constants.COMMENT_ID, commentUserAssociation.getCommentId());
         query = Constants.DELETE_START + query + Constants.DELETE_END;
         mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
         if (mResponseData.isSuccess()) {
@@ -66,8 +68,8 @@ public class ContentUserLikeDao implements IContentUserLikeDao<ContentUserLikeAs
     }
 
     @Override
-    public boolean isContentLikedByUser(ContentUserLikeAssociation contentUserAssociation) {
-        String query = String.format("q=%s:%s AND %s:%s&%s", Constants.LIKED_USER_ID, contentUserAssociation.getLikeduserId(), Constants.CONTENT_ID, contentUserAssociation.getContentId(), Constants.WT_JSON);
+    public boolean isCommentLikedByUser(CommentUserLikeAssociation commentUserAssociation) {
+        String query = String.format("q=%s:%s AND %s:%s&%s", Constants.COMMENT_LIKED_USER_ID, commentUserAssociation.getCommentLikedUserId(), Constants.COMMENT_ID, commentUserAssociation.getCommentId(), Constants.WT_JSON);
         ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -85,8 +87,8 @@ public class ContentUserLikeDao implements IContentUserLikeDao<ContentUserLikeAs
     }
 
     @Override
-    public int fullCountOfUserLikesForContentId(int contentId) {
-        String query = String.format("q=%s:%s AND %s:%s&%s", Constants.LIKED_USER_ID, Constants.ALL, Constants.CONTENT_ID, contentId, Constants.WT_JSON);
+    public int fullCountOfUserLikesForCommentId(int commentId) {
+        String query = String.format("q=%s:%s AND %s:%s&%s", Constants.COMMENT_LIKED_USER_ID, Constants.ALL, Constants.COMMENT_ID, commentId, Constants.WT_JSON);
         ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -102,8 +104,8 @@ public class ContentUserLikeDao implements IContentUserLikeDao<ContentUserLikeAs
     }
 
     @Override
-    public List<User> usersWhoLikedContentId(int contentId) {
-        String query = String.format("fq=userName:*&q={!join from=likedUserId to=userId}contentId:%s&rows=100&wt=json", contentId);
+    public List<User> usersWhoLikedCommentId(int commentId) {
+        String query = String.format("fq=userName:*&q={!join from=commentLikedUserId to=userId}commentId:%s&rows=100&wt=json", commentId);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if(responseData.isSuccess()){
             try {
@@ -138,3 +140,4 @@ public class ContentUserLikeDao implements IContentUserLikeDao<ContentUserLikeAs
     }
 
 }
+

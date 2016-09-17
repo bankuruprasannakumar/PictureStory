@@ -44,6 +44,11 @@ public interface IUserDetailsDao<T> {
 
     public int isCookiePresent(String cookieId);
 
+<<<<<<< HEAD
     public boolean deleteCookiesForUser(int userId);
+=======
+    public boolean updateUserInterests(int userId,List<Integer> userInterests);
+
+>>>>>>> bc0aac06c004004b597969235adeb5a07b9f99ab
 
 }
