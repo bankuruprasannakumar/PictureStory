@@ -551,7 +551,6 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         return null;
     }
 
-<<<<<<< HEAD
 
     @Override
     public List<Content> getAllContentDetailsForIdsTillSetId(List<Integer> ids, long setId) {
@@ -596,8 +595,6 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         return null;
     }
 
-=======
->>>>>>> bc0aac06c004004b597969235adeb5a07b9f99ab
     @Override
     public ResponseData getDetailedResponse() {
         return mResponseData;
