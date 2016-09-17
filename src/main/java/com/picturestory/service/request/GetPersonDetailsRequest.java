@@ -21,6 +21,7 @@ public class GetPersonDetailsRequest implements IRequest {
         this.registeredTimeStamp = registeredTimeStamp;
     }
 
+
     public int getPersonId() {
         return personId;
     }

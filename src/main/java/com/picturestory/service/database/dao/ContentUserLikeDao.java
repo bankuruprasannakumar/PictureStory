@@ -1,13 +1,20 @@
 package com.picturestory.service.database.dao;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.picturestory.service.Constants;
 import com.picturestory.service.database.adapters.IDataAccessAdapter ;
 import com.picturestory.service.pojo.ContentUserLikeAssociation;
+import com.picturestory.service.pojo.User;
 import com.picturestory.service.response.ResponseData;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by aasha.medhi on 10/19/15.
@@ -92,6 +99,37 @@ public class ContentUserLikeDao implements IContentUserLikeDao<ContentUserLikeAs
             }
         }
         return 0;
+    }
+
+    @Override
+    public List<User> usersWhoLikedContentId(int contentId) {
+        String query = String.format("fq=userName:*&q={!join from=likedUserId to=userId}contentId:%s&wt=json", contentId);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    JSONArray userJsonArray = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<User>>(){}.getType();
+                    ArrayList<User> users = gson.fromJson(userJsonArray.toString(),listType);
+                    return users;
+                }
+                else {
+                    mResponseData.setErrorMessage("Invalid userId");
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return null;
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
     }
 
     @Override

@@ -1,11 +1,14 @@
 package com.picturestory.service.api;
 
+
 import com.picturestory.service.Constants;
 import com.picturestory.service.database.dao.IUserDetailsDao;
-import com.picturestory.service.database.dao.IUserGcmIdDao;
 import com.picturestory.service.pojo.User;
-import com.picturestory.service.request.AddPushNotifsIdRequest;
+import com.picturestory.service.request.LinkFbIdUserIdRequest;
+import com.picturestory.service.request.NewUserRequest;
 import com.picturestory.service.response.ResponseBuilder;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -15,42 +18,40 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /**
- * Created by bankuru on 30/12/15.
+ * Created by aasha.medhi on 9/25/15.
  */
-@Path("/addPushNotifsId")
+@Path("/linkFbIdUserId")
 @Produces("application/json")
 @Consumes("application/json")
-
-public class AddPushNotifsId {
+public class LinkFbIdUserId {
     private final IUserDetailsDao mUserDetailsDao;
-    private final IUserGcmIdDao mUserGcmIdDao;
 
     @Inject
-    public AddPushNotifsId(IUserDetailsDao userDetailsDao, IUserGcmIdDao userGcmIdDao){
+    public LinkFbIdUserId(IUserDetailsDao userDetailsDao) {
         mUserDetailsDao = userDetailsDao;
-        mUserGcmIdDao = userGcmIdDao;
     }
+
     @POST
-    public Response addPushNotifsId(AddPushNotifsIdRequest addPushNotifsIdRequest) {
+    public Response linkFbIdUserId(LinkFbIdUserIdRequest linkFbIdUserIdRequest) {
         try {
-            if (addPushNotifsIdRequest == null) {
+            if(linkFbIdUserIdRequest == null){
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_REQUEST);
             }
-            if (!addPushNotifsIdRequest.isValid()) {
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, addPushNotifsIdRequest.errorMessage());
+            if (!linkFbIdUserIdRequest.isValid()) {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, linkFbIdUserIdRequest.errorMessage());
             }
-            int userId = addPushNotifsIdRequest.getUserId();
+
+            int userId = linkFbIdUserIdRequest.getUserId();
             if (null == mUserDetailsDao.getUser(userId)) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
             }
-            boolean status;
-            User u = (User) mUserDetailsDao.getUser(userId);
-            u.setGcmId(addPushNotifsIdRequest.getGcmId());
-            status = mUserDetailsDao.updateGcmIdOfUser(u);
-            if(status == false){
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserDetailsDao.getDetailedResponse().getErrorMessage());
-            }else{
+            User user =(User)mUserDetailsDao.getUser(userId);
+            user.setFbId(linkFbIdUserIdRequest.getFbId());
+            boolean status = mUserDetailsDao.updateFbIdOfUser(user);
+            if (status) {
                 return ResponseBuilder.successResponse();
+            } else {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserDetailsDao.getDetailedResponse().getErrorMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();

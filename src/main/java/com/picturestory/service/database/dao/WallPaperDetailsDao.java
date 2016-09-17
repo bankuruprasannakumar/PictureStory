@@ -99,7 +99,7 @@ public class WallPaperDetailsDao implements IWallPaperDetailsDao {
             try {
 
                 JSONObject wallPaperResponse = new JSONObject(responseData.getData());
-                if (wallPaperResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 1) {
+                if (wallPaperResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
                     JSONObject userJsonObject = wallPaperResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0);
                     Gson gson = new Gson();
                     Content content = gson.fromJson(userJsonObject.toString(),Content.class);

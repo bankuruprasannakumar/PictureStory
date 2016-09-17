@@ -1,7 +1,6 @@
 package com.picturestory.service.database.dao;
 
 import com.google.common.reflect.TypeToken;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.picturestory.service.Configs ;
@@ -16,9 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -34,6 +30,55 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         mResponseData = new ResponseData();
     }
 
+    @Override
+    public int addContent(Content content) {
+        String query = "";
+        try {
+            Gson gson = new Gson();
+            Random rand = new Random();
+            int currentContentId = rand.nextInt( Integer.MAX_VALUE ) + 1;
+            content.setContentId(currentContentId);
+            String contentJSON = gson.toJson(content);
+            query = Constants.INSERT_START + contentJSON + Constants.INSERT_END;
+            mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return currentContentId;
+            }
+        } catch (Exception j) {
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return 0;
+        }
+        mResponseData.setSuccess(true);
+        return 0;
+    }
+
+    @Override
+    public int addContestContent(ContestContent contestContent) {
+        String query = "";
+        try {
+            Gson gson = new Gson();
+            Random rand = new Random();
+            int currentContestId = rand.nextInt( Integer.MAX_VALUE ) + 1;
+            contestContent.setContestId(currentContestId);
+            String contentJSON = gson.toJson(contestContent);
+            query = Constants.INSERT_START + contentJSON + Constants.INSERT_END;
+            mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return currentContestId;
+            }
+        } catch (Exception j) {
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return 0;
+        }
+        mResponseData.setSuccess(true);
+        return 0;
+    }
 
     @Override
     public Content getContentDetails(int id) {
@@ -61,6 +106,66 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
                 return null;
             }
         }
+        return null;
+    }
+
+    @Override
+    public Content getContentDetailsForUser(int contentId, int userId) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s", Constants.CONTENT_ID, contentId, Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.USER_ID, userId, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) == 1) {
+                    JSONObject contentJsonObject = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0);
+                    Gson gson = new Gson();
+                    Content content = gson.fromJson(contentJsonObject.toString(), Content.class);
+                    return content;
+                } else {
+                    mResponseData.setErrorMessage(Constants.INVALID_CONTENT_ID);
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return null;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Content> getAllContentDetailsContributedByUserId(int userId, int pixtoryStatus) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s&%s=%s&%s=%s",Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.USER_ID, userId, Constants.PIXTORY_STATUS, pixtoryStatus,Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    mResponseData.setSuccess(true);
+                    JSONArray contentArray = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Content>>(){}.getType();
+                    List<Content> contentList = gson.fromJson(contentArray.toString(), listType);
+                    return contentList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return new ArrayList<Content>();
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
         return null;
     }
 
@@ -326,7 +431,15 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
 
     @Override
     public List<Content> getAllContentDetailsTillSetId(long setId) {
-        String query = String.format("q=%s:[%s TO %s]&%s=%s&%s",Constants.SET_ID,Constants.ALL, setId,Constants.ROWS,Configs.MAX_LIMIT, Constants.WT_JSON);
+        int totalNumberOfContents = getNumberOfContentsTillSetId(setId);
+        if (totalNumberOfContents == 0) {
+            return new ArrayList<Content>();
+        }
+        int startRow = 0;
+        if (totalNumberOfContents > 100) {
+            startRow = totalNumberOfContents - 100;
+        }
+        String query = String.format("q=%s:[%s TO %s]&%s=%s&%s=%s&%s&sort=setId asc",Constants.SET_ID,Constants.ALL, setId, Constants.START, startRow,Constants.ROWS,Configs.MAX_LIMIT, Constants.WT_JSON);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {
@@ -354,6 +467,27 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         mResponseData = responseData;
         return null;
     }
+
+    private int getNumberOfContentsTillSetId(long setId){
+        String query = String.format("q=%s:[%s TO %s]&%s",Constants.SET_ID, Constants.ALL, setId, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                return responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND);
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return 0;
+            }
+        }
+        mResponseData = responseData;
+        return 0;
+    }
+
+
 
     @Override
     public List<Content> getAllContentDetailsContributedByUserIdTillSetId(int userId, long setId) {
@@ -386,6 +520,37 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         return null;
 
     }
+
+
+    @Override
+    public String getImageForSetId(long setId) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s", Constants.CONTENT_ID, Constants.ALL, Constants.PICTURE_DESCRIPTION, Constants.ALL, Constants.SET_ID, setId, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    JSONObject contentJsonObject = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0);
+                    Gson gson = new Gson();
+                    Content content = gson.fromJson(contentJsonObject.toString(), Content.class);
+                    return content.getPictureUrl();
+                } else {
+                    mResponseData.setErrorMessage(Constants.INVALID_CONTENT_ID);
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return null;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
 
     @Override
     public List<Content> getAllContentDetailsForIdsTillSetId(List<Integer> ids, long setId) {

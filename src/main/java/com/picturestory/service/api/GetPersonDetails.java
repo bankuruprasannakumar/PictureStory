@@ -1,6 +1,7 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
+import com.picturestory.service.api.utilities.GetSetId;
 import com.picturestory.service.database.dao.*;
 import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.ContentUserLikeAssociation;
@@ -8,6 +9,7 @@ import com.picturestory.service.pojo.User;
 import com.picturestory.service.pojo.UserUserAssociation;
 import com.picturestory.service.request.GetPersonDetailsRequest;
 import com.picturestory.service.response.ResponseBuilder;
+import com.sun.xml.bind.v2.runtime.reflect.opt.Const;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -63,15 +65,16 @@ public class GetPersonDetails {
             if (null == mUserDetailsDao.getUser(personId)) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_PERSON_ID);
             }
-            long setId=0;
-            long registeredTimeStamp = getPersonDetailRequest.getRegisteredTimeStamp();
-            if( registeredTimeStamp>0)
-                setId = timeStampTosetId(registeredTimeStamp);
+            User user =(User)mUserDetailsDao.getUser(userId);
+            long registeredTimeStamp = user.getRegisteredTime();
             User personDetails = (User) mUserDetailsDao.getUser(personId);
             //get all content for the user
             List<Content> contentList;
             if (personDetails.isContributor()) {
-                contentList = mContentDetailsDao.getAllContentDetailsContributedByUserIdTillSetId(personId,setId);
+                if (userId == personId)
+                    contentList = mContentDetailsDao.getAllContentDetailsContributedByUserId(personId);
+                else
+                    contentList = mContentDetailsDao.getAllContentDetailsContributedByUserIdTillSetId(personId, GetSetId.getSetIdForFeed(registeredTimeStamp));
             } else {
                 contentList = mContentDetailsDao.getAllContentCommentedAndLikedByUser(personId);
             }
@@ -137,7 +140,24 @@ public class GetPersonDetails {
                     contentJSONArray.put(contentJSON);
                 }
             }
-            response.put(Constants.CONTENT_LIST, contentJSONArray);
+            response.put(Constants.LIKED_CONTENT_LIST, contentJSONArray);
+
+            //TODO : adding dummy data for now
+
+            if (personDetails.isContributor()) {
+                response.put(Constants.CONTRIBUTED_CONTENT_LIST, contentJSONArray);
+            }
+            else {
+                response.put(Constants.CONTRIBUTED_CONTENT_LIST, new JSONArray());
+            }
+
+            //TODO : addding dummy data for postcard
+
+            JSONArray postCardJSONArray = new JSONArray();
+            postCardJSONArray.put(1,"https://s3.ap-south-1.amazonaws.com/pixtorycontent/fresh/56-rohit.jpg");
+            postCardJSONArray.put(2,"https://s3.ap-south-1.amazonaws.com/pixtorycontent/Rohit.jpg");
+            response.put(Constants.MY_POSTCARDS, postCardJSONArray);
+
             JSONObject personDetailsJSONObject = new JSONObject();
             personDetailsJSONObject.put(Constants.ID, personDetails.getUserId());
             personDetailsJSONObject.put(Constants.NAME, personDetails.getUserName());
@@ -157,9 +177,5 @@ public class GetPersonDetails {
         userUserAssociation.setUserId(userId);
         userUserAssociation.setFollowedUserId(personId);
         return mUserUserDao.isFollowedByUser(userUserAssociation);
-    }
-
-    private long timeStampTosetId(long timeStamp){
-        return (long)((System.currentTimeMillis()-timeStamp)/(1000*60*60*24));
     }
 }
