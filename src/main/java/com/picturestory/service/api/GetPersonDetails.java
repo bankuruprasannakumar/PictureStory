@@ -90,7 +90,6 @@ public class GetPersonDetails {
         org.json.JSONObject response = new org.json.JSONObject();
         try {
             response.put(Constants.SUCCESS, true);
-            response.put(Constants.FULLCOUNT,contentList.size());
             JSONArray contentJSONArray = new JSONArray();
             if (null != contentList) {
                 for (int index = 0; index < contentList.size(); index++) {
@@ -154,8 +153,8 @@ public class GetPersonDetails {
             //TODO : addding dummy data for postcard
 
             JSONArray postCardJSONArray = new JSONArray();
-            postCardJSONArray.put(1,"https://s3.ap-south-1.amazonaws.com/pixtorycontent/fresh/56-rohit.jpg");
-            postCardJSONArray.put(2,"https://s3.ap-south-1.amazonaws.com/pixtorycontent/Rohit.jpg");
+            postCardJSONArray.put(0,"https://s3.ap-south-1.amazonaws.com/pixtorycontent/fresh/56-rohit.jpg");
+            postCardJSONArray.put(1,"https://s3.ap-south-1.amazonaws.com/pixtorycontent/Rohit.jpg");
             response.put(Constants.MY_POSTCARDS, postCardJSONArray);
 
             JSONObject personDetailsJSONObject = new JSONObject();
