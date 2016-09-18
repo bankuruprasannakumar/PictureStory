@@ -129,6 +129,37 @@ public class ContentUserCommentDao implements IContentUserCommentDao<ContentUser
     }
 
     @Override
+    public List<ContentUserCommentAssociation> getCommentsForContentIdWithIndex(int contentId, int start ,int end) {
+        String query = String.format("q=%s:%s AND %s:%s&%s&%s=%s&%s=%s&sort=ingestionTime+desc", Constants.CONTENT_ID, contentId, Constants.COMMENT, Constants.ALL, Constants.WT_JSON, Constants.START, start, Constants.ROWS, end);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if (responseData.isSuccess()) {
+            try {
+                JSONObject responseJSONObject = new JSONObject(responseData.getData());
+                if (responseJSONObject.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    mResponseData.setSuccess(true);
+                    JSONArray contentArray = responseJSONObject.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<ContentUserCommentAssociation>>(){}.getType();
+                    List<ContentUserCommentAssociation> contentUserCommentList = gson.fromJson(contentArray.toString(), listType);
+                    return contentUserCommentList;
+                }
+                else{
+                    mResponseData.setSuccess(true);
+                    return null;
+                }
+            } catch (JSONException j) {
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        mResponseData = responseData;
+        return null;
+    }
+
+    @Override
     public ResponseData getDetailedResponse() {
         return mResponseData;
     }

@@ -1,7 +1,9 @@
 package com.picturestory.service.database.dao;
 
+import com.picturestory.service.pojo.Category;
 import com.picturestory.service.response.ResponseData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +19,10 @@ public interface ICategoryDetailsDao<T,S> {
 
     //returns categoryId for a given given category name
     public T getCategoryId(S categoryName);
+
+    public ArrayList<Category> getAllCategoryDetails();
+
+    public ArrayList<Integer> getAllCategoriesLikedByUser(int userId);
 
     public ResponseData getDetailedResponse();
 }

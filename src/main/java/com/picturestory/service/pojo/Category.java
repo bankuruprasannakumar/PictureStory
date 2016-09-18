@@ -6,6 +6,15 @@ package com.picturestory.service.pojo;
 public class Category {
     private int categoryId;
     private String categoryName;
+    private String pictureUrl;
+
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
 
     public int getCategoryId() {
         return categoryId;

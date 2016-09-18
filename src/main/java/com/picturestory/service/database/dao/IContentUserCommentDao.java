@@ -19,5 +19,7 @@ public interface IContentUserCommentDao<T> {
 
     public List<T> getAllCommentsForContentId(int contentId);
 
+    public List<T> getCommentsForContentIdWithIndex(int contentId, int start, int end);
+
     public ResponseData getDetailedResponse();
 }

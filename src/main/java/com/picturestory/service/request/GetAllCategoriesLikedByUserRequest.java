@@ -1,14 +1,12 @@
 package com.picturestory.service.request;
 
-import com.picturestory.service.Constants;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by bankuru on 24/6/16.
  */
 @XmlRootElement
-public class GetWallPaperRequest implements IRequest{
+public class GetAllCategoriesLikedByUserRequest implements IRequest{
     int userId;
 
 

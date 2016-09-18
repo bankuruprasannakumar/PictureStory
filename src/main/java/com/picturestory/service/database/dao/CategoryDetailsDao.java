@@ -1,16 +1,19 @@
 package com.picturestory.service.database.dao;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.picturestory.service.Constants;
 import com.picturestory.service.database.adapters.IDataAccessAdapter;
 import com.picturestory.service.pojo.Category;
+import com.picturestory.service.pojo.User;
 import com.picturestory.service.pojo.WallPaper;
 import com.picturestory.service.response.ResponseData;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -25,6 +28,72 @@ public class CategoryDetailsDao implements ICategoryDetailsDao<Integer,String> {
         mSolrAdapter = solrAdapter;
         mResponseData = new ResponseData();
     }
+
+    @Override
+    public ArrayList<Category> getAllCategoryDetails() {
+        String query = "";
+        query = String.format("q=%s:%s AND %s:%s&%s", Constants.CATEGORY_ID,Constants.ALL, Constants.CATEGORY_NAME, Constants.ALL, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+
+                JSONObject categoryResponse = new JSONObject(responseData.getData());
+                if (categoryResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    JSONArray categoryArray = categoryResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Category>>(){}.getType();
+                    ArrayList<Category> categories = gson.fromJson(categoryArray.toString(),listType);
+                    return categories;
+                }
+                else {
+                    mResponseData.setErrorMessage("Invalid category ids");
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return null;
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<Integer> getAllCategoriesLikedByUser(int userId) {
+        String query = "";
+        query = String.format("q=%s:%s AND %s:%s&%s", Constants.USER_ID, userId, Constants.USER_INTERESTS, Constants.ALL, Constants.WT_JSON);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+                JSONObject categoryResponse = new JSONObject(responseData.getData());
+                if (categoryResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    JSONObject userJsonObject = categoryResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0);
+                    Gson gson = new Gson();
+                    User user = gson.fromJson(userJsonObject.toString(),User.class);
+                    return (ArrayList)user.getUserInterests();
+
+                }
+                else {
+                    mResponseData.setErrorMessage("Invalid category ids");
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return new ArrayList<Integer>();
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String getCategoryName(Integer categoryId) {
         String query = "";

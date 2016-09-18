@@ -28,5 +28,6 @@ public class SolrModule  extends AbstractModule{
         bind(IContentCategoryDao.class).to(ContentCategoryDao.class);
         bind(ISharedContentAssociationDao.class).to(SharedContentAssociationDao.class);
         bind(ICommentUserLikeDao.class).to(CommentUserLikeDao.class);
+        bind(IPostcardDetailsDao.class).to(PostcardDetailsDao.class);
     }
 }

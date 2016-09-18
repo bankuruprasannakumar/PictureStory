@@ -1,14 +1,10 @@
 package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
-import com.picturestory.service.api.utilities.GetSetId;
 import com.picturestory.service.database.dao.*;
-import com.picturestory.service.pojo.Content;
-import com.picturestory.service.pojo.ContentUserLikeAssociation;
 import com.picturestory.service.pojo.User;
 import com.picturestory.service.pojo.UserUserAssociation;
-import com.picturestory.service.request.GetLikedUserListRequest;
-import com.picturestory.service.request.GetMainFeedRequest;
+import com.picturestory.service.request.GetContentLikedUserListRequest;
 import com.picturestory.service.response.ResponseBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,17 +22,17 @@ import java.util.List;
  * Created by sriram on 2/9/16.
  */
 
-@Path("/getLikedUserList")
+@Path("/getContentLikedUserList")
 @Produces("application/json")
 @Consumes("application/json")
-public class GetLikedUserList {
+public class GetContentLikedUserList {
     private final IUserDetailsDao mUserDetailsDao;
     private final IContentUserLikeDao mContentUserLikeDao;
     private final IUserUserDao mUserUserDao;
     private final IContentDetailsDao mContentDetailsDao;
     @Inject
-    public GetLikedUserList(IUserDetailsDao userDetailsDao,IContentDetailsDao mContentDetailsDao,
-                       IContentUserLikeDao contentUserDao, IUserUserDao userUserDao) {
+    public GetContentLikedUserList(IUserDetailsDao userDetailsDao, IContentDetailsDao mContentDetailsDao,
+                                   IContentUserLikeDao contentUserDao, IUserUserDao userUserDao) {
         mUserDetailsDao = userDetailsDao;
         mContentUserLikeDao = contentUserDao;
         mUserUserDao = userUserDao;
@@ -44,21 +40,21 @@ public class GetLikedUserList {
     }
 
     @POST
-    public Response getLikedUserList(GetLikedUserListRequest getLikedUserListRequest) {
+    public Response getLikedUserList(GetContentLikedUserListRequest getContentLikedUserListRequest) {
         try {
-            if (getLikedUserListRequest == null) {
+            if (getContentLikedUserListRequest == null) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_REQUEST);
             }
-            if (!getLikedUserListRequest.isValid()) {
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getLikedUserListRequest.errorMessage());
+            if (!getContentLikedUserListRequest.isValid()) {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getContentLikedUserListRequest.errorMessage());
             }
 
-            int userId = getLikedUserListRequest.getUserId();
+            int userId = getContentLikedUserListRequest.getUserId();
             if (null == mUserDetailsDao.getUser(userId)) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
             }
 
-            int contentId = getLikedUserListRequest.getContentId();
+            int contentId = getContentLikedUserListRequest.getContentId();
             if(null == mContentDetailsDao.getContentDetails(contentId))
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT,Constants.INVALID_CONTENT_ID);
 

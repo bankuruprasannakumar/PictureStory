@@ -35,6 +35,8 @@ public interface IContentDetailsDao<T> {
 
     public List<T> getAllContentDetailsTillSetId(long setId);
 
+    public List<T> getAllPersonalizedContentDetailsTillSetId(long setId, List<Integer> categoryIds);
+
     public List<T> getAllContentDetailsContributedByUserIdTillSetId(int userId, long setId);
 
     public List<T> getAllContentDetailsForIdsTillSetId(List<Integer> ids,long setId);

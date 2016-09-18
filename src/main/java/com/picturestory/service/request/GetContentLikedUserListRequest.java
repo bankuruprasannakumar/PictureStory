@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement
-public class GetLikedUserListRequest implements IRequest{
+public class GetContentLikedUserListRequest implements IRequest{
 
     private int contentId;
     private int userId;

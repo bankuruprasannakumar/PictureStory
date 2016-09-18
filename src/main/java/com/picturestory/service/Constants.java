@@ -40,6 +40,7 @@ public class Constants {
     public static final String WALL_PAPER = "wallPaper";
     public static final String SHARED_CONTEND_ID = "sharedContentId";
     public static final String PIXTORY_STATUS = "pixtoryStatus";
+    public static final String POSTCARD_ID = "postcardId";
 
     //Network params
     public static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
@@ -108,6 +109,7 @@ public class Constants {
     public static final String CONTRIBUTED_CONTENT_LIST = "contributedContentList";
     public static final String MY_POSTCARDS = "myPostCards";
     public static final String COMMENT_LIST = "commentList";
+    public static final String COMMENT_COUNT = "commentCount";
     public static final String IS_WALLPAPER = "isWallPaper";
     public static final String SET_ID = "setId";
     public static final String CATEGORY_NAME_LIST = "categoryNameList";
