@@ -47,5 +47,7 @@ public interface IContentDetailsDao<T> {
 
     public int addContestContent(ContestContent contestContent);
 
+//    public List<Content>
+
     public ResponseData getDetailedResponse();
 }

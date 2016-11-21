@@ -11,6 +11,7 @@ import com.picturestory.service.response.ResponseData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -122,6 +123,11 @@ public class WallPaperDetailsDao implements IWallPaperDetailsDao {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<Content> getWallPaperForV2(Long setId) {
+
     }
 
     @Override

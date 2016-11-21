@@ -70,7 +70,7 @@ public class CreatePixtory {
             if (addContentRequest.getLocation() != null && !addContentRequest.getLocation().trim().isEmpty()) {
                 content.setPlace(addContentRequest.getTitle());
             }
-
+            content.setIngestionTime(System.currentTimeMillis());
             content.setPixtoryStatus(PixtoryStatus.SUBMITTED.getValue());
             int id = mContentDetailsDao.addContent(content);
             if (id == 0) {

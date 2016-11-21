@@ -63,7 +63,7 @@ public class LikeCommentRequest implements IRequest{
         if(userId == 0)
             msg.append(Constants.INVALID_USER_ID);
         if (commentId == 0)
-            msg.append(Constants.INVALID_CONTENT_ID);
+            msg.append(Constants.INVALID_COMMENT_ID);
         if (doLike == null || doLike.trim().isEmpty())
             msg.append(Constants.INVALID_DO_LIKE);
         return msg.toString();

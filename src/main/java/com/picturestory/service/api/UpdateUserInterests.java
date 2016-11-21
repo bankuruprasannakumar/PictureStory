@@ -27,7 +27,7 @@ public class UpdateUserInterests {
     private final IUserDetailsDao mUserDetailsDao;
 
     @Inject
-    public UpdateUserInterests(IUserDetailsDao userDetailsDao, IUserGcmIdDao userGcmIdDao){
+    public UpdateUserInterests(IUserDetailsDao userDetailsDao){
         mUserDetailsDao = userDetailsDao;
     }
     @POST

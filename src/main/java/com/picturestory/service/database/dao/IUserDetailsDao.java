@@ -48,5 +48,6 @@ public interface IUserDetailsDao<T> {
 
     public boolean updateUserInterests(int userId,List<Integer> userInterests);
 
+    public boolean updateUserDescription (T t);
 
 }

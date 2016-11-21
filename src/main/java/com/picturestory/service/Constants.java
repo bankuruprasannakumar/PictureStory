@@ -41,7 +41,7 @@ public class Constants {
     public static final String SHARED_CONTEND_ID = "sharedContentId";
     public static final String PIXTORY_STATUS = "pixtoryStatus";
     public static final String POSTCARD_ID = "postcardId";
-
+    public static final String TEMPLATE_COUNT = "templateCount";
     //Network params
     public static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
 
@@ -129,6 +129,7 @@ public class Constants {
     public static final String INVALID_DO_LIKE = "Invalid doLike";
     public static final String INVALID_DO_FOLLOW = "Invalid doFollow";
     public static final String INVALID_COMMENT = "Invalid comment";
+    public static final String INVALID_USER_DESCRIPTION = "Invalid user Desription";
     public static final String INVALID_COMMENT_ID = "Invalid comment Id";
     public static final String INVALID_REQUEST = "Invalid request body";
     public static final String INVALID_GCMID = "Invalid gcmId";

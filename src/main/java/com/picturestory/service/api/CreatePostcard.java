@@ -47,7 +47,7 @@ public class CreatePostcard {
     public Response createPostcard(@FormDataParam("image") InputStream image,
                                    @FormDataParam("imageFormat") String format,
                                    @FormDataParam("userId") int  userId,
-                                   @FormDataParam("userId") int  contentId) {
+                                   @FormDataParam("contentId") int  contentId) {
         try {
 
             CreatePostcardRequest createPostcardRequest = new CreatePostcardRequest(image, format, userId, contentId);

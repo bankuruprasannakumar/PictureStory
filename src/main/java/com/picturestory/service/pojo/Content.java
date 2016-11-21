@@ -8,7 +8,7 @@ public class Content {
     private int userId;
     private String pictureUrl;
     private String pictureDescription;
-    private String ingestionTime;
+    private long ingestionTime;
     private String name;
     private String place;
     private String date;
@@ -96,11 +96,11 @@ public class Content {
         this.pictureDescription = pictureDescription;
     }
 
-    public String getIngestionTime() {
+    public long getIngestionTime() {
         return ingestionTime;
     }
 
-    public void setIngestionTime(String ingestionTime) {
+    public void setIngestionTime(long ingestionTime) {
         this.ingestionTime = ingestionTime;
     }
 }
