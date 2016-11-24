@@ -119,6 +119,9 @@ public class Constants {
     public static final String DATA = "data";
     public static final String DIAGNOSTICS = "diagnostics";
     public static final String COMMENT_LIKED_USER_ID = "commentLikedUserId";
+    public static final String WALL_PAPER_CONTENT_IDS ="wallPaperContnetIds";
+    public static final String CURRENT_WALL_PAPER_CONTENT = "currentWallPaperContent";
+    public static final String USER_SELECTED_WALL_PAPER_CONTENT = "userSelectedWallPaperContent";
 
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";

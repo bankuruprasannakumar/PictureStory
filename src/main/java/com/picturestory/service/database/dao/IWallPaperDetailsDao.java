@@ -1,6 +1,7 @@
 package com.picturestory.service.database.dao;
 
 import com.picturestory.service.pojo.Content;
+import com.picturestory.service.pojo.UserWallPaperAssociation;
 import com.picturestory.service.pojo.WallPaper;
 import com.picturestory.service.response.ResponseData;
 
@@ -15,4 +16,8 @@ public interface IWallPaperDetailsDao {
     public ResponseData getDetailedResponse();
     public WallPaper getWallPaperFromSetId(Long setId);
     public List<Content> getWallPaperForV2(Long setId);
+    public List<Integer> getUserSelectedWallPaper(int userId);
+    public boolean setUserSelectedWallPaper(UserWallPaperAssociation userWallPaperAssociation);
+    public boolean updateUserSelectedWallPaper(UserWallPaperAssociation userWallPaperAssociation);
+
 }

@@ -7,6 +7,7 @@ import com.picturestory.service.Constants ;
 import com.picturestory.service.database.adapters.IDataAccessAdapter ;
 import com.picturestory.service.pojo.Contributor;
 import com.picturestory.service.pojo.CookieObject;
+import com.picturestory.service.pojo.UserForMigration;
 import com.picturestory.service.response.ResponseData ;
 import com.picturestory.service.pojo.User;
 import org.json.JSONArray;
@@ -56,6 +57,37 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
                     Gson gson = new Gson();
                     Type listType = new TypeToken<List<User>>(){}.getType();
                     ArrayList<User> users = gson.fromJson(userJsonArray.toString(),listType);
+                    return users;
+                }
+                else {
+                    mResponseData.setErrorMessage("Invalid userId");
+                    mResponseData.setErrorCode(Constants.ERRORCODE_INVALID_INPUT);
+                    mResponseData.setSuccess(false);
+                    return null;
+                }
+            }catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<UserForMigration> getUserBeforeTimeForMigration(long registeredTimeForMigration) {
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.USER_ID,Constants.ALL, Constants.USER_NAME,Constants.ALL, Constants.REGISTERED_TIME, Long.toString(registeredTimeForMigration), Constants.WT_JSON, Constants.START, 0, Constants.ROWS, 1000);
+        ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
+        if(responseData.isSuccess()){
+            try {
+                JSONObject userResponse = new JSONObject(responseData.getData());
+                if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) > 0) {
+                    JSONArray userJsonArray = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<UserForMigration>>(){}.getType();
+                    ArrayList<UserForMigration> users = gson.fromJson(userJsonArray.toString(),listType);
                     return users;
                 }
                 else {
@@ -188,6 +220,34 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
             userJsonObject.put(Constants.ID, recordId);
             query = userJsonObject.toString();
             query = Constants.INSERT_START + query +Constants.INSERT_END;
+            mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
+            if (mResponseData.isSuccess()) {
+                return true;
+            }
+        } catch (JSONException j) {
+            j.printStackTrace();
+            mResponseData.setErrorMessage(j.toString());
+            mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+            mResponseData.setSuccess(false);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateRegisteredTimeOfUser(List<UserForMigration> userList, long registeredTime) {
+        JSONArray setQueryArray = new JSONArray();
+        try {
+            for (UserForMigration user : userList) {
+                JSONObject setQuery = new JSONObject();
+                JSONObject userJsonObject = new JSONObject();
+                setQuery.put(Constants.SET, registeredTime+1);
+                userJsonObject.put(Constants.REGISTERED_TIME, setQuery);
+                userJsonObject.put(Constants.ID, user.getId());
+                setQueryArray.put(userJsonObject);
+            }
+            String query = setQueryArray.toString();
+            System.out.println(query);
             mResponseData = (ResponseData) mSolrAdapter.updateRequest(query);
             if (mResponseData.isSuccess()) {
                 return true;

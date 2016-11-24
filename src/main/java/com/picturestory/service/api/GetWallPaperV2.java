@@ -1,14 +1,14 @@
 package com.picturestory.service.api;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.picturestory.service.Constants;
 import com.picturestory.service.api.utilities.GetSetId;
-import com.picturestory.service.database.dao.IUserDetailsDao;
-import com.picturestory.service.database.dao.IWallPaperDetailsDao;
-import com.picturestory.service.pojo.User;
-import com.picturestory.service.pojo.WallPaper;
+import com.picturestory.service.database.dao.*;
+import com.picturestory.service.pojo.*;
 import com.picturestory.service.request.GetWallPaperRequest;
 import com.picturestory.service.response.ResponseBuilder;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,22 +17,43 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by bankuru on 24/6/16.
  */
-@Path("/getWallPaper/v2")
+@Path("/v2/getWallPaper")
 @Produces("application/json")
 @Consumes("application/json")
 
 public class GetWallPaperV2 {
-    private final IWallPaperDetailsDao mWallPaperDetailsDao;
     private final IUserDetailsDao mUserDetailsDao;
+    private final IContentDetailsDao mContentDetailsDao;
+    private final IContentUserLikeDao mContentUserLikeDao;
+    private final IUserUserDao mUserUserDao;
+    private final IContentCategoryDao mContentCategoryDao;
+    private final ICategoryDetailsDao mCategoryDetailsDao;
+    private final ICommentUserLikeDao mCommentUserLikeDao;
+    private final IContentUserCommentDao mContentUserCommentDao;
+    private final IWallPaperDetailsDao mWallPaperDetailsDao;
 
-    @Inject
-    public GetWallPaperV2(IWallPaperDetailsDao wallPaperDetailsDao, IUserDetailsDao userDetailsDao){
-        this.mWallPaperDetailsDao = wallPaperDetailsDao;
-        this.mUserDetailsDao = userDetailsDao;
+
+    @javax.inject.Inject
+    public GetWallPaperV2(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao,
+                           IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
+                           ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao,
+                           ICommentUserLikeDao mCommentUserLikeDao, IContentUserCommentDao contentUserCommentDao,
+                           IWallPaperDetailsDao wallPaperDetailsDao) {
+        mUserDetailsDao = userDetailsDao;
+        mContentDetailsDao = contentDetailsDao;
+        mContentUserLikeDao = contentUserDao;
+        mUserUserDao = userUserDao;
+        this.mCategoryDetailsDao = mCategoryDetailsDao;
+        this.mContentCategoryDao = mContentCategoryDao;
+        this.mCommentUserLikeDao = mCommentUserLikeDao;
+        mContentUserCommentDao = contentUserCommentDao;
+        mWallPaperDetailsDao = wallPaperDetailsDao;
     }
 
     @POST
@@ -52,26 +73,107 @@ public class GetWallPaperV2 {
         User user =(User)mUserDetailsDao.getUser(userId);
         long registeredTimeStamp = user.getRegisteredTime();
 
-        WallPaper wallPaperObject ;
-        wallPaperObject = mWallPaperDetailsDao.getWallPaperFromSetId(GetSetId.getSetIdForWallPaper(registeredTimeStamp));
-        if (wallPaperObject != null) {
-            JSONObject responseObj = composeResponse(wallPaperObject.getWallPaper());
-            return ResponseBuilder.successResponse(responseObj.toString());
+        List<Content> currentContentList = mWallPaperDetailsDao.getWallPaperForV2(GetSetId.getSetIdForWallPaper(registeredTimeStamp));
+        if (currentContentList == null) {
+            currentContentList = new ArrayList<Content>();
         }
-        else {
-            return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mWallPaperDetailsDao.getDetailedResponse().getErrorMessage());
+        List<Integer> userSelectedContentIds = mWallPaperDetailsDao.getUserSelectedWallPaper(userId);
+        List<Content> userSelectedContentList;
+        if (userSelectedContentIds == null || userSelectedContentIds.isEmpty()) {
+            userSelectedContentList = new ArrayList<Content>();
+        } else {
+            userSelectedContentList = mContentDetailsDao.getAllContentDetailsForIds(userSelectedContentIds);
         }
+        System.out.println(currentContentList);
+        System.out.println(userSelectedContentList);
+        JSONObject currentContentWallPaper = currentContentList.isEmpty()?new JSONObject():composeResponse(userId, currentContentList);
+        JSONObject userSelectedContentWallPaper = userSelectedContentList.isEmpty()?new JSONObject():composeResponse(userId, userSelectedContentList);
+        return ResponseBuilder.successResponse(finalResponse(currentContentWallPaper, userSelectedContentWallPaper));
+
     } catch (Exception e) {
         e.printStackTrace();
         return ResponseBuilder.error(Constants.ERRORCODE_IOEXCEPTION, "Internal Server Error");
     }
 }
 
-    private JSONObject composeResponse(String wallPaper) throws JSONException {
-        JSONObject responseObj = new JSONObject();
-        responseObj.put(Constants.SUCCESS, true);
-        responseObj.put(Constants.WALL_PAPER, wallPaper);
-        return responseObj;
+    private String finalResponse(JSONObject currentContentWallPaper, JSONObject userSelectedContentWallPaper) {
+        JSONObject response = new JSONObject();
+        try {
+            response.put(Constants.SUCCESS, true);
+            response.put(Constants.CURRENT_WALL_PAPER_CONTENT, currentContentWallPaper);
+            response.put(Constants.USER_SELECTED_WALL_PAPER_CONTENT, userSelectedContentWallPaper);
+            return response.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+
+    private JSONObject composeResponse(int userId,List<Content> contentList) {
+        JSONObject response = new JSONObject();
+        try {
+            response.put(Constants.FULLCOUNT,contentList.size());
+            JSONArray contentJSONArray = new JSONArray();
+            if (null != contentList) {
+                for (int index = 0; index < contentList.size(); index++) {
+                    Content content = contentList.get(index);
+                    JSONObject contentJSON = new JSONObject();
+                    contentJSON.put(Constants.ID, content.getContentId());
+                    contentJSON.put(Constants.NAME, content.getName());
+                    contentJSON.put(Constants.PICTURE_URL,content.getPictureUrl());
+                    contentJSON.put(Constants.PLACE,content.getPlace());
+                    contentJSON.put(Constants.DATE,content.getDate());
+                    contentJSON.put(Constants.PICTURE_DESCRIPTION,content.getPictureDescription());
+                    contentJSON.put(Constants.PICTURE_SUMMARY,content.getPictureSummary());
+                    contentJSON.put(Constants.EDITORS_PICK,content.isEditorsPick());
+
+                    //set if liked by user
+
+                    ContentUserLikeAssociation contentUserAssociation = new ContentUserLikeAssociation();
+                    contentUserAssociation.setContentId(content.getContentId());
+                    contentUserAssociation.setLikeduserId(userId);
+                    contentJSON.put(Constants.LIKED_BY_USER, mContentUserLikeDao.isContentLikedByUser(contentUserAssociation));
+                    contentJSON.put(Constants.LIKE_COUNT, mContentUserLikeDao.fullCountOfUserLikesForContentId(content.getContentId()));
+
+                    //Add content creator details
+                    JSONObject contentCreatorJSON = new JSONObject();
+                    User user = (User) mUserDetailsDao.getUser(content.getUserId());
+                    if (user != null) {
+                        contentCreatorJSON.put(Constants.ID, user.getUserId());
+                        contentCreatorJSON.put(Constants.NAME, user.getUserName());
+                        contentCreatorJSON.put(Constants.DESCRIPTION,user.getUserDesc());
+                        contentCreatorJSON.put(Constants.IMAGE_URL,user.getUserImage());
+                        contentCreatorJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, user.getUserId()));
+                        contentJSON.put(Constants.PERSON_DETAILS, contentCreatorJSON);
+                    }
+
+                    //Add category name list
+                    JSONArray categoryJSONArray = new JSONArray();
+                    List<Integer> categoryIdList = mContentCategoryDao.getCategoryIdListFromContentId(content.getContentId());
+                    for(int i=0;i<categoryIdList.size();i++){
+                        JSONObject categoryObject = new JSONObject();
+                        categoryObject.put(Constants.CATEGORY_ID,categoryIdList.get(i));
+                        categoryObject.put(Constants.CATEGORY_NAME,mCategoryDetailsDao.getCategoryName(categoryIdList.get(i)));
+                        categoryJSONArray.put(categoryObject);
+                    }
+                    contentJSON.put(Constants.CATEGORY_NAME_LIST,categoryJSONArray);
+                    contentJSONArray.put(contentJSON);
+                }
+            }
+            response.put(Constants.CONTENT_LIST, contentJSONArray);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return response;
+    }
+
+    private boolean isPersonFollowedByUser(int userId, int personId) {
+        UserUserAssociation userUserAssociation = new UserUserAssociation();
+        userUserAssociation.setUserId(userId);
+        userUserAssociation.setFollowedUserId(personId);
+        return mUserUserDao.isFollowedByUser(userUserAssociation);
+    }
+
 
 }

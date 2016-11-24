@@ -3,6 +3,7 @@ package com.picturestory.service.database.dao;
 import com.picturestory.service.pojo.Contributor;
 import com.picturestory.service.pojo.CookieObject;
 import com.picturestory.service.pojo.User;
+import com.picturestory.service.pojo.UserForMigration;
 import com.picturestory.service.response.ResponseData;
 
 import java.util.ArrayList;
@@ -49,5 +50,11 @@ public interface IUserDetailsDao<T> {
     public boolean updateUserInterests(int userId,List<Integer> userInterests);
 
     public boolean updateUserDescription (T t);
+
+    public ArrayList<UserForMigration> getUserBeforeTimeForMigration(long registeredTimeForMigration);
+
+    public boolean updateRegisteredTimeOfUser(List<UserForMigration> userList, long registeredTime);
+
+
 
 }
