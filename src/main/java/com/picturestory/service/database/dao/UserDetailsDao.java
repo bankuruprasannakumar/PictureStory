@@ -78,7 +78,7 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
 
     @Override
     public ArrayList<UserForMigration> getUserBeforeTimeForMigration(long registeredTimeForMigration) {
-        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.USER_ID,Constants.ALL, Constants.USER_NAME,Constants.ALL, Constants.REGISTERED_TIME, Long.toString(registeredTimeForMigration), Constants.WT_JSON, Constants.START, 0, Constants.ROWS, 1000);
+        String query = String.format("q=%s:%s AND %s:%s AND %s:%s&%s&%s=%s&%s=%s", Constants.USER_ID,Constants.ALL, Constants.USER_NAME,Constants.ALL, Constants.REGISTERED_TIME, Long.toString(registeredTimeForMigration), Constants.WT_JSON, Constants.START, 0, Constants.ROWS, 1100);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if(responseData.isSuccess()){
             try {

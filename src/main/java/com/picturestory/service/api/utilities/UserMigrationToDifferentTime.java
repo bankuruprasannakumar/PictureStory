@@ -21,7 +21,7 @@ public class UserMigrationToDifferentTime {
             System.out.println("userList is null");
             return true;
         }
-        boolean status = userDetailsDao.updateRegisteredTimeOfUser(userList, registeredTime);
+        boolean status = userDetailsDao.updateRegisteredTimeOfUser(userList, 1470748328000l);
         if (status) {
             return true;
         }
@@ -29,7 +29,7 @@ public class UserMigrationToDifferentTime {
     }
 
 //    public static void main(String[] args) {
-//        System.out.println(MigrationToChangeRegisteredTimeForUsers(1470505706000l));
+//        System.out.println(MigrationToChangeRegisteredTimeForUsers(1470505706001l));
 //        return;
 //    }
 }

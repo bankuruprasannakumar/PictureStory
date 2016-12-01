@@ -492,7 +492,7 @@ public class ContentDetailsDao implements IContentDetailsDao<Content> {
         subQuery = subQuery.substring(0, (subQuery.length() - 3));
         subQuery += ")";
 
-        String query = String.format("fq=pictureDescription:*&q={!join from=contentId to=contentId}categoryId:%s&wt=json&start=%s&rows=%s",subQuery,startRow,Configs.MAX_LIMIT);
+        String query = String.format("fq=pictureDescription:*&q={!join from=contentId to=contentId}categoryId:%s&wt=json&start=%s&rows=%s",subQuery,startRow,300);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
             try {

@@ -107,6 +107,6 @@ public class GetSetId {
     }
 
     public static void main (String[] args){
-        System.out.println(getSetIdForFeed(1469298244000l));
+        System.out.println(getSetIdForFeed(1470748328000l));
     }
 }
