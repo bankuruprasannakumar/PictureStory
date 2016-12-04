@@ -1,115 +1,82 @@
 package com.picturestory.service.api;
 
-import com.google.gson.Gson;
-import com.google.inject.Inject;
 import com.picturestory.service.Constants;
 import com.picturestory.service.api.utilities.GetSetId;
 import com.picturestory.service.database.dao.*;
-import com.picturestory.service.pojo.*;
-import com.picturestory.service.request.GetWallPaperRequest;
+import com.picturestory.service.pojo.Content;
+import com.picturestory.service.pojo.ContentUserLikeAssociation;
+import com.picturestory.service.pojo.User;
+import com.picturestory.service.pojo.UserUserAssociation;
+import com.picturestory.service.request.GetMainFeedRequest;
 import com.picturestory.service.response.ResponseBuilder;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by bankuru on 24/6/16.
+ * Created by bankuru on 4/12/16.
  */
-@Path("/v2/getWallPaper")
+@Path("/v2/getMainFeed")
 @Produces("application/json")
 @Consumes("application/json")
-
-public class GetWallPaperV2 {
+public class GetMainFeedV2 {
     private final IUserDetailsDao mUserDetailsDao;
     private final IContentDetailsDao mContentDetailsDao;
     private final IContentUserLikeDao mContentUserLikeDao;
     private final IUserUserDao mUserUserDao;
     private final IContentCategoryDao mContentCategoryDao;
     private final ICategoryDetailsDao mCategoryDetailsDao;
-    private final ICommentUserLikeDao mCommentUserLikeDao;
-    private final IContentUserCommentDao mContentUserCommentDao;
-    private final IWallPaperDetailsDao mWallPaperDetailsDao;
 
-
-    @javax.inject.Inject
-    public GetWallPaperV2(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao,
-                           IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
-                           ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao,
-                           ICommentUserLikeDao mCommentUserLikeDao, IContentUserCommentDao contentUserCommentDao,
-                           IWallPaperDetailsDao wallPaperDetailsDao) {
+    @Inject
+    public GetMainFeedV2(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao,
+                       IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
+                       ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao) {
         mUserDetailsDao = userDetailsDao;
         mContentDetailsDao = contentDetailsDao;
         mContentUserLikeDao = contentUserDao;
         mUserUserDao = userUserDao;
         this.mCategoryDetailsDao = mCategoryDetailsDao;
         this.mContentCategoryDao = mContentCategoryDao;
-        this.mCommentUserLikeDao = mCommentUserLikeDao;
-        mContentUserCommentDao = contentUserCommentDao;
-        mWallPaperDetailsDao = wallPaperDetailsDao;
     }
 
     @POST
-    public Response getWallPaper(GetWallPaperRequest getWallPaperRequest){
-    try {
-        if (getWallPaperRequest == null){
-            return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_REQUEST);
-        }
-        if (!getWallPaperRequest.isValid()) {
-            return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getWallPaperRequest.errorMessage());
-        }
+    public Response getContentDetailList(GetMainFeedRequest getMainFeedReguest) {
+        try {
+            if (getMainFeedReguest == null) {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_REQUEST);
+            }
+            if (!getMainFeedReguest.isValid()) {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, getMainFeedReguest.errorMessage());
+            }
+            int userId = getMainFeedReguest.getUserId();
+            if (null == mUserDetailsDao.getUser(userId)) {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
+            }
+            User user =(User)mUserDetailsDao.getUser(userId);
+            long registeredTimeStamp = user.getRegisteredTime();
+            List<Content> contentList;
+            contentList = mContentDetailsDao.getAllContentDetails();
 
-        int userId = getWallPaperRequest.getUserId();
-        if (null == mUserDetailsDao.getUser(userId)) {
-            return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
+            return ResponseBuilder.successResponse(composeResponse(userId,contentList));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseBuilder.error(Constants.ERRORCODE_IOEXCEPTION, "Internal Server Error");
         }
-        User user =(User)mUserDetailsDao.getUser(userId);
-        long registeredTimeStamp = user.getRegisteredTime();
-
-        List<Content> currentContentList = mWallPaperDetailsDao.getWallPaperForV2(0l);
-        if (currentContentList == null) {
-            currentContentList = new ArrayList<Content>();
-        }
-        List<Integer> userSelectedContentIds = mWallPaperDetailsDao.getUserSelectedWallPaper(userId);
-        List<Content> userSelectedContentList;
-        if (userSelectedContentIds == null || userSelectedContentIds.isEmpty()) {
-            userSelectedContentList = new ArrayList<Content>();
-        } else {
-            userSelectedContentList = mContentDetailsDao.getAllContentDetailsForIds(userSelectedContentIds);
-        }
-        JSONObject currentContentWallPaper = currentContentList.isEmpty()?new JSONObject():composeResponse(userId, currentContentList);
-        JSONObject userSelectedContentWallPaper = userSelectedContentList.isEmpty()?new JSONObject():composeResponse(userId, userSelectedContentList);
-        return ResponseBuilder.successResponse(finalResponse(currentContentWallPaper, userSelectedContentWallPaper));
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseBuilder.error(Constants.ERRORCODE_IOEXCEPTION, "Internal Server Error");
     }
-}
 
-    private String finalResponse(JSONObject currentContentWallPaper, JSONObject userSelectedContentWallPaper) {
+
+
+    private String composeResponse(int userId,List<Content> contentList) {
         JSONObject response = new JSONObject();
         try {
             response.put(Constants.SUCCESS, true);
-            response.put(Constants.CURRENT_WALL_PAPER_CONTENT, currentContentWallPaper);
-            response.put(Constants.USER_SELECTED_WALL_PAPER_CONTENT, userSelectedContentWallPaper);
-            return response.toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private JSONObject composeResponse(int userId,List<Content> contentList) {
-        JSONObject response = new JSONObject();
-        try {
             response.put(Constants.FULLCOUNT,contentList.size());
             JSONArray contentJSONArray = new JSONArray();
             if (null != contentList) {
@@ -155,7 +122,9 @@ public class GetWallPaperV2 {
                         categoryJSONArray.put(categoryObject);
                     }
                     contentJSON.put(Constants.CATEGORY_NAME_LIST,categoryJSONArray);
+
                     contentJSONArray.put(contentJSON);
+
                 }
             }
             response.put(Constants.CONTENT_LIST, contentJSONArray);
@@ -163,7 +132,7 @@ public class GetWallPaperV2 {
             e.printStackTrace();
             return null;
         }
-        return response;
+        return response.toString();
     }
 
     private boolean isPersonFollowedByUser(int userId, int personId) {
@@ -172,6 +141,5 @@ public class GetWallPaperV2 {
         userUserAssociation.setFollowedUserId(personId);
         return mUserUserDao.isFollowedByUser(userUserAssociation);
     }
-
 
 }

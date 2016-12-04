@@ -3,6 +3,7 @@ package com.picturestory.service.database.dao;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
+import com.picturestory.service.Configs;
 import com.picturestory.service.Constants;
 import com.picturestory.service.database.adapters.IDataAccessAdapter;
 import com.picturestory.service.pojo.Content;
@@ -130,7 +131,7 @@ public class WallPaperDetailsDao implements IWallPaperDetailsDao {
     @Override
     public List<Content> getWallPaperForV2(Long setId) {
         String query = "";
-        query = String.format("q=%s:%s AND %s:true&%s", Constants.SET_ID, setId,Constants.IS_WALLPAPER, Constants.WT_JSON);
+        query = String.format("q=%s:%s AND %s:true&%s&%s=%s&%s=%s", Constants.SET_ID, setId,Constants.IS_WALLPAPER, Constants.WT_JSON, Constants.START, 0, Constants.ROWS, Configs.MAX_LIMIT);
         ResponseData responseData = (ResponseData)mSolrAdapter.selectRequest(query);
         if(responseData.isSuccess()){
             try {
