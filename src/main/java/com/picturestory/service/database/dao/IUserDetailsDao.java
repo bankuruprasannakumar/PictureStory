@@ -27,6 +27,8 @@ public interface IUserDetailsDao<T> {
 
     public boolean updateGcmIdOfUser(T user);
 
+    public boolean updateApNsIdOfUser(T user);
+
     public int addUserForFbId(T user);
 
     public int getTotalCount();

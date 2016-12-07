@@ -13,9 +13,18 @@ public class User {
     private String userImage;
     private String userDesc;
     private String gcmId;
+    private String apNsId;
     private boolean isContributor;
     private long registeredTime;
     private List<Integer> userInterests;
+
+    public String getApNsId() {
+        return apNsId;
+    }
+
+    public void setApNsId(String apNsId) {
+        this.apNsId = apNsId;
+    }
 
     public List<Integer> getUserInterests() {
         return userInterests;

@@ -8,6 +8,7 @@ import com.google.inject.AbstractModule;
 import com.picturestory.service.database.adapters.IDataAccessAdapter;
 import com.picturestory.service.database.adapters.solr.SolrAdapter;
 import com.picturestory.service.database.dao.*;
+import com.picturestory.service.pojo.UserTemplateBucketAssociation;
 
 public class SolrModule  extends AbstractModule{
     @Override
@@ -29,5 +30,6 @@ public class SolrModule  extends AbstractModule{
         bind(ISharedContentAssociationDao.class).to(SharedContentAssociationDao.class);
         bind(ICommentUserLikeDao.class).to(CommentUserLikeDao.class);
         bind(IPostcardDetailsDao.class).to(PostcardDetailsDao.class);
+        bind(IUserTemplateBucketDao.class).to(UserTemplateBucketDao.class);
     }
 }

@@ -16,6 +16,7 @@ public class Constants {
     public static final String DOCS = "docs";
     public static final String WT_JSON = "wt=json";
     public static final String GCMID = "gcmId";
+    public static final String APNSID = "apNsId";
     public static final String FB_ID = "fbId";
     public static final String ALL = "*";
     public static final String AND = " AND ";
@@ -42,6 +43,11 @@ public class Constants {
     public static final String PIXTORY_STATUS = "pixtoryStatus";
     public static final String POSTCARD_ID = "postcardId";
     public static final String TEMPLATE_COUNT = "templateCount";
+    public static final String UNLOCKED_TEMPLATE_BUCKET_IDS= "unlockedTemplateBucketIds";
+    public static final String TEMPLATE_ID = "templateId";
+    public static final String BUCKET_ID = "bucketId";
+    public static final String BUCKET_NAME = "bucketName";
+    public static final String BUCKET_PICTURE_URL = "bucketPictureUrl";
     //Network params
     public static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
 
@@ -122,6 +128,9 @@ public class Constants {
     public static final String WALL_PAPER_CONTENT_IDS ="wallPaperContnetIds";
     public static final String CURRENT_WALL_PAPER_CONTENT = "currentWallPaperContent";
     public static final String USER_SELECTED_WALL_PAPER_CONTENT = "userSelectedWallPaperContent";
+    public static final String UNLOCKED_STATUS = "unlockedStatus";
+    public static final String BUCKET_LIST = "bucketList";
+    public static final String TEMPLATE_LIST = "templateList";
 
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";
@@ -141,4 +150,10 @@ public class Constants {
     public static final String INVALID_STORY = "Invalid Story";
     public static final String INVALID_COOKIE = "Invalid Cookie";
     public static final String INVALID_MESSAGE = "Invalid message";
+    public static final String INVALID_TEXT = "Invalid text";
+    public static final String INVALID_TEMPLATE_ID = "Invalid Template Id";
+    public static final String INVALID_POST_CARD_USER_NAME = "Invalid Postcard Username";
+    public static final String INVALID_TEMPLATE_BUCKET_ID = "Invalid Template BucketId";
+    public static final String INVALID_TAG = "Invalid Tag";
+
 }

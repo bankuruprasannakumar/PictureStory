@@ -12,6 +12,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AddPushNotifsIdRequest implements IRequest{
     int userId;
     String gcmId;
+    String apNsId;
+
+    public String getApNsId() {
+        return apNsId;
+    }
+
+    public void setApNsId(String apNsId) {
+        this.apNsId = apNsId;
+    }
 
     public String getGcmId() {
         return gcmId;
@@ -33,7 +42,7 @@ public class AddPushNotifsIdRequest implements IRequest{
     public boolean isValid() {
         if(userId == 0)
             return false;
-        if (gcmId == null || gcmId.trim().isEmpty())
+        if ((gcmId == null || gcmId.trim().isEmpty()) && (apNsId == null || apNsId.trim().isEmpty()))
             return false;
         return true;
     }
@@ -43,7 +52,7 @@ public class AddPushNotifsIdRequest implements IRequest{
         StringBuilder msg = new StringBuilder();
         if(userId == 0)
             msg.append(Constants.INVALID_USER_ID);
-        if (gcmId == null || gcmId.trim().isEmpty())
+        if ((gcmId == null || gcmId.trim().isEmpty()) && (apNsId == null || apNsId.trim().isEmpty()))
             msg.append(Constants.INVALID_GCMID);
         return msg.toString();
     }

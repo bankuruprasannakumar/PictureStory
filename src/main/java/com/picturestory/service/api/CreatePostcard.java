@@ -15,11 +15,13 @@ import com.sun.jersey.multipart.FormDataParam;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -46,11 +48,16 @@ public class CreatePostcard {
     @POST
     public Response createPostcard(@FormDataParam("image") InputStream image,
                                    @FormDataParam("imageFormat") String format,
+                                   @FormDataParam("text") String text,
+                                   @FormDataParam("templateId") int templateId,
+                                   @FormDataParam("location") String location,
+                                   @FormDataParam("postcardUserName") String postcardUserName,
                                    @FormDataParam("userId") int  userId,
-                                   @FormDataParam("contentId") int  contentId) {
+                                   @FormDataParam("contentId") int  contentId,
+                                   @FormDataParam("tag") List<String> tag) {
         try {
 
-            CreatePostcardRequest createPostcardRequest = new CreatePostcardRequest(image, format, userId, contentId);
+            CreatePostcardRequest createPostcardRequest = new CreatePostcardRequest(image, format, text, templateId, location, postcardUserName, userId, contentId, tag);
 
             if (!createPostcardRequest.isValid()){
                 return WebResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, createPostcardRequest.errorMessage());
@@ -64,16 +71,29 @@ public class CreatePostcard {
             if (null == content) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_CONTENT_ID);
             }
+            if (checkIfFileIsImage(image)) {
+                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_IMAGE);
+            }
+            // check for valid templateId
+
 
             String fileName = getVideoUrl(createPostcardRequest, null);
             //https://dabx1e3n0nllc.cloudfront.net/Devesh+-+Texts+in+the+making
             String pictureUrl = "https://s3.ap-south-1.amazonaws.com/pixtory-uploaded-content/"+fileName+".jpeg";
 
             Postcard postcard = new Postcard();
-            postcard.setContentId(contentId);
             postcard.setPictureUrl(pictureUrl);
-            postcard.setUserid(userId);
-
+            postcard.setUserid(createPostcardRequest.getUserId());
+            postcard.setText(createPostcardRequest.getText());
+            postcard.setPostcardUserName(createPostcardRequest.getPostcardUserName());
+            postcard.setTemplateId(createPostcardRequest.getTemplateId());
+            postcard.setTags(createPostcardRequest.getTags());
+            if (contentId != 0) {
+                postcard.setContentId(contentId);
+            }
+            if (createPostcardRequest.getLocation() != null || !createPostcardRequest.getLocation().isEmpty()) {
+                postcard.setLocation(createPostcardRequest.getLocation());
+            }
             int postcardId = mPostcardDetailsDao.createPostCard(postcard);
 
             if (postcardId != 0){
@@ -130,5 +150,15 @@ public class CreatePostcard {
             }
         }
         return imageURL;
+    }
+
+    private boolean checkIfFileIsImage(InputStream inputStream) {
+            try {
+                ImageIO.read(inputStream).toString();
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+
     }
 }

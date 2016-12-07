@@ -45,12 +45,22 @@ public class AddPushNotifsId {
             }
             boolean status;
             User u = (User) mUserDetailsDao.getUser(userId);
-            u.setGcmId(addPushNotifsIdRequest.getGcmId());
-            status = mUserDetailsDao.updateGcmIdOfUser(u);
-            if(status == false){
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserDetailsDao.getDetailedResponse().getErrorMessage());
-            }else{
-                return ResponseBuilder.successResponse();
+            if (addPushNotifsIdRequest.getGcmId() != null || addPushNotifsIdRequest.getGcmId().isEmpty()) {
+                u.setGcmId(addPushNotifsIdRequest.getGcmId());
+                status = mUserDetailsDao.updateGcmIdOfUser(u);
+                if(status == false){
+                    return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserDetailsDao.getDetailedResponse().getErrorMessage());
+                }else{
+                    return ResponseBuilder.successResponse();
+                }
+            } else {
+                u.setApNsId(addPushNotifsIdRequest.getApNsId());
+                status = mUserDetailsDao.updateApNsIdOfUser(u);
+                if(status == false){
+                    return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, mUserDetailsDao.getDetailedResponse().getErrorMessage());
+                }else{
+                    return ResponseBuilder.successResponse();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
