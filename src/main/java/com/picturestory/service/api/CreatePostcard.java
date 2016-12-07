@@ -11,6 +11,7 @@ import com.picturestory.service.pojo.User;
 import com.picturestory.service.request.CreatePostcardRequest;
 import com.picturestory.service.response.ResponseBuilder;
 import com.picturestory.service.response.WebResponseBuilder;
+import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +22,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -47,17 +49,19 @@ public class CreatePostcard {
     //createpixtory
     @POST
     public Response createPostcard(@FormDataParam("image") InputStream image,
+                                   @FormDataParam("tag") List<FormDataBodyPart> tag,
                                    @FormDataParam("imageFormat") String format,
                                    @FormDataParam("text") String text,
                                    @FormDataParam("templateId") int templateId,
                                    @FormDataParam("location") String location,
                                    @FormDataParam("postcardUserName") String postcardUserName,
                                    @FormDataParam("userId") int  userId,
-                                   @FormDataParam("contentId") int  contentId,
-                                   @FormDataParam("tag") List<String> tag) {
+                                   @FormDataParam("contentId") int  contentId) {
         try {
-
-            CreatePostcardRequest createPostcardRequest = new CreatePostcardRequest(image, format, text, templateId, location, postcardUserName, userId, contentId, tag);
+            List<String> extractedTags = new ArrayList<String>();
+            for(FormDataBodyPart keyword : tag)
+                extractedTags.add(keyword.getValueAs(String.class));
+            CreatePostcardRequest createPostcardRequest = new CreatePostcardRequest(image, format, text, templateId, location, postcardUserName, userId, contentId, extractedTags);
 
             if (!createPostcardRequest.isValid()){
                 return WebResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, createPostcardRequest.errorMessage());
@@ -71,7 +75,7 @@ public class CreatePostcard {
             if (null == content) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_CONTENT_ID);
             }
-            if (checkIfFileIsImage(image)) {
+            if (!isImage(image)) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_IMAGE);
             }
             // check for valid templateId
@@ -152,7 +156,7 @@ public class CreatePostcard {
         return imageURL;
     }
 
-    private boolean checkIfFileIsImage(InputStream inputStream) {
+    private boolean isImage(InputStream inputStream) {
             try {
                 ImageIO.read(inputStream).toString();
                 return true;
