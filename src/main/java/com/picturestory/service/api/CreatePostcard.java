@@ -46,7 +46,7 @@ public class CreatePostcard {
         mPostcardDetailsDao = postcardDetailsDao;
     }
 
-    //createpixtory
+    //createpostcard
     @POST
     public Response createPostcard(@FormDataParam("image") InputStream image,
                                    @FormDataParam("tag") List<FormDataBodyPart> tag,
@@ -77,9 +77,9 @@ public class CreatePostcard {
                     return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_CONTENT_ID);
                 }
             }
-            if (!isImage(image)) {
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_IMAGE);
-            }
+//            if (!isImage(image)) {
+//                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_IMAGE);
+//            }
             // check for valid templateId
 
 
@@ -89,7 +89,7 @@ public class CreatePostcard {
 
             Postcard postcard = new Postcard();
             postcard.setPictureUrl(pictureUrl);
-            postcard.setUserid(createPostcardRequest.getUserId());
+            postcard.setUserId(createPostcardRequest.getUserId());
             postcard.setText(createPostcardRequest.getText());
             postcard.setPostcardUserName(createPostcardRequest.getPostcardUserName());
             postcard.setTemplateId(createPostcardRequest.getTemplateId());

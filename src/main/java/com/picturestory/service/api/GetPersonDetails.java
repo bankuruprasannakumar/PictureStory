@@ -141,22 +141,6 @@ public class GetPersonDetails {
             }
             response.put(Constants.LIKED_CONTENT_LIST, contentJSONArray);
 
-            //TODO : adding dummy data for now
-
-            if (personDetails.isContributor()) {
-                response.put(Constants.CONTRIBUTED_CONTENT_LIST, contentJSONArray);
-            }
-            else {
-                response.put(Constants.CONTRIBUTED_CONTENT_LIST, new JSONArray());
-            }
-
-            //TODO : addding dummy data for postcard
-
-            JSONArray postCardJSONArray = new JSONArray();
-            postCardJSONArray.put(0,"https://s3.ap-south-1.amazonaws.com/pixtorycontent/fresh/56-rohit.jpg");
-            postCardJSONArray.put(1,"https://s3.ap-south-1.amazonaws.com/pixtorycontent/Rohit.jpg");
-            response.put(Constants.MY_POSTCARDS, postCardJSONArray);
-
             JSONObject personDetailsJSONObject = new JSONObject();
             personDetailsJSONObject.put(Constants.ID, personDetails.getUserId());
             personDetailsJSONObject.put(Constants.NAME, personDetails.getUserName());

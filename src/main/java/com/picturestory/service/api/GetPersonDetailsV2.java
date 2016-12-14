@@ -22,11 +22,11 @@ import java.util.List;
 /**
  * Created by bankuru on 26/5/16.
  */
-@Path("/getAllPersonDetails")
+@Path("/v2/getPersonDetails")
 @Produces("application/json")
 @Consumes("application/json")
 
-public class GetAllPersonDetails {
+public class GetPersonDetailsV2 {
     private final IUserDetailsDao mUserDetailsDao;
     private final IContentDetailsDao mContentDetailsDao;
     private final IContentUserLikeDao mContentUserLikeDao;
@@ -38,11 +38,11 @@ public class GetAllPersonDetails {
     private final IContentUserCommentDao mContentUserCommentDao;
 
     @Inject
-    public GetAllPersonDetails(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao,
-                               IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
-                               ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao,
-                               IPostcardDetailsDao postcardDetailsDao, ICommentUserLikeDao mCommentUserLikeDao,
-                               IContentUserCommentDao contentUserCommentDao) {
+    public GetPersonDetailsV2(IUserDetailsDao userDetailsDao, IContentDetailsDao contentDetailsDao,
+                              IContentUserLikeDao contentUserDao, IUserUserDao userUserDao,
+                              ICategoryDetailsDao mCategoryDetailsDao, IContentCategoryDao mContentCategoryDao,
+                              IPostcardDetailsDao postcardDetailsDao, ICommentUserLikeDao mCommentUserLikeDao,
+                              IContentUserCommentDao contentUserCommentDao) {
         mUserDetailsDao = userDetailsDao;
         mContentDetailsDao = contentDetailsDao;
         mContentUserLikeDao = contentUserDao;
@@ -99,7 +99,6 @@ public class GetAllPersonDetails {
             JSONArray userLikedContentJSONArray = composeContentResponse(userId, userLikedContentList);
             response.put(Constants.LIKED_CONTENT_LIST, userLikedContentJSONArray);
 
-            //TODO : adding dummy data for now
 
             if (personDetails.isContributor()) {
                 JSONArray userContributedContentJSONArray = composeContentResponse(userId, userContributedContentList);
@@ -109,13 +108,11 @@ public class GetAllPersonDetails {
                 response.put(Constants.CONTRIBUTED_CONTENT_LIST, new JSONArray());
             }
 
-            //TODO : addding dummy data for postcard
 
             JSONArray postCardJSONArray = new JSONArray();
-            if (postCardJSONArray != null && postCardJSONArray.length() != 0) {
-                for (int i = 0; i < userCreatedPostCardList.size() ; i++) {
-                    postCardJSONArray.put(i, userCreatedPostCardList.get(i).getPictureUrl());
-                }
+            if (userCreatedPostCardList != null && userCreatedPostCardList.size() != 0) {
+                Gson gson = new Gson();
+                postCardJSONArray = new JSONArray(gson.toJson(userCreatedPostCardList));
             }
             response.put(Constants.MY_POSTCARDS, postCardJSONArray);
 

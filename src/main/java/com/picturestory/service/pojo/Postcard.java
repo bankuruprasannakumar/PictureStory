@@ -6,7 +6,7 @@ import java.util.List;
  * Created by bankuru on 19/9/16.
  */
 public class Postcard {
-    private int userid;
+    private int userId;
     private int ContentId;
     private String pictureUrl;
     private int postcardId;
@@ -64,12 +64,12 @@ public class Postcard {
         this.pictureUrl = pictureUrl;
     }
 
-    public int getUserid() {
-        return userid;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUserid(int userid) {
-        this.userid = userid;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public int getContentId() {

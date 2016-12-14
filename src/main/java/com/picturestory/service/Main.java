@@ -33,7 +33,7 @@ public class Main {
             // create and start a new instance of grizzly http server
             // exposing the Jersey application at BASE_URI
 
-            return GrizzlyServerFactory.createHttpServer(getBaseURI(), rc, ioc);
+            return GrizzlyServerFactory.createHttpServer(BASE_URI, rc, ioc);
         }catch (IOException e){
             System.out.println("unable to start server");
             e.printStackTrace();
