@@ -4,15 +4,8 @@ import com.google.inject.Inject;
 import com.picturestory.service.Constants;
 import com.picturestory.service.database.dao.IUserDetailsDao;
 import com.picturestory.service.database.dao.IUserTemplateBucketDao;
-import com.picturestory.service.pojo.Template;
-import com.picturestory.service.pojo.TemplateBucket;
-import com.picturestory.service.pojo.UserTemplateBucketAssociation;
-import com.picturestory.service.request.GetTemplateRequest;
 import com.picturestory.service.request.UnlockTemplateBucketsRequest;
 import com.picturestory.service.response.ResponseBuilder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;

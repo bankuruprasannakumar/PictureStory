@@ -10,9 +10,36 @@ public class Template {
     private String fontName;
     private String fontColor;
     private float fontSize;
-    private float lineSpacing;
-    private float boundaryHeight;
-    private float boundaryWidth;
+    private float lineSpacingAndr;
+    private float boundaryHeightAndr;
+    private float boundaryWidthAndr;
+    private float lineSpacingIos;
+    private float boundaryHeightIos;
+    private float boundaryWidthIos;
+
+    public float getLineSpacingIos() {
+        return lineSpacingIos;
+    }
+
+    public void setLineSpacingIos(float lineSpacingIos) {
+        this.lineSpacingIos = lineSpacingIos;
+    }
+
+    public float getBoundaryHeightIos() {
+        return boundaryHeightIos;
+    }
+
+    public void setBoundaryHeightIos(float boundaryHeightIos) {
+        this.boundaryHeightIos = boundaryHeightIos;
+    }
+
+    public float getBoundaryWidthIos() {
+        return boundaryWidthIos;
+    }
+
+    public void setBoundaryWidthIos(float boundaryWidthIos) {
+        this.boundaryWidthIos = boundaryWidthIos;
+    }
 
     public int getTemplateId() {
         return templateId;
@@ -62,27 +89,27 @@ public class Template {
         this.fontSize = fontSize;
     }
 
-    public float getLineSpacing() {
-        return lineSpacing;
+    public float getLineSpacingAndr() {
+        return lineSpacingAndr;
     }
 
-    public void setLineSpacing(float lineSpacing) {
-        this.lineSpacing = lineSpacing;
+    public void setLineSpacingAndr(float lineSpacingAndr) {
+        this.lineSpacingAndr = lineSpacingAndr;
     }
 
-    public float getBoundaryHeight() {
-        return boundaryHeight;
+    public float getBoundaryHeightAndr() {
+        return boundaryHeightAndr;
     }
 
-    public void setBoundaryHeight(float boundaryHeight) {
-        this.boundaryHeight = boundaryHeight;
+    public void setBoundaryHeightAndr(float boundaryHeightAndr) {
+        this.boundaryHeightAndr = boundaryHeightAndr;
     }
 
-    public float getBoundaryWidth() {
-        return boundaryWidth;
+    public float getBoundaryWidthAndr() {
+        return boundaryWidthAndr;
     }
 
-    public void setBoundaryWidth(float boundaryWidth) {
-        this.boundaryWidth = boundaryWidth;
+    public void setBoundaryWidthAndr(float boundaryWidthAndr) {
+        this.boundaryWidthAndr = boundaryWidthAndr;
     }
 }
