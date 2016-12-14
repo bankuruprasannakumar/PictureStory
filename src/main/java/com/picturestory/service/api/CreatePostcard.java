@@ -81,7 +81,7 @@ public class CreatePostcard {
 //                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_IMAGE);
 //            }
             // check for valid templateId
-
+            
 
             String fileName = getVideoUrl(createPostcardRequest, null);
             //https://dabx1e3n0nllc.cloudfront.net/Devesh+-+Texts+in+the+making
