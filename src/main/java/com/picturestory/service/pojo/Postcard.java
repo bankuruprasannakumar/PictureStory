@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class Postcard {
     private int userId;
-    private int ContentId;
+    private int contentId;
     private String pictureUrl;
     private int postcardId;
     private String text;
@@ -73,11 +73,11 @@ public class Postcard {
     }
 
     public int getContentId() {
-        return ContentId;
+        return contentId;
     }
 
     public void setContentId(int contentId) {
-        ContentId = contentId;
+        this.contentId = contentId;
     }
 
 
