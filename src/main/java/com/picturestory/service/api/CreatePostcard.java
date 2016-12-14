@@ -71,9 +71,11 @@ public class CreatePostcard {
             if (null == user) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
             }
-            Content content = (Content) mContentDetailsDao.getContentDetails(contentId);
-            if (null == content) {
-                return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_CONTENT_ID);
+            if (createPostcardRequest.getContentId() != 0) {
+                Content content = (Content) mContentDetailsDao.getContentDetails(contentId);
+                if (null == content) {
+                    return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_CONTENT_ID);
+                }
             }
             if (!isImage(image)) {
                 return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_IMAGE);

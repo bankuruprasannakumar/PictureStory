@@ -154,6 +154,7 @@ public class Constants {
     public static final String INVALID_TEMPLATE_ID = "Invalid Template Id";
     public static final String INVALID_POST_CARD_USER_NAME = "Invalid Postcard Username";
     public static final String INVALID_TEMPLATE_BUCKET_ID = "Invalid Template BucketId";
+    public static final String INVALID_TARGET_USER_ID = "Invalid target user id";
     public static final String INVALID_TAG = "Invalid Tag";
 
 }

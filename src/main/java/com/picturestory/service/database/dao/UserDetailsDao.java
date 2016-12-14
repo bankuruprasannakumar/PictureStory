@@ -3,13 +3,11 @@ package com.picturestory.service.database.dao;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
+import com.picturestory.service.Configs;
 import com.picturestory.service.Constants ;
 import com.picturestory.service.database.adapters.IDataAccessAdapter ;
-import com.picturestory.service.pojo.Contributor;
-import com.picturestory.service.pojo.CookieObject;
-import com.picturestory.service.pojo.UserForMigration;
+import com.picturestory.service.pojo.*;
 import com.picturestory.service.response.ResponseData ;
-import com.picturestory.service.pojo.User;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +38,7 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
         }
         else {
             currentUserId = createUser(user);
+
             return currentUserId;
         }
     }
@@ -455,6 +454,27 @@ public class UserDetailsDao implements IUserDetailsDao<User>{
             return 0;
         }
         return 0;
+    }
+
+    private boolean createUserTemplateAssocaiation(int userId) {
+        String query = "";
+        try {
+            Gson gson = new Gson();
+            UserTemplateBucketAssociation userTemplateBucketAssociation = new UserTemplateBucketAssociation();
+            userTemplateBucketAssociation.setUserId(userId);
+            userTemplateBucketAssociation.setUnlockedTemplateBucketIds(Configs.DEFAULT_TEMPLATE_LIST);
+            String jsonUserBucket = gson.toJson(UserTemplateBucketAssociation.class);
+            JSONObject userBucketJSONObject = new JSONObject(jsonUserBucket);
+            query = Constants.INSERT_START + userBucketJSONObject.toString() + Constants.INSERT_END;
+            mResponseData = (ResponseData)mSolrAdapter.updateRequest(query);
+            return mResponseData.isSuccess();
+            } catch (JSONException j){
+                j.printStackTrace();
+                mResponseData.setErrorMessage(j.toString());
+                mResponseData.setErrorCode(Constants.ERRORCODE_JSON_EXCEPTION);
+                mResponseData.setSuccess(false);
+                return false;
+        }
     }
 
     @Override

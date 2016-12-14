@@ -1,5 +1,6 @@
 package com.picturestory.service.api;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.picturestory.service.Constants;
 import com.picturestory.service.api.utilities.GetSetId;
@@ -76,7 +77,8 @@ public class GetTemplates {
             bucketObject.put(Constants.UNLOCKED_STATUS, unlockedStatus);
             bucketList.put(bucketObject);
         }
-        JSONArray templateList = new JSONArray(userTemplateList);
+        Gson gson = new Gson();
+        JSONArray templateList = new JSONArray(gson.toJson(userTemplateList));
         responseObj.put(Constants.SUCCESS, true);
         responseObj.put(Constants.BUCKET_LIST, bucketList);
         responseObj.put(Constants.TEMPLATE_LIST, templateList);

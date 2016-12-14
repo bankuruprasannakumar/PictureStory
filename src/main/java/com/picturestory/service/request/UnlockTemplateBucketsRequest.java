@@ -11,6 +11,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class UnlockTemplateBucketsRequest implements IRequest{
     private int userId;
     private int bucketId;
+    private int targetUserId;
+
+
+    public int getTargetUserId() {
+        return targetUserId;
+    }
+
+    public void setTargetUserId(int targetUserId) {
+        this.targetUserId = targetUserId;
+    }
 
     public int getUserId() {
         return userId;
@@ -34,6 +44,8 @@ public class UnlockTemplateBucketsRequest implements IRequest{
             return false;
         if (bucketId == 0)
             return false;
+        if (targetUserId == 0)
+            return false;
         return true;
     }
 
@@ -44,6 +56,8 @@ public class UnlockTemplateBucketsRequest implements IRequest{
             msg.append(Constants.INVALID_USER_ID);
         if (bucketId == 0)
             msg.append(Constants.INVALID_TEMPLATE_BUCKET_ID);
+        if (targetUserId == 0)
+            msg.append(Constants.INVALID_TARGET_USER_ID);
         return msg.toString();
     }
 }

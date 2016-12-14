@@ -16,7 +16,7 @@ import java.io.IOException;
  * Created by bankuru on 29/4/16.
  */
 public class Main {
-    private static final String BASE_URI = "http://10.14.125.134:4055/";
+    private static final String BASE_URI = "http://10.14.123.253:4055/";
     public static HttpServer startServer(){
         try {
             Injector injector = Guice.createInjector(new SolrModule());

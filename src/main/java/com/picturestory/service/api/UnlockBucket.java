@@ -52,7 +52,11 @@ public class UnlockBucket {
         if (null == mUserDetailsDao.getUser(userId)) {
             return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_USER_ID);
         }
-        mUserTemplateBucketDao.unlockUserTemplateBucket(userId, unlockTemplateBucketsRequest.getBucketId());
+        int targetUserId = unlockTemplateBucketsRequest.getTargetUserId();
+        if (null == mUserDetailsDao.getUser(targetUserId)) {
+            return ResponseBuilder.error(Constants.ERRORCODE_INVALID_INPUT, Constants.INVALID_TARGET_USER_ID);
+        }
+        mUserTemplateBucketDao.unlockUserTemplateBucket(targetUserId, unlockTemplateBucketsRequest.getBucketId());
         return ResponseBuilder.successResponse();
     } catch (Exception e) {
         e.printStackTrace();

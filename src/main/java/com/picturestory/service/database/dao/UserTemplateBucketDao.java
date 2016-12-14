@@ -97,7 +97,7 @@ public class UserTemplateBucketDao implements IUserTemplateBucketDao<UserTemplat
         JSONObject setQuery = new JSONObject();
         String query = "";
         String recordId;
-        List<Integer> userTemplateBucketIds;
+        ArrayList<Integer> userTemplateBucketIds;
         query = String.format("q=%s:%s AND %s:%s&%s", Constants.USER_ID,userId,Constants.UNLOCKED_TEMPLATE_BUCKET_IDS,Constants.ALL, Constants.WT_JSON);
         ResponseData responseData = (ResponseData) mSolrAdapter.selectRequest(query);
         if (responseData.isSuccess()) {
@@ -106,7 +106,10 @@ public class UserTemplateBucketDao implements IUserTemplateBucketDao<UserTemplat
                 if (userResponse.getJSONObject(Constants.RESPONSE).getInt(Constants.NUMFOUND) == 1) {
                     JSONObject responseJSON = userResponse.getJSONObject(Constants.RESPONSE).getJSONArray(Constants.DOCS).getJSONObject(0);
                     recordId = responseJSON.getString(Constants.ID);
-                    userTemplateBucketIds = (List)responseJSON.getJSONArray(Constants.UNLOCKED_TEMPLATE_BUCKET_IDS);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Integer>>(){}.getType();
+                    JSONArray userTemplateBucketIdsJSONArray = responseJSON.getJSONArray(Constants.UNLOCKED_TEMPLATE_BUCKET_IDS);
+                    userTemplateBucketIds = gson.fromJson(userTemplateBucketIdsJSONArray.toString(), listType);
                     if (userTemplateBucketIds.contains(bucketId)) {
                         return true;
                     } else {
