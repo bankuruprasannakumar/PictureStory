@@ -108,6 +108,7 @@ public class Constants {
     public static final String DOWNLOADED_BY_USER = "downloadedByUser";
     public static final String FULLCOUNT = "fullCount";
     public static final String PERSON_DETAILS="personDetails";
+    public static final String STORY_USER_DETAILS = "storyUserDetails";
     public static final String USER_DETAILS="userDetails";
     public static final String PERSON_LIST="personList";
     public static final String CONTENT_LIST = "contentList";

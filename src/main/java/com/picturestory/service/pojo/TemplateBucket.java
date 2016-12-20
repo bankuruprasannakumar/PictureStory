@@ -7,6 +7,15 @@ public class TemplateBucket {
     private int bucketId;
     private String bucketName;
     private String bucketPictureUrl;
+    private String bucketThumbnailUrl;
+
+    public String getBucketThumbnailUrl() {
+        return bucketThumbnailUrl;
+    }
+
+    public void setBucketThumbnailUrl(String bucketThumbnailUrl) {
+        this.bucketThumbnailUrl = bucketThumbnailUrl;
+    }
 
     public int getBucketId() {
         return bucketId;

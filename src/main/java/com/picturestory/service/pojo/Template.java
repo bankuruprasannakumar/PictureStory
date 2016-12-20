@@ -16,6 +16,33 @@ public class Template {
     private float lineSpacingIos;
     private float boundaryHeightIos;
     private float boundaryWidthIos;
+    private float marginLeft;
+    private float marginRight;
+    private float marginHeight;
+
+    public float getMarginLeft() {
+        return marginLeft;
+    }
+
+    public void setMarginLeft(float marginLeft) {
+        this.marginLeft = marginLeft;
+    }
+
+    public float getMarginRight() {
+        return marginRight;
+    }
+
+    public void setMarginRight(float marginRight) {
+        this.marginRight = marginRight;
+    }
+
+    public float getMarginHeight() {
+        return marginHeight;
+    }
+
+    public void setMarginHeight(float marginHeight) {
+        this.marginHeight = marginHeight;
+    }
 
     public float getLineSpacingIos() {
         return lineSpacingIos;

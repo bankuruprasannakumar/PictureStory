@@ -15,6 +15,15 @@ public class Content {
     private String pictureSummary;
     private boolean editorsPick;
     private int pixtoryStatus;
+    private int storyUserId;
+
+    public int getStoryUserId() {
+        return storyUserId;
+    }
+
+    public void setStoryUserId(int storyUserId) {
+        this.storyUserId = storyUserId;
+    }
 
     public int getPixtoryStatus() {
         return pixtoryStatus;

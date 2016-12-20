@@ -111,8 +111,23 @@ public class GetMainFeedV2 {
                         contentCreatorJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, user.getUserId()));
                         contentJSON.put(Constants.PERSON_DETAILS, contentCreatorJSON);
                     }
+                    //Add story creator Details
+                    if (content.getStoryUserId() != 0) {
+                        System.out.println(content.getStoryUserId());
+                        JSONObject storyUserJSON = new JSONObject();
+                        User storyUser = (User) mUserDetailsDao.getUser(content.getStoryUserId());
+                        if (storyUser != null) {
+                            storyUserJSON.put(Constants.ID, user.getUserId());
+                            storyUserJSON.put(Constants.NAME, user.getUserName());
+                            storyUserJSON.put(Constants.DESCRIPTION, user.getUserDesc());
+                            storyUserJSON.put(Constants.IMAGE_URL, user.getUserImage());
+                            storyUserJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, user.getUserId()));
+                            storyUserJSON.put(Constants.STORY_USER_DETAILS, contentCreatorJSON);
+                        }
+                    }
 
                     //Add category name list
+/*
                     JSONArray categoryJSONArray = new JSONArray();
                     List<Integer> categoryIdList = mContentCategoryDao.getCategoryIdListFromContentId(content.getContentId());
                     for(int i=0;i<categoryIdList.size();i++){
@@ -122,6 +137,7 @@ public class GetMainFeedV2 {
                         categoryJSONArray.put(categoryObject);
                     }
                     contentJSON.put(Constants.CATEGORY_NAME_LIST,categoryJSONArray);
+*/
 
                     contentJSONArray.put(contentJSON);
 
