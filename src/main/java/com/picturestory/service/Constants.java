@@ -50,6 +50,7 @@ public class Constants {
     public static final String BUCKET_PICTURE_URL = "bucketPictureUrl";
     public static final String FOLDER_NAME = "folderName";
     public static final String FOLDER_IMAGE_ID = "folderImageId";
+    public static final String USER_FINISHED_SET_IDS="userFinishedSetIds";
     //Network params
     public static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
 
@@ -162,4 +163,5 @@ public class Constants {
     public static final String INVALID_TAG = "Invalid Tag";
     public static final String INVALID_FOLDER_NAME = "Invalid folder name";
     public static final String INVALID_FOLDER_ID = "Invalid folder id";
+    public static final String INVALID_SET_ID = "Invalid set id";
 }

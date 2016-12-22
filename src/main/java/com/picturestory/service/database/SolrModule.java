@@ -32,5 +32,6 @@ public class SolrModule  extends AbstractModule{
         bind(IPostcardDetailsDao.class).to(PostcardDetailsDao.class);
         bind(IUserTemplateBucketDao.class).to(UserTemplateBucketDao.class);
         bind(IUserFolderAssociationDao.class).to(UserFolderAssociationDao.class);
+        bind(IUserSetIdDao.class).to(UserSetIdDao.class);
     }
 }

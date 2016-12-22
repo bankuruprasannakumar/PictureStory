@@ -103,7 +103,7 @@ public class CreatePostcard {
             int postcardId = mPostcardDetailsDao.createPostCard(postcard);
 
             if (postcardId != 0){
-                JSONObject responseObj = composeResponse(pictureUrl);
+                JSONObject responseObj = composeResponse(pictureUrl, postcardId);
                 return ResponseBuilder.successResponse(responseObj.toString());
             } else {
                 return ResponseBuilder.error(mPostcardDetailsDao.getDetailedResponse().getErrorCode(), mPostcardDetailsDao.getDetailedResponse().getErrorMessage());
@@ -115,10 +115,11 @@ public class CreatePostcard {
         }
     }
 
-    private JSONObject composeResponse(String pictureUrl) throws JSONException {
+    private JSONObject composeResponse(String pictureUrl, int postCardId) throws JSONException {
         JSONObject responseObj = new JSONObject();
         responseObj.put(Constants.SUCCESS, true);
         responseObj.put(Constants.PICTURE_URL, pictureUrl);
+        responseObj.put(Constants.POSTCARD_ID, postCardId);
         return responseObj;
     }
 
