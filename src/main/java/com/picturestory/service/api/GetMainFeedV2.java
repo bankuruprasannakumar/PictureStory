@@ -122,7 +122,7 @@ public class GetMainFeedV2 {
                             storyUserJSON.put(Constants.DESCRIPTION, user.getUserDesc());
                             storyUserJSON.put(Constants.IMAGE_URL, user.getUserImage());
                             storyUserJSON.put(Constants.FOLLOWED_BY_USER, isPersonFollowedByUser(userId, user.getUserId()));
-                            contentJSON.put(Constants.STORY_USER_DETAILS, storyUserJSON);
+                            contentJSON.put(Constants.STORY_PERSON_DETAILS, storyUserJSON);
                         }
                     }
 

@@ -2,10 +2,13 @@ package com.picturestory.service.api;
 
 import com.picturestory.service.Constants;
 import com.picturestory.service.database.dao.IUserDetailsDao;
+import com.picturestory.service.pojo.Content;
 import com.picturestory.service.pojo.Contributor;
 import com.picturestory.service.pojo.User;
 import com.picturestory.service.request.ContributorMailRequest;
 import com.picturestory.service.response.ResponseBuilder;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

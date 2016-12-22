@@ -48,6 +48,8 @@ public class Constants {
     public static final String BUCKET_ID = "bucketId";
     public static final String BUCKET_NAME = "bucketName";
     public static final String BUCKET_PICTURE_URL = "bucketPictureUrl";
+    public static final String FOLDER_NAME = "folderName";
+    public static final String FOLDER_IMAGE_ID = "folderImageId";
     //Network params
     public static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
 
@@ -108,7 +110,7 @@ public class Constants {
     public static final String DOWNLOADED_BY_USER = "downloadedByUser";
     public static final String FULLCOUNT = "fullCount";
     public static final String PERSON_DETAILS="personDetails";
-    public static final String STORY_USER_DETAILS = "storyUserDetails";
+    public static final String STORY_PERSON_DETAILS = "storyPersonDetails";
     public static final String USER_DETAILS="userDetails";
     public static final String PERSON_LIST="personList";
     public static final String CONTENT_LIST = "contentList";
@@ -132,7 +134,7 @@ public class Constants {
     public static final String UNLOCKED_STATUS = "unlockedStatus";
     public static final String BUCKET_LIST = "bucketList";
     public static final String TEMPLATE_LIST = "templateList";
-
+    public static final String FOLDERS_LIST = "foldersList";
     //Error messages
     public static final String INVALID_USER_ID = "Invalid User Id";
     public static final String INVALID_USER_NAME = "Invalid User Name";
@@ -141,6 +143,7 @@ public class Constants {
     public static final String INVALID_CONTENT_ID = "Invalid Content Id";
     public static final String INVALID_DO_LIKE = "Invalid doLike";
     public static final String INVALID_DO_FOLLOW = "Invalid doFollow";
+    public static final String INVALID_DO_CREATE = "Invalid doCreate";
     public static final String INVALID_COMMENT = "Invalid comment";
     public static final String INVALID_USER_DESCRIPTION = "Invalid user Desription";
     public static final String INVALID_COMMENT_ID = "Invalid comment Id";
@@ -157,5 +160,6 @@ public class Constants {
     public static final String INVALID_TEMPLATE_BUCKET_ID = "Invalid Template BucketId";
     public static final String INVALID_TARGET_USER_ID = "Invalid target user id";
     public static final String INVALID_TAG = "Invalid Tag";
-
+    public static final String INVALID_FOLDER_NAME = "Invalid folder name";
+    public static final String INVALID_FOLDER_ID = "Invalid folder id";
 }
