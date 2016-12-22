@@ -1,10 +1,15 @@
 package com.picturestory.service.api.utilities;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.*;
+
+import org.apache.commons.io.FileUtils;
+import org.json.CDL;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by bankuru on 7/7/16.
@@ -106,7 +111,7 @@ public class GetSetId {
         return time;
     }
 
-    public static void main (String[] args){
+    public static void main (String[] args) throws Exception{
         System.out.println(getSetIdForWallPaper(1480744221712l));
     }
 }
